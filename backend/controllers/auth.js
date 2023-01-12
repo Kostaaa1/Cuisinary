@@ -2,13 +2,17 @@ const User = require("../models/User");
 
 module.exports = {
     addUser: async (req, res) => {
-        console.log(req.body);
         try {
-            const newUser = new User(req.body.user);
-            await newUser.save();
-            // const user = await User.create(newUser);
+            const user = await User.findOne({ email: req.body.email });
 
-            res.json(newUser);
+            if (!user) {
+                const newUser = new User(req.body.user);
+                await newUser.save();
+
+                res.json(newUser);
+            }
+
+            // const user = await User.create(newUser);
         } catch (error) {
             console.log(error);
         }
@@ -21,8 +25,15 @@ module.exports = {
             console.log(err);
         }
     },
+    validateUser: async (req, res) => {
+        try {
+            const user = await User.findOne({ email: req.params.email });
+            res.json(user);
+        } catch (error) {
+            console.log(error);
+        }
+    },
     addToFavorite: async (req, res) => {
-        console.log(req.body);
         try {
             const user = await User.findOneAndUpdate(
                 {
@@ -46,7 +57,6 @@ module.exports = {
         }
     },
     deleteFavorite: async (req, res) => {
-        console.log(req.body);
         try {
             const user = await User.findOneAndUpdate(
                 {

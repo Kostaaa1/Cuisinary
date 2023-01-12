@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
+import { useAuth } from "../../../setup/auth/useAuth";
 
 const PersonalInfo = () => {
     const [clicked, setClicked] = useState(true);
     const [buttonSave, setButtonSave] = useState(false);
+    const { currentUser } = useAuth();
     const [personalForm, setPersonalForm] = useState({
         email: "",
         firstName: "",
@@ -44,117 +46,133 @@ const PersonalInfo = () => {
 
     return (
         <Form onSubmit={submitForm}>
-            <div className="personal__section">
-                <h1>Personal Info</h1>
-                <input
-                    type="submit"
-                    value={"SAVE CHANGES"}
-                    className={`btn__save ${buttonSave ? "highlight" : ""}`}
-                />
-            </div>
-            <div className="section__info">
-                <h3>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Illum assumenda, libero expedita at nesciunt magni enim
-                    impedit deserunt laborum soluta earum quidem repellendus,
-                    aliquid aspernatur.
-                </h3>
-                <span>
-                    <Lock />
-                    Only you can see the information on this page. It will not
-                    be displayed for other users to see.
-                </span>
-            </div>
-            <div className="line__break"></div>
-            <DynamicForm>
-                <div
-                    className="head__info"
-                    onClick={() => setClicked(!clicked)}
-                >
-                    <h3>My Basic Info</h3>
-                    <KeyboardArrowDown className={clicked ? "click" : ""} />
-                </div>
-                {clicked && (
-                    <>
-                        <div className="input__container">
-                            <div className="input__wrapper">
-                                <label> Email Address*</label>
-                                <input
-                                    onChange={(e) => handleForm(e)}
-                                    id="email"
-                                    type="email"
-                                    placeholder={
-                                        "battlefieldheroes177@gmail.com"
-                                    }
-                                />
-                            </div>
-                            <HalfWrap>
-                                <div className="input__wrapper half">
-                                    <label> First Name</label>
-                                    <input
-                                        onChange={(e) => handleForm(e)}
-                                        id="firstName"
-                                        type="text"
-                                        placeholder="Taylor"
-                                    />
-                                </div>
-                                <div className="input__wrapper half">
-                                    <label> Last Name</label>
-                                    <input
-                                        onChange={(e) => handleForm(e)}
-                                        id="lastName"
-                                        type="text"
-                                        placeholder="Smith"
-                                    />
-                                </div>
-                            </HalfWrap>
-                            <HalfWrap>
-                                <div className="input__wrapper date">
-                                    <label>Birth Date</label>
-                                    <div>
+            {!currentUser ? (
+                <Loading />
+            ) : (
+                <>
+                    <div className="personal__section">
+                        <h1>Personal Info</h1>
+                        <input
+                            type="submit"
+                            value={"SAVE CHANGES"}
+                            className={`btn__save ${
+                                buttonSave ? "highlight" : ""
+                            }`}
+                        />
+                    </div>
+                    <div className="section__info">
+                        <h3>
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Illum assumenda, libero expedita at nesciunt
+                            magni enim impedit deserunt laborum soluta earum
+                            quidem repellendus, aliquid aspernatur.
+                        </h3>
+                        <span>
+                            <Lock />
+                            Only you can see the information on this page. It
+                            will not be displayed for other users to see.
+                        </span>
+                    </div>
+                    <div className="line__break"></div>
+                    <DynamicForm>
+                        <div
+                            className="head__info"
+                            onClick={() => setClicked(!clicked)}
+                        >
+                            <h3>My Basic Info</h3>
+                            <KeyboardArrowDown
+                                className={clicked ? "click" : ""}
+                            />
+                        </div>
+                        {clicked && (
+                            <>
+                                <div className="input__container">
+                                    <div className="input__wrapper">
+                                        <label> Email Address*</label>
                                         <input
                                             onChange={(e) => handleForm(e)}
-                                            id="month"
-                                            type="number"
-                                            min={"1"}
-                                            max={"12"}
-                                            placeholder="MM"
-                                        />
-                                        <span>/</span>
-                                        <input
-                                            onChange={(e) => handleForm(e)}
-                                            type="number"
-                                            min={"1"}
-                                            max={"31"}
-                                            id="day"
-                                            placeholder="DD"
-                                        />
-                                        <span>/</span>
-                                        <input
-                                            onChange={(e) => handleForm(e)}
-                                            type="number"
-                                            min={"1930"}
-                                            max={"2022"}
-                                            id="year"
-                                            placeholder="YYYY"
+                                            id="email"
+                                            type="email"
+                                            placeholder={
+                                                "battlefieldheroes177@gmail.com"
+                                            }
                                         />
                                     </div>
-                                </div>
+                                    <HalfWrap>
+                                        <div className="input__wrapper half">
+                                            <label> First Name</label>
+                                            <input
+                                                onChange={(e) => handleForm(e)}
+                                                id="firstName"
+                                                type="text"
+                                                placeholder="Taylor"
+                                            />
+                                        </div>
+                                        <div className="input__wrapper half">
+                                            <label> Last Name</label>
+                                            <input
+                                                onChange={(e) => handleForm(e)}
+                                                id="lastName"
+                                                type="text"
+                                                placeholder="Smith"
+                                            />
+                                        </div>
+                                    </HalfWrap>
+                                    <HalfWrap>
+                                        <div className="input__wrapper date">
+                                            <label>Birth Date</label>
+                                            <div>
+                                                <input
+                                                    onChange={(e) =>
+                                                        handleForm(e)
+                                                    }
+                                                    id="month"
+                                                    type="number"
+                                                    min={"1"}
+                                                    max={"12"}
+                                                    placeholder="MM"
+                                                />
+                                                <span>/</span>
+                                                <input
+                                                    onChange={(e) =>
+                                                        handleForm(e)
+                                                    }
+                                                    type="number"
+                                                    min={"1"}
+                                                    max={"31"}
+                                                    id="day"
+                                                    placeholder="DD"
+                                                />
+                                                <span>/</span>
+                                                <input
+                                                    onChange={(e) =>
+                                                        handleForm(e)
+                                                    }
+                                                    type="number"
+                                                    min={"1930"}
+                                                    max={"2022"}
+                                                    id="year"
+                                                    placeholder="YYYY"
+                                                />
+                                            </div>
+                                        </div>
 
-                                <div className="input__wrapper half">
-                                    <label>ZIP Code</label>
-                                    <input
-                                        onChange={(e) => handleForm(e)}
-                                        id="zipCode"
-                                        type="text"
-                                        placeholder="ZIP Code"
-                                    />
+                                        <div className="input__wrapper half">
+                                            <label>ZIP Code</label>
+                                            <input
+                                                onChange={(e) => handleForm(e)}
+                                                id="zipCode"
+                                                type="text"
+                                                placeholder="ZIP Code"
+                                            />
+                                        </div>
+                                    </HalfWrap>
                                 </div>
-                            </HalfWrap>
-                        </div>
-                    </>
-                )}
-            </DynamicForm>
+                            </>
+                        )}
+                    </DynamicForm>
+                </>
+            )}
         </Form>
     );
 };
@@ -234,6 +252,7 @@ const DynamicForm = styled.div`
 const Form = styled.form`
     width: 100%;
     padding: 20px;
+    position: relative;
 
     .personal__section {
         display: flex;

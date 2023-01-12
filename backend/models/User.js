@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
 const CollectionRecipeSchema = new mongoose.Schema({
-    recipeTitle: { type: String, unique: true },
+    recipeTitle: { type: String, unique: true, sparse: true },
     recipe: {},
+    _id: false,
 });
 
 const UserSchema = new mongoose.Schema({
@@ -18,14 +19,14 @@ const UserSchema = new mongoose.Schema({
             collName: String,
             collDesc: String,
             private: Boolean,
-            // collRecipes: [CollectionRecipeSchema],
-            collRecipes: [
-                {
-                    recipeTitle: { type: String, unique: true },
-                    recipe: {},
-                    _id: false,
-                },
-            ],
+            collRecipes: [CollectionRecipeSchema],
+            // collRecipes: [
+            //     {
+            //         recipeTitle: { type: String, unique: true, sparse: true },
+            //         recipe: {},
+            //         _id: false,
+            //     },
+            // ],
         },
     ],
 

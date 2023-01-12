@@ -15,11 +15,28 @@ import { motion } from "framer-motion";
 const Navbar = () => {
     const { user, loginWithPopup, isAuthenticated, logout, isLoading } =
         useAuth0();
-    const { authenticated, userLogout } = useAuth();
-    const { currentUser, loading } = useContext(AuthContext);
+    const { authenticated, userLogout, currentUser } = useAuth();
+    const { userDataContext, setUserDataContext } = useContext(AuthContext);
     const [searchClick, setSearchedClick] = useState(false);
     const showSearched = () => {
         setSearchedClick(!searchClick);
+    };
+
+    useEffect(() => {
+        getUser();
+        // }, [userDataContext !== undefined]);
+    }, [user]);
+
+    const getUser = async () => {
+        try {
+            const res = await fetch(`/api/auth/${user?.email}`);
+            const data = await res.json();
+
+            console.log(data);
+            setUserDataContext(data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (

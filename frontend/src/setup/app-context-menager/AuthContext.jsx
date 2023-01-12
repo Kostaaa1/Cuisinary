@@ -9,9 +9,18 @@ export const AuthContext = createContext(null);
 
 export const AuthContextProvider = ({ children }) => {
     const [arrayId, setArrayId] = useState([]);
+    const { loading, getUser, currentUser, setCurrentUser } = useAuth();
+    const [userDataContext, setUserDataContext] = useState();
     const { logout, getAccessTokenSilently, user, isAuthenticated } =
         useAuth0();
-    const { currentUser, setCurrentUser, loading, jwtToken } = useAuth();
+
+    const value = {
+        arrayId,
+        setArrayId,
+        loading,
+        userDataContext,
+        setUserDataContext,
+    };
 
     // sending JWT on backend
     const validation = async () => {
@@ -30,17 +39,6 @@ export const AuthContextProvider = ({ children }) => {
         // } catch (error) {
         //     console.log(error);
         // }
-    };
-
-    const value = {
-        arrayId,
-        setArrayId,
-        currentUser,
-        setCurrentUser,
-        loading,
-        // testUser,
-        // setCurrentUser,
-        // currentUser,
     };
 
     return (

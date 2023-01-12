@@ -2,26 +2,27 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../../../setup/auth/useAuth";
+import { useState } from "react";
 
 export const useFavorites = () => {
+    const { user } = useAuth0();
     // const { data, isLoading, isSuccess, refetch, isFetched, isFetching } =
     //     useQuery(["favorite"], async () => {
-    //         return axios.get("/api/favorites").then((res) => res.data);
+    //         return axios
+    //             .get(`/api/auth/${user?.email}`)
+    //             .then((res) => res.data.collections[0].collRecipes);
     //     });
-    const { user } = useAuth0();
-    const { data, isLoading, isSuccess, refetch, isFetched, isFetching } =
-        useQuery(["favorite"], async () => {
-            return axios
-                .get(`/api/auth/${user?.email}`)
-                .then((res) => res.data.collections[0].collRecipes);
-        });
+    const { currentUser } = useAuth();
+    const [layoutData, setLayoutData] = useState([]);
 
-    // data = data?.map((el, i, arr) => arr.indexOf(el.name) !== i);
-    // data?.filter((x, i, arr) => arr.indexOf(x));
+    useEffect(() => {
+        if (currentUser) {
+            setLayoutData(currentUser.collections[0].collRecipes);
+        }
+    }, [currentUser]);
 
-    // console.log([...new Set(data.map((x) => x.recipe.image))]);
-
-    const length = data?.length;
+    // const length = data?.length;
 
     const refetchOnLoad = () => {
         useEffect(() => {
@@ -30,12 +31,11 @@ export const useFavorites = () => {
     };
 
     return {
-        data,
-        isLoading,
-        isSuccess,
-        refetchOnLoad,
-        length,
-        isFetched,
-        isFetching,
+        layoutData,
+        // data,
+        // isLoading,
+        // isSuccess,
+        // refetchOnLoad,
+        // length,
     };
 };

@@ -10,20 +10,6 @@ const CollectionCard = ({ favorite, addRecipeName }) => {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const deleteFavorite = async () => {
-        // await fetch("/api/favorites", {
-        //     method: "DELETE",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //         id: id,
-        //     }),
-        // });
-
-        setShowRemoveModal(false);
-    };
-
     const closeModal = () => {
         setShowRemoveModal(false);
     };
@@ -38,7 +24,7 @@ const CollectionCard = ({ favorite, addRecipeName }) => {
             )}
             <img src={favorite.recipe?.image} alt="" />
             <div className="card__desc">
-                <h4>{favorite.recipeTitle}</h4>
+                <h4>{favorite?.recipeTitle}</h4>
                 <ButtonBorder
                     value={
                         <span>
@@ -75,7 +61,7 @@ const Card = styled.div`
     width: 30%;
     display: flex;
     flex-direction: column;
-    min-height: 470px;
+    min-height: 370px;
     position: relative;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 

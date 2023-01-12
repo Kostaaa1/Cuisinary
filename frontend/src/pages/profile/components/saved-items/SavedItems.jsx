@@ -9,18 +9,21 @@ import { useNavigate } from "react-router-dom";
 import IndexesContext from "../../../../setup/app-context-menager/RecipeNameContext";
 import { useFavorites } from "../../hooks/useFavorites";
 import Loading from "../../../../common/Loading";
+import { useLayoutData } from "../../hooks/useLayoutData";
 
 const SavedItems = () => {
     const navigate = useNavigate();
-    const {
-        data,
-        isLoading,
-        isSuccess,
-        refetchOnLoad,
-        length,
-        isFetched,
-        isFetching,
-    } = useFavorites();
+    // const {
+    //     data,
+    //     isLoading,
+    //     isSuccess,
+    //     refetchOnLoad,
+    //     length,
+    //     isFetched,
+    //     isFetching,
+    // } = useFavorites();
+
+    const { layoutData, setLayoutData, length } = useLayoutData();
 
     const { arrayOfRecipeNames, setArrayOfRecipeNames } =
         useContext(IndexesContext);
@@ -35,68 +38,61 @@ const SavedItems = () => {
         setArrayOfRecipeNames(arr);
     };
 
-    refetchOnLoad();
-
     return (
         <Saved>
             <Return
                 value={"BACK TO ALL"}
                 onClick={() => navigate("/account/profile/collections")}
             />
-            {isFetching ? (
+            {/* {isFetching ? (
                 <Loading margin={"110px 0 0 0"} />
-            ) : (
-                <>
-                    <div className="section-info">
-                        <h1>All Saved Items</h1>
-                        <h3>All your favorite content in one place!</h3>
-                        <span>
-                            <SupervisorAccount /> Other users see what you save
-                        </span>
-                    </div>
-                    <div className="line-break"></div>
+            ) : ( */}
+            <>
+                <div className="section-info">
+                    <h1>All Saved Items</h1>
+                    <h3>All your favorite content in one place!</h3>
+                    <span>
+                        <SupervisorAccount /> Other users see what you save
+                    </span>
+                </div>
+                <div className="line-break"></div>
 
-                    {length === 0 && (
-                        <section>
-                            <h2>
-                                You haven't saved anything yet. Start browsing!
-                            </h2>
-                            <p>
-                                You can save items to your profile by clicking
-                                the heart icon in the share bar.
-                            </p>
-                            <Button
-                                value={"BACK HOME"}
-                                onClick={() =>
-                                    navigate("/account/profile/collections")
-                                }
+                {length === 0 && (
+                    <section>
+                        <h2>You haven't saved anything yet. Start browsing!</h2>
+                        <p>
+                            You can save items to your profile by clicking the
+                            heart icon in the share bar.
+                        </p>
+                        <Button
+                            value={"BACK HOME"}
+                            onClick={() =>
+                                navigate("/account/profile/collections")
+                            }
+                        />
+                    </section>
+                )}
+                {length > 0 && <h3 className="length">{length} items</h3>}
+                <div className="collection-control">
+                    {layoutData?.map((favorite, id) =>
+                        arrayOfRecipeNames.includes(favorite?.recipeTitle) ? (
+                            <TransparentCard
+                                key={id}
+                                favorite={favorite}
+                                removeRecipeName={removeRecipeName}
                             />
-                        </section>
+                        ) : (
+                            <CollectionCard
+                                key={id}
+                                id={id}
+                                favorite={favorite}
+                                addRecipeName={addRecipeName}
+                            />
+                        )
                     )}
-                    {length > 0 && <h3 className="length">{length} items</h3>}
-                    <div className="collection-control">
-                        {isSuccess &&
-                            data?.map((favorite, id) =>
-                                arrayOfRecipeNames.includes(
-                                    favorite?.recipeTitle
-                                ) ? (
-                                    <TransparentCard
-                                        key={id}
-                                        favorite={favorite}
-                                        removeRecipeName={removeRecipeName}
-                                    />
-                                ) : (
-                                    <CollectionCard
-                                        key={id}
-                                        id={id}
-                                        favorite={favorite}
-                                        addRecipeName={addRecipeName}
-                                    />
-                                )
-                            )}
-                    </div>
-                </>
-            )}
+                </div>
+            </>
+            {/* )} */}
         </Saved>
     );
 };

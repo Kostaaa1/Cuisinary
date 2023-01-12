@@ -9,25 +9,29 @@ import { motion } from "framer-motion";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useAuth } from "../../setup/auth/useAuth";
+import { useQuery } from "@tanstack/react-query";
 
 const MyProfile = ({ listContent, staticList }) => {
     const { arrayOfRecipeNames, setArrayOfRecipeNames } =
         useContext(IndexesContext);
+    const { userDataContext } = useContext(AuthContext);
     const { isLoading, isAuthenticated, getAccessTokenSilently, user } =
         useAuth0();
-    const { currentUser, loading, validated, authenticated } =
-        useContext(AuthContext);
-    const { fetchUserData } = useAuth();
-    const [data, setData] = useState([]);
+    const [data, setdata] = useState([]);
+    // const { validated, authenticated, userDataContext } =
+    //     useContext(AuthContext);
+    const { token, currentUser } = useAuth();
+    const [userData] = useState();
 
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         console.log(currentUser);
+    //     }
+    // }, [currentUser]);
     // useEffect(() => {
     //     console.log("fetched user data");
     //     fetchUserData();
     // }, []);
-
-    useEffect(() => {
-        console.log(currentUser);
-    }, [currentUser]);
 
     useEffect(() => {
         if (arrayOfRecipeNames.length !== 0) {
@@ -49,32 +53,16 @@ const MyProfile = ({ listContent, staticList }) => {
         });
     };
 
-    const userData = async () => {
-        try {
-            if (user) {
-                const res = await axios.get(`/api/auth/${user.email}`, {
-                    method: "GET",
-                    headers: {
-                        autorization: `Bearer ${getAccessTokenSilently()}`,
-                    },
-                });
-                setData(res.data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     return (
         <Container>
             <div className="profile">
-                {isLoading ? (
+                {!userDataContext ? (
                     <h4>Loading...</h4>
                 ) : (
                     <div className="profile-greet">
-                        <img src="../../src/assets/images/image1.png" alt="" />
+                        <img src={userDataContext?.picture} alt="" />
                         <div>
-                            <h3>Hi, {currentUser?.email} </h3>
+                            <h3>Hi, {userDataContext?.email} </h3>
                             <ButtonBorder value={"View Public Profile"} />
                         </div>
                     </div>

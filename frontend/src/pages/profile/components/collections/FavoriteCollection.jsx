@@ -5,30 +5,28 @@ import { AppsOutlined, VideocamOff } from "@material-ui/icons";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 
-const FavoriteCollection = () => {
+const FavoriteCollection = ({ collectionData }) => {
     const { arr, length, isSuccess, isLoading } = useLayoutData();
     const { currentUser, loading, validated, authenticated } =
         useContext(AuthContext);
 
     return (
         <Collection>
-            {currentUser && (
-                <CustomLink to={"/account/profile/saved-items"}>
-                    <div className="collection-layout">
-                        {arr?.map((recipe, id) => (
-                            <img key={id} src={recipe.data.image} alt="" />
-                        ))}
-                    </div>
-                    {isLoading && <h4>Loading...</h4>}
-                    <div className="collection-description">
-                        <p>PUBLIC</p>
-                        <h3>All Saved Items</h3>
-                        <span>
-                            <AppsOutlined /> Collection // {length}
-                        </span>
-                    </div>
-                </CustomLink>
-            )}
+            <CustomLink to={"/account/profile/saved-items"}>
+                <div className="collection-layout">
+                    {arr?.map((recipe, id) => (
+                        <img key={id} src={recipe.data.image} alt="" />
+                    ))}
+                </div>
+                {isLoading && <h4>Loading...</h4>}
+                <div className="collection-description">
+                    <p>PUBLIC</p>
+                    <h3>All Saved Items</h3>
+                    <span>
+                        <AppsOutlined /> Collection // {length}
+                    </span>
+                </div>
+            </CustomLink>
         </Collection>
     );
 };

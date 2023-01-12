@@ -25,9 +25,11 @@ import {
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import ProtectedRoutes from "../setup/auth/ProtectedRoutes";
+import { useAuth } from "../setup/auth/useAuth";
 
 const Pages = () => {
     const location = useLocation();
+    const { currentUser, setCurrentUser } = useAuth();
     const [lists, setLists] = useState([
         {
             id: 0,

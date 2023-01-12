@@ -1,10 +1,13 @@
 import { KeyboardArrowDown, SupervisorAccount } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Loading from "../../../common/Loading";
+import { useAuth } from "../../../setup/auth/useAuth";
 
 const PersonalInfo = () => {
     const [clicked, setClicked] = useState(true);
     const [preview, setPreview] = useState("");
+    const { currentUser } = useAuth();
     const [image, setImage] = useState("");
     const [publicForm, setPublicForm] = useState({
         displayName: "",
@@ -49,79 +52,88 @@ const PersonalInfo = () => {
 
     return (
         <FormWrapper onSubmit={submitForm}>
-            <div className="public__section">
-                <h1>Public Profile Settings</h1>
-                <input
-                    type="submit"
-                    value={"SAVE CHANGES"}
-                    className={`btn__save`}
-                />
-            </div>
-            <div className="section__info">
-                <h3>
-                    The information on this page will be displayed on your
-                    public profile, which is visible to other users.
-                </h3>
-                <span>
-                    <SupervisorAccount />
-                    The information on this page will be displayed publicly and
-                    will be visible to others
-                </span>
-                <div className="line__break"></div>
-            </div>
-            <DynamicForm>
-                <div
-                    className="head__info"
-                    onClick={() => setClicked(!clicked)}
-                >
-                    <h3>About Me</h3>
-                    <KeyboardArrowDown className={clicked ? "click" : ""} />
-                </div>
-                {clicked && (
-                    <>
-                        <div className="input__container">
-                            <div className="form__control">
-                                <div className="input__wrapper">
-                                    <label>Display Name*</label>
-                                    <input
-                                        type="text"
-                                        id="displayName"
-                                        placeholder="Kosta"
-                                        required
-                                        onChange={(e) => handleInput(e)}
-                                    />
-                                </div>
-                                <div className="input__wrapper">
-                                    <label>Tagline</label>
-                                    <textarea
-                                        cols="30"
-                                        rows="6"
-                                        id="tagline"
-                                        placeholder="Describe yourself in a nutshell"
-                                        className="tag"
-                                        onChange={(e) => handleInput(e)}
-                                    ></textarea>
-                                </div>
-                            </div>
-                            <div className="form__file">
-                                <label htmlFor="input_file">
-                                    Add an image
-                                    <div>
-                                        <img src={preview} />
-                                        <h3>Profile photo</h3>
-                                    </div>
-                                </label>
-                                <input
-                                    id="input_file"
-                                    type="file"
-                                    accept="image/png, image/jpeg"
-                                    onChange={handleImage}
-                                />
-                            </div>
+            {!currentUser ? (
+                <Loading />
+            ) : (
+                <>
+                    <div className="public__section">
+                        <h1>Public Profile Settings</h1>
+                        <input
+                            type="submit"
+                            value={"SAVE CHANGES"}
+                            className={`btn__save`}
+                        />
+                    </div>
+                    <div className="section__info">
+                        <h3>
+                            The information on this page will be displayed on
+                            your public profile, which is visible to other
+                            users.
+                        </h3>
+                        <span>
+                            <SupervisorAccount />
+                            The information on this page will be displayed
+                            publicly and will be visible to others
+                        </span>
+                        <div className="line__break"></div>
+                    </div>
+                    <DynamicForm>
+                        <div
+                            className="head__info"
+                            onClick={() => setClicked(!clicked)}
+                        >
+                            <h3>About Me</h3>
+                            <KeyboardArrowDown
+                                className={clicked ? "click" : ""}
+                            />
                         </div>
-                    </>
-                )}
-            </DynamicForm>
+                        {clicked && (
+                            <>
+                                <div className="input__container">
+                                    <div className="form__control">
+                                        <div className="input__wrapper">
+                                            <label>Display Name*</label>
+                                            <input
+                                                type="text"
+                                                id="displayName"
+                                                placeholder="Kosta"
+                                                required
+                                                onChange={(e) => handleInput(e)}
+                                            />
+                                        </div>
+                                        <div className="input__wrapper">
+                                            <label>Tagline</label>
+                                            <textarea
+                                                cols="30"
+                                                rows="6"
+                                                id="tagline"
+                                                placeholder="Describe yourself in a nutshell"
+                                                className="tag"
+                                                onChange={(e) => handleInput(e)}
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                    <div className="form__file">
+                                        <label htmlFor="input_file">
+                                            Add an image
+                                            <div>
+                                                <img src={preview} />
+                                                <h3>Profile photo</h3>
+                                            </div>
+                                        </label>
+                                        <input
+                                            id="input_file"
+                                            type="file"
+                                            accept="image/png, image/jpeg"
+                                            onChange={handleImage}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </DynamicForm>
+                </>
+            )}
         </FormWrapper>
     );
 };
@@ -253,6 +265,7 @@ const DynamicForm = styled.div`
 const FormWrapper = styled.form`
     width: 100%;
     padding: 20px;
+    position: relative;
 
     .public__section {
         display: flex;

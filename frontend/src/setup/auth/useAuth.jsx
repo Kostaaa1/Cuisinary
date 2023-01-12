@@ -3,12 +3,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useContext } from "react";
+import AuthContext from "../app-context-menager/AuthContext";
 
 export const useAuth = () => {
     const { user, isAuthenticated, getAccessTokenSilently, logout, isLoading } =
         useAuth0();
+    // const valid = JSON.parse(localStorage.getItem("validation"));
     const [currentUser, setCurrentUser] = useState();
-    const valid = JSON.parse(localStorage.getItem("validation"));
     const [authenticated, setAuthenticated] = useState(
         JSON.parse(localStorage.getItem("validation"))
     );
@@ -25,28 +27,27 @@ export const useAuth = () => {
     const userLogout = () => {
         localStorage.clear();
         logout();
-        setCurrentUser(null);
     };
-    // const { data: jwtToken } = useQuery(["token"], async () => {
-    //     return getAccessTokenSilently()
-    //         .then((res) => res)
-    //         .then((data) => data);
-    // });
 
     useEffect(() => {
-        newUser();
+        getUser();
     }, [user]);
 
-    const newUser = async () => {
+    const getUser = async () => {
         try {
-            if (!isLoading) {
-                const res = await fetch(`/api/auth/${user?.email}`);
+            if (user) {
+                const res = await fetch(`/api/auth/${user?.email}`, {
+                    method: "GET",
+                    headers: {
+                        authorization: `Bearer ${await getAccessTokenSilently()}`,
+                    },
+                });
                 const data = await res.json();
 
                 if (!data) {
                     addNewUser();
                 }
-                console.log(data);
+
                 setCurrentUser(data);
             }
         } catch (error) {
@@ -55,35 +56,36 @@ export const useAuth = () => {
     };
 
     const addNewUser = async () => {
-        if (user) {
-            const newUser = {
-                nickname: user.nickname,
-                email: user.email,
-                name: user.name,
-                picture:
-                    "https://st3.depositphotos.com/4326917/12573/v/450/depositphotos_125734036-stock-illustration-user-sign-illustration-white-icon.jpg",
-                collections: [
-                    {
-                        collName: "All saved items",
-                        collDesc: "",
-                        private: false,
-                        collRecipes: [],
-                    },
-                ],
-            };
-
-            await fetch("/api/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+        const mockUser = {
+            nickname: user?.nickname,
+            email: user?.email,
+            name: user?.name,
+            picture:
+                "https://st3.depositphotos.com/4326917/12573/v/450/depositphotos_125734036-stock-illustration-user-sign-illustration-white-icon.jpg",
+            collections: [
+                {
+                    collName: "All saved items",
+                    collDesc: "",
+                    private: false,
+                    collRecipes: [],
                 },
-                body: JSON.stringify({
-                    user: newUser,
-                }),
-            });
-        }
+            ],
+        };
+        const newUser = await fetch("/api/auth", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user: mockUser,
+                email: user?.email,
+            }),
+        });
 
-        newUser();
+        const data = await newUser.json();
+
+        setCurrentUser(data);
     };
-    return { currentUser, userLogout, authenticated, newUser };
+
+    return { userLogout, authenticated, currentUser };
 };

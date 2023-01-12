@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useState } from "react";
+import { useAuth } from "../../../setup/auth/useAuth";
 import { useFavorites } from "./useFavorites";
 
 export const useLayoutData = () => {
@@ -25,10 +27,20 @@ export const useLayoutData = () => {
         },
     ]);
 
-    const { data, length, isLoading, isSuccess } = useFavorites();
-    const destructuredArray = data?.map((x) => ({
+    const [layoutData, setLayoutData] = useState(null);
+    const { currentUser, setCurrentUser } = useAuth();
+
+    useEffect(() => {
+        if (currentUser) {
+            setLayoutData(currentUser.collections[0].collRecipes);
+        }
+    }, [currentUser]);
+
+    const destructuredArray = layoutData?.map((x) => ({
         data: { image: x.recipe?.image },
     }));
+
+    const length = destructuredArray?.length;
 
     const arr = mockData.map((fav, i) =>
         destructuredArray?.[i] ? destructuredArray[i] : fav
@@ -37,7 +49,6 @@ export const useLayoutData = () => {
     return {
         arr,
         length,
-        isSuccess,
-        isLoading,
+        layoutData,
     };
 };

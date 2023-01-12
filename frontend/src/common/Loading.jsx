@@ -10,8 +10,9 @@ const Loading = ({ margin }) => {
 const Wrapper = styled.div`
     position: absolute;
     content: "";
-    top: 0;
-    left: 0;
+    top: 50%;
+    right: 0;
+    transform: translate(0, 50%);
     width: 100%;
     height: 100%;
     display: flex;
@@ -21,12 +22,12 @@ const Wrapper = styled.div`
 
 const LoadingCircle = styled.div`
     pointer-events: none;
-    width: 3em;
-    height: 3em;
-    border: 0.25em solid white;
+    width: 3.2em;
+    height: 3.2em;
+    border: 0.3em solid white;
     border-top-color: #ce4620;
     border-radius: 50%;
-    animation: spin 1.5s linear infinite;
+    animation: spin 1.2s linear infinite;
 
     @keyframes spin {
         100% {

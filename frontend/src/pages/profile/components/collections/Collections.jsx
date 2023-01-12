@@ -8,38 +8,59 @@ import NewCollectionModal from "./NewCollectionModal";
 import NewCollectionCard from "./NewCollectionCard";
 import { useFavorites } from "../../hooks/useFavorites";
 import Loading from "../../../../common/Loading";
+import { useAuth } from "../../../../setup/auth/useAuth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const SavedItems = () => {
     const [showCollectionModal, setShowCollectionModal] = useState(false);
+    const { currentUser } = useAuth();
+    const [collections, setCollections] = useState([]);
+
+    useEffect(() => {
+        if (currentUser) {
+            setCollections(currentUser.collections);
+        }
+    }, [currentUser]);
 
     return (
         <Collections>
-            <div className="saved-items">
-                <div className="public-section">
-                    <h1>Saved Items & Collections</h1>
-                    <Button
-                        onClick={() => setShowCollectionModal(true)}
-                        value={"NEW COLLECTION +"}
-                    />
-                </div>
-                <SectionInfo
-                    value={"Create collections to organize your saved items"}
-                    icon={<Lock />}
-                    text={
-                        "Others can see your saved items and any collection you make public."
-                    }
-                />
-                <div className="line-break"></div>
-                <div>
-                    <h3>Collections</h3>
-                    <div className="collection-control">
-                        <FavoriteCollection />
-                        <NewCollectionCard
-                            onClick={() => setShowCollectionModal(true)}
+            {currentUser && (
+                <>
+                    <div className="saved-items">
+                        <div className="public-section">
+                            <h1>Saved Items & Collections</h1>
+                            <Button
+                                onClick={() => setShowCollectionModal(true)}
+                                value={"NEW COLLECTION +"}
+                            />
+                        </div>
+                        <SectionInfo
+                            value={
+                                "Create collections to organize your saved items"
+                            }
+                            icon={<Lock />}
+                            text={
+                                "Others can see your saved items and any collection you make public."
+                            }
                         />
+                        <div className="line-break"></div>
+                        <div>
+                            <h3>Collections</h3>
+                            <div className="collection-control">
+                                {collections?.map((collection, id) => (
+                                    <FavoriteCollection
+                                        key={id}
+                                        collectionData={collection}
+                                    />
+                                ))}
+                                <NewCollectionCard
+                                    onClick={() => setShowCollectionModal(true)}
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </>
+            )}
             {showCollectionModal && (
                 <NewCollectionModal
                     showModal={() =>
