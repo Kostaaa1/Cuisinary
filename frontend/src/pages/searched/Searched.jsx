@@ -64,7 +64,13 @@ const Searched = () => {
 const Container = styled.div`
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 1250px;
+    margin: 0 auto;
 
+    @media (max-width: 1270px) {
+        padding: 0 25px;
+    }
     h2 {
         color: var(--main-color);
         margin: 40px 0;

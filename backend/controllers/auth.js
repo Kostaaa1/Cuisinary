@@ -1,81 +1,133 @@
 const User = require("../models/User");
 
 module.exports = {
-    addUser: async (req, res) => {
-        try {
-            const user = await User.findOne({ email: req.body.email });
+  addUser: async (req, res) => {
+    try {
+      const user = await User.findOne({ email: req.body.email });
 
-            if (!user) {
-                const newUser = new User(req.body.user);
-                await newUser.save();
+      if (!user) {
+        const newUser = new User(req.body.user);
+        await newUser.save();
 
-                res.json(newUser);
-            }
+        res.status(200).json(newUser);
+      }
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  getUser: async (req, res) => {
+    try {
+      const user = await User.findOne({ email: req.params.email });
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  validateUser: async (req, res) => {
+    try {
+      const user = await User.findOne({ email: req.params.email });
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  addToFavorite: async (req, res) => {
+    try {
+      const user = await User.findOneAndUpdate(
+        {
+          email: req.params.email,
+          "collections.collName": "All saved items",
+        },
+        {
+          $addToSet: {
+            "collections.$.collRecipes": {
+              recipeTitle: req.body.recipeTitle,
+              recipe: req.body.recipe,
+            },
+          },
+        },
+        { unique: true, new: true, runValidators: true }
+      );
 
-            // const user = await User.create(newUser);
-        } catch (error) {
-            console.log(error);
-        }
-    },
-    getUser: async (req, res) => {
-        try {
-            const user = await User.findOne({ email: req.params.email });
-            res.json(user);
-        } catch (err) {
-            console.log(err);
-        }
-    },
-    validateUser: async (req, res) => {
-        try {
-            const user = await User.findOne({ email: req.params.email });
-            res.json(user);
-        } catch (error) {
-            console.log(error);
-        }
-    },
-    addToFavorite: async (req, res) => {
-        try {
-            const user = await User.findOneAndUpdate(
-                {
-                    email: req.params.email,
-                    "collections.collName": "All saved items",
-                },
-                {
-                    $addToSet: {
-                        "collections.$.collRecipes": {
-                            recipeTitle: req.body.recipeTitle,
-                            recipe: req.body.recipe,
-                        },
-                    },
-                },
-                { unique: true, new: true, runValidators: true }
-            );
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  deleteFavorite: async (req, res) => {
+    console.log(req.body.collectionId);
+    try {
+      // const user = await User.findOneAndUpdate(
+      //     {
+      //         email: req.params.email,
+      //         "collections.collName": "All saved items",
+      //     },
+      //     {
+      //         $pull: {
+      //             "collections.$.collRecipes": {
+      //                 // _id: { $in: req.body.ids },
+      //                 recipeTitle: { $in: req.body.titles },
+      //             },
+      //         },
+      //     }
+      // );
+      let filter = {
+        email: req.params.email,
+        "collections.collName": "All saved items",
+      };
+      if (req.body.collectionId) {
+        filter = {
+          email: req.params.email,
+          "collections._id": req.body.collectionId,
+        };
+      }
 
-            res.json(user);
-        } catch (err) {
-            console.log(err);
-        }
-    },
-    deleteFavorite: async (req, res) => {
-        try {
-            const user = await User.findOneAndUpdate(
-                {
-                    email: req.params.email,
-                    "collections.collName": "All saved items",
-                },
-                {
-                    $pull: {
-                        "collections.$.collRecipes": {
-                            // _id: { $in: req.body.ids },
-                            recipeTitle: { $in: req.body.titles },
-                        },
-                    },
-                }
-            );
+      const user = await User.findOneAndUpdate(filter, {
+        $pull: {
+          "collections.$.collRecipes": {
+            recipeTitle: { $in: req.body.titles },
+          },
+        },
+      });
 
-            res.json(user);
-        } catch (error) {
-            console.log(err);
+      res.status(200).json(`Deleted from collection ${req.body.collectionId}`);
+    } catch (error) {
+      res.status(400).send(error.message);
+      console.log(error);
+    }
+  },
+  getCustomCollection: async (req, res) => {
+    try {
+      const user = await User.findOne(
+        {
+          email: req.params.email,
+          "collections._id": req.params.id,
+        },
+        {
+          "collections.$": 1,
         }
-    },
+      );
+
+      res.status(200).json(user.collections[0]);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  getSavedCollection: async (req, res) => {
+    try {
+      const user = await User.findOne(
+        {
+          email: req.params.email,
+          "collections.collName": "All saved items",
+        },
+        {
+          "collections.$": 1,
+        }
+      );
+
+      res.status(200).send(user.collections[0]);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
 };

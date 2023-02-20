@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import "@splidejs/react-splide/css";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import axios from "axios";
 import { fetchPopular } from "../hooks/fetch-popular";
 
 const Popular = () => {
     const { isLoading, error, data } = useQuery(["popular"], fetchPopular);
-
     if (isLoading) return <h1 style={{ color: "white" }}>Loading...</h1>;
 
     return (
@@ -31,12 +32,12 @@ const Popular = () => {
                         },
                     }}
                 >
-                    {data.map((x, id) => (
+                    {data.map((popular, id) => (
                         <SplideSlide key={id}>
                             <Card>
-                                <Link to={"/recipe/" + x.id}>
-                                    <p>{x.title}</p>
-                                    <img src={x.image} alt="" />
+                                <Link to={"/recipe/" + popular.id}>
+                                    <p>{popular.title}</p>
+                                    <img src={popular.image} alt="" />
                                     <Gradient />
                                 </Link>
                             </Card>

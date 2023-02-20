@@ -2,9 +2,13 @@ import styled from "styled-components";
 import { Close, Lock } from "@material-ui/icons";
 import { motion } from "framer-motion";
 import Button from "../../../../common/Button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const RemoveModal = ({ name, onClick, remove }) => {
+const RemoveModal = ({ title, onClick, remove }) => {
+    const params = useParams();
+    const [collection, setCollection] = useState("");
+
     const handle = (e) => {
         if (e.key !== "Escape") return;
         onClick();
@@ -12,6 +16,11 @@ const RemoveModal = ({ name, onClick, remove }) => {
 
     useEffect(() => {
         document.addEventListener("keydown", handle);
+        if (params.name === "saved-items") {
+            setCollection("All Saved Items");
+        } else {
+            setCollection("Collection");
+        }
     }, []);
 
     return (
@@ -22,17 +31,17 @@ const RemoveModal = ({ name, onClick, remove }) => {
             transition={{ duration: 0.5 }}
         >
             <Section>
-                <div className="favorite__header">
-                    <h3>Remove from All Saved Items</h3>
+                <div className="favorite-header">
+                    <h3>Remove from {collection}</h3>
                     <Close onClick={onClick} />
                 </div>
                 <div className="content">
                     <p>
-                        Are you sure? Removing <span> {name} </span> will
+                        Are you sure? Removing <span> {title}</span> will
                         permanently delete it from all collections.
                     </p>
-                    <div className="buttons__wrap">
-                        <button className="btn__border" onClick={onClick}>
+                    <div className="buttons-wrap">
+                        <button className="btn-border" onClick={onClick}>
                             Cancel
                         </button>
                         <Button value={"Remove"} onClick={remove} />
@@ -63,7 +72,7 @@ const Section = styled.div`
     width: 380px;
     min-height: 260px;
 
-    .favorite__header {
+    .favorite-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -89,19 +98,20 @@ const Section = styled.div`
             margin: 25px 0;
             line-height: 1.6rem;
             letter-spacing: 0.8px;
+            word-wrap: break-word;
         }
 
         p > span {
             font-weight: bold;
         }
 
-        .buttons__wrap {
+        .buttons-wrap {
             display: flex;
             align-items: center;
             justify-content: start;
             margin-bottom: 10px;
 
-            .btn__border {
+            .btn-border {
                 color: var(--main-color);
                 text-decoration: none;
                 padding: 14px 35px;

@@ -5,32 +5,56 @@ import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
 import RemoveModal from "./RemoveModal";
 import Loading from "../../../../common/Loading";
+import AddCustomModal from "./AddCustomModal";
 
-const CollectionCard = ({ favorite, addRecipeName }) => {
+const CollectionCard = ({
+    favorite,
+    addRecipeName,
+    showDeleteCollectionModal,
+}) => {
     const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const closeModal = () => {
         setShowRemoveModal(false);
+        setShowModal(false);
     };
+
+    useEffect(() => {
+        const body = document.querySelector("body");
+        if (showModal || showRemoveModal) {
+            body.classList.add("no-scroll");
+        } else {
+            body.classList.remove("no-scroll");
+        }
+    }, [showModal, showRemoveModal]);
 
     return (
         <Card>
             {loading && (
                 <>
                     <div className="transparent"></div>
-                    <Loading margin={"0 0 110px 0"} />
+                    <Loading
+                        styles={{
+                            position: "absolute",
+                            content: "",
+                            bottom: "10%",
+                            right: "0",
+                        }}
+                    />
                 </>
             )}
             <img src={favorite.recipe?.image} alt="" />
-            <div className="card__desc">
+            <div className="card-desc">
                 <h4>{favorite?.recipeTitle}</h4>
                 <ButtonBorder
                     value={
-                        <span>
-                            <Add /> Add to collection
-                        </span>
+                        <p>
+                            <Add /> <span> Add to collection </span>
+                        </p>
                     }
+                    onClick={() => setShowModal(true)}
                 />
             </div>
             {!loading && (
@@ -49,8 +73,15 @@ const CollectionCard = ({ favorite, addRecipeName }) => {
                             addRecipeName(favorite?.recipeTitle);
                         }, Math.random() * 1200);
                     }}
-                    // title={favorite.recipeTitle}
+                    title={favorite.recipeTitle}
                     onClick={() => closeModal()}
+                />
+            )}
+            {showModal && (
+                <AddCustomModal
+                    favorite={favorite}
+                    onClick={() => closeModal()}
+                    showModal={() => setShowModal(false)}
                 />
             )}
         </Card>
@@ -64,6 +95,10 @@ const Card = styled.div`
     min-height: 370px;
     position: relative;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+    @media (max-width: 1030px) {
+        width: 270px;
+    }
 
     .transparent {
         position: absolute;
@@ -105,10 +140,10 @@ const Card = styled.div`
     img {
         border-top-right-radius: 8px;
         border-top-left-radius: 8px;
-        /* height: 270px; */
+        height: 80%;
     }
 
-    .card__desc {
+    .card-desc {
         padding: 1rem;
         height: 200px;
         display: flex;
@@ -131,13 +166,15 @@ const Card = styled.div`
             }
         }
 
-        span {
+        p {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
 
             svg {
                 color: var(--red-color);
+                font-size: 1.3rem;
+                margin-right: 5px;
             }
         }
     }

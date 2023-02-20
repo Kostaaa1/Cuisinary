@@ -3,51 +3,52 @@ import { useState } from "react";
 import { useEffect } from "react";
 import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
-import RemoveModal from "./RemoveModal";
+import Loading from "../../../../common/Loading";
 
 const CollectionCard = ({ favorite, removeRecipeName }) => {
-    // const [showRemoveModal, setShowRemoveModal] = useState(false);
-    // const [transparentCard, setTransparentCard] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    // const deleteFavorite = async () => {
-    //     // await fetch("/api/favorites", {
-    //     //     method: "DELETE",
-    //     //     headers: {
-    //     //         "Content-Type": "application/json",
-    //     //     },
-    //     //     body: JSON.stringify({
-    //     //         id: id,
-    //     //     }),
-    //     // });
+    const remove = () => {
+        setLoading(true);
 
-    //     setShowRemoveModal(false);
-    // };
-
-    // const closeModal = () => {
-    //     setShowRemoveModal(false);
-    // };
+        setTimeout(() => {
+            setLoading(false);
+            removeRecipeName(favorite?.recipeTitle);
+        }, Math.random() * 1200);
+    };
 
     return (
         <Card>
             <>
+                {loading && (
+                    <>
+                        <div className="transparent"></div>
+                        <Loading
+                            styles={{
+                                position: "absolute",
+                                content: "",
+                                bottom: "10%",
+                                right: "0",
+                            }}
+                        />
+                    </>
+                )}
                 <img src={favorite.recipe?.image} alt="" />
                 <div className="card__desc">
                     <h4>{favorite?.recipeTitle}</h4>
                     <ButtonBorder
                         value={
-                            <span>
-                                <Add /> Add to collection
-                            </span>
+                            <p>
+                                <Add /> <span> Add to collection </span>
+                            </p>
                         }
                     />
                 </div>
-                <div className="transparent">
-                    <button
-                        onClick={() => removeRecipeName(favorite?.recipeTitle)}
-                    >
-                        Undo
-                    </button>
-                </div>
+                {!loading && (
+                    <div className="transparent">
+                        <button onClick={() => remove()}>Undo</button>
+                    </div>
+                )}
             </>
         </Card>
     );
@@ -61,12 +62,13 @@ const Card = styled.div`
     position: relative;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
+    @media (max-width: 1030px) {
+        width: 270px;
+    }
     .transparent {
         position: absolute;
         background-color: rgba(245, 245, 245, 0.73);
         content: "";
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
         display: flex;
@@ -86,7 +88,6 @@ const Card = styled.div`
             text-align: center;
             align-items: center;
             font-size: 14px;
-            margin-top: 12px;
             max-width: 170px;
             cursor: pointer;
 
@@ -100,6 +101,7 @@ const Card = styled.div`
     img {
         border-top-right-radius: 8px;
         border-top-left-radius: 8px;
+        height: 80%;
     }
 
     .card__desc {
@@ -125,13 +127,15 @@ const Card = styled.div`
             }
         }
 
-        span {
+        p {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
 
             svg {
                 color: var(--red-color);
+                font-size: 1.3rem;
+                margin-right: 5px;
             }
         }
     }

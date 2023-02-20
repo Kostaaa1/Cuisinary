@@ -2,17 +2,16 @@ import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useContext } from "react";
 import AuthContext from "../app-context-menager/AuthContext";
 
 export const useAuth = () => {
     const { user, isAuthenticated, getAccessTokenSilently, logout, isLoading } =
         useAuth0();
-    // const valid = JSON.parse(localStorage.getItem("validation"));
     const [currentUser, setCurrentUser] = useState();
+    const { userData, setUserData } = useContext(AuthContext);
     const [authenticated, setAuthenticated] = useState(
-        JSON.parse(localStorage.getItem("validation"))
+        JSON.parse(localStorage.getItem("validation")) || false
     );
 
     useEffect(() => {
@@ -49,6 +48,7 @@ export const useAuth = () => {
                 }
 
                 setCurrentUser(data);
+                setUserData(data);
             }
         } catch (error) {
             console.log(error);
@@ -56,35 +56,49 @@ export const useAuth = () => {
     };
 
     const addNewUser = async () => {
-        const mockUser = {
-            nickname: user?.nickname,
-            email: user?.email,
-            name: user?.name,
-            picture:
-                "https://st3.depositphotos.com/4326917/12573/v/450/depositphotos_125734036-stock-illustration-user-sign-illustration-white-icon.jpg",
-            collections: [
-                {
-                    collName: "All saved items",
-                    collDesc: "",
-                    private: false,
-                    collRecipes: [],
-                },
-            ],
-        };
-        const newUser = await fetch("/api/auth", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                user: mockUser,
+        try {
+            const mockUser = {
+                nickname: user?.nickname,
                 email: user?.email,
-            }),
-        });
+                name: user?.name,
+                firstName: "",
+                lastName: "",
+                birthDate: { month: "", day: "", year: "" },
+                zipCode: "",
+                picture: {
+                    fileName: "",
+                    fileType: "",
+                    fileSize: "",
+                    image: "",
+                    cloudinaryId: "",
+                },
+                collections: [
+                    {
+                        collName: "All saved items",
+                        collDesc: "",
+                        private: false,
+                        collRecipes: [],
+                    },
+                ],
+            };
+            const newUser = await fetch("/api/auth", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: mockUser,
+                    email: user?.email,
+                }),
+            });
 
-        const data = await newUser.json();
+            const data = await newUser.json();
 
-        setCurrentUser(data);
+            setCurrentUser(data);
+            setUserData(data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return { userLogout, authenticated, currentUser };

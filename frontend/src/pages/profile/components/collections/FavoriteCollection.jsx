@@ -1,29 +1,34 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
 import { AppsOutlined, VideocamOff } from "@material-ui/icons";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import SavedItems from "../saved-items/SavedItems";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const FavoriteCollection = ({ collectionData }) => {
-    const { arr, length, isSuccess, isLoading } = useLayoutData();
-    const { currentUser, loading, validated, authenticated } =
-        useContext(AuthContext);
+const FavoriteCollection = ({ collection, layoutArr, onClick }) => {
+    const { isLoading } = useAuth0;
 
     return (
-        <Collection>
-            <CustomLink to={"/account/profile/saved-items"}>
+        <Collection onClick={onClick}>
+            <CustomLink>
                 <div className="collection-layout">
-                    {arr?.map((recipe, id) => (
-                        <img key={id} src={recipe.data.image} alt="" />
-                    ))}
+                    {layoutArr?.map((recipe, id) =>
+                        recipe.data.image ? (
+                            <img key={id} src={recipe.data.image} alt="" />
+                        ) : (
+                            <img key={id}></img>
+                        )
+                    )}
                 </div>
                 {isLoading && <h4>Loading...</h4>}
                 <div className="collection-description">
-                    <p>PUBLIC</p>
-                    <h3>All Saved Items</h3>
+                    <p>{collection.private ? "PRIVATE" : "PUBLIC"}</p>
+                    <h3>{collection.collName}</h3>
                     <span>
-                        <AppsOutlined /> Collection // {length}
+                        <AppsOutlined /> Collection //{" "}
+                        {collection?.collRecipes.length}
                     </span>
                 </div>
             </CustomLink>
@@ -39,9 +44,11 @@ const CustomLink = styled(NavLink)`
 const Collection = styled.div`
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 270px;
     font-size: 14px;
     border: 1px solid rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    min-height: 370px;
 
     .collection-description {
         display: flex;
@@ -85,13 +92,13 @@ const Collection = styled.div`
     .collection-layout {
         display: grid;
         grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
-        gap: 4px;
+        gap: 2.5px;
         width: 100%;
 
         img {
             width: 100%;
-            height: 160px;
-            background-color: grey;
+            height: 180px;
+            background-color: #b1b1b1;
         }
 
         img:first-child {
@@ -100,7 +107,7 @@ const Collection = styled.div`
         }
 
         img:nth-child(n + 2) {
-            height: 80px;
+            height: 90px;
         }
 
         img:nth-child(2) {

@@ -13,14 +13,14 @@ import AuthContext, {
 
 function App() {
     return (
+        // <AuthContextProvider>
         <BrowserRouter>
-            <AuthContextProvider>
-                <RecipeNamesProvider>
-                    <Navbar />
-                    <Pages />
-                </RecipeNamesProvider>
-            </AuthContextProvider>
+            <RecipeNamesProvider>
+                <Navbar />
+                <Pages />
+            </RecipeNamesProvider>
         </BrowserRouter>
+        // </AuthContextProvider>
     );
 }
 

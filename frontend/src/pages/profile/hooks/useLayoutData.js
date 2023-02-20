@@ -1,54 +1,48 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
+import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import { useAuth } from "../../../setup/auth/useAuth";
-import { useFavorites } from "./useFavorites";
 
 export const useLayoutData = () => {
     const [mockData, setMockData] = useState([
         {
-            data: {
-                image: "/src/assets/images/gray-background.jpg",
-            },
+            data: {},
         },
         {
-            data: {
-                image: "/src/assets/images/gray-background.jpg",
-            },
+            data: {},
         },
         {
-            data: {
-                image: "/src/assets/images/gray-background.jpg",
-            },
+            data: {},
         },
         {
-            data: {
-                image: "/src/assets/images/gray-background.jpg",
-            },
+            data: {},
         },
     ]);
-
-    const [layoutData, setLayoutData] = useState(null);
-    const { currentUser, setCurrentUser } = useAuth();
+    const [layoutData, setLayoutData] = useState([]);
+    const { currentUser } = useAuth();
+    const { userData } = useContext(AuthContext);
 
     useEffect(() => {
         if (currentUser) {
-            setLayoutData(currentUser.collections[0].collRecipes);
+            setLayoutData(currentUser.collections);
         }
     }, [currentUser]);
 
-    const destructuredArray = layoutData?.map((x) => ({
-        data: { image: x.recipe?.image },
-    }));
+    const destructuredArray = layoutData?.map((coll) =>
+        coll.collRecipes.map((recipes) => ({
+            data: { image: recipes?.recipe.image },
+        }))
+    );
 
-    const length = destructuredArray?.length;
-
-    const arr = mockData.map((fav, i) =>
-        destructuredArray?.[i] ? destructuredArray[i] : fav
+    const layoutArr = destructuredArray?.map((el) =>
+        mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
     );
 
     return {
-        arr,
+        layoutArr,
         length,
+        destructuredArray,
         layoutData,
+        setLayoutData,
     };
 };

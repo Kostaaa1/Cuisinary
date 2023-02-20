@@ -1,43 +1,144 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
+const SingleFile = require("../models/singlefile");
+const cloudinary = require("../middleware/cloudinary");
+const autoIncrement = require("mongoose-auto-increment");
+
+const fileSizeFormatter = (bytes, decimal) => {
+    if (bytes === 0) {
+        return "0 Bytes";
+    }
+    const dm = decimal || 2;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "YB", "ZB"];
+
+    const index = Math.floor(Math.log(bytes) / Math.log(1000));
+    return parseFloat(
+        (bytes / Math.pow(1000, index)).toFixed(dm) + "-" + sizes[index]
+    );
+};
 
 // CRUD OPERATIONS
 module.exports = {
     updateUser: async (req, res) => {
-        if (req.user.id === req.params.id) {
-            if (req.body.password) {
-                req.body.password = CryptoJS.AES.encrypt(
-                    req.body.password,
-                    process.env.SECRET_KEY
-                ).toString();
-            }
-
-            try {
-                const updatedUser = await User.findByIdAndUpdate(
-                    req.params.id,
-                    {
-                        $set: req.body,
-                    },
-                    { new: true }
-                );
-
-                res.status(200).json(updatedUser);
-            } catch (error) {
-                res.status(500).json(error);
-            }
-        } else {
-            res.status(403).json(
-                "Wrong Id in request or user id from token not found !"
+        console.log(req.body);
+        try {
+            const updateData = {};
+            Object.entries(req.body.user).forEach(([key, value]) => {
+                if (value) updateData[key] = value;
+            });
+            const user = await User.findOneAndUpdate(
+                { email: req.params.email },
+                { $set: updateData }
             );
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(400).send(error.message);
         }
     },
-    deleteUser: async (req, res) => {
+    updateProfileImage: async (req, res) => {
+        console.log(req.body);
         try {
-            await User.findByIdAndDelete(req.params.id);
-            res.status(200).json(`User has been deleted!`);
+            const result = await cloudinary.uploader.upload(req.file.path);
+            const user = await User.findOneAndUpdate(
+                { email: req.params.email },
+                {
+                    $set: {
+                        nickname: req.body.nickname,
+                        tagline: req.body.tagline,
+                        picture: {
+                            fileName: req.file.originalname,
+                            fileType: req.file.mimetype,
+                            fileSize: fileSizeFormatter(req.file.size, 2),
+                            image: result.secure_url,
+                            cloudinaryId: result.public_id,
+                        },
+                    },
+                }
+            );
+
+            res.status(200).send(user);
         } catch (error) {
-            res.status(500).json(error);
+            res.status(400).send(error.message);
+        }
+    },
+    addCollection: async (req, res) => {
+        console.log(req.body);
+        try {
+            const user = await User.findOneAndUpdate(
+                { email: req.params.email },
+                {
+                    $push: {
+                        collections: {
+                            $each: [
+                                {
+                                    collName: req.body.collName,
+                                    collDesc: req.body.collDesc,
+                                    private: req.body.private,
+                                    collRecipes: req.body.collRecipes,
+                                },
+                            ],
+                            $position: 1,
+                        },
+                    },
+                }
+            );
+
+            console.log(user);
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(400).send(error.message);
+        }
+    },
+    addToCustomCollection: async (req, res) => {
+        try {
+            const checkedCollections = req.body.collections;
+            const recipe = req.body.recipe;
+
+            console.log(recipe);
+            console.log(checkedCollections);
+
+            const update = { $push: {} };
+            checkedCollections.forEach((coll) => {
+                update.$push[`collections.$.collRecipes`] = recipe;
+            });
+
+            const user = await User.findOneAndUpdate(
+                { email: req.params.email },
+                {
+                    $push: {
+                        "collections.$[coll].collRecipes": {
+                            $each: [recipe],
+                            $position: 0,
+                        },
+                    },
+                },
+
+                {
+                    arrayFilters: [
+                        { "coll.collName": { $in: checkedCollections } },
+                    ],
+                }
+            );
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    },
+    deleteCollection: async (req, res) => {
+        console.log(req.params);
+        try {
+            const user = await User.findOneAndUpdate(
+                {
+                    email: req.params.email,
+                    "collections._id": req.params.id,
+                },
+                { $pull: { collections: { _id: req.params.id } } }
+            );
+
+            res.status(200).send(user);
+        } catch (err) {
+            res.status(400).send(err);
         }
     },
 };

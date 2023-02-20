@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const recipesController = require("../controllers/recipes");
+const { upload } = require("../middleware/multer");
 
 router.get("/getPopular", recipesController.getPopular);
 router.get("/getVeggie", recipesController.getVeggie);

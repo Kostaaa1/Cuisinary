@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import { Lock } from "@material-ui/icons";
-import Button from "../../../common/Button";
-import SectionInfo from "../../../common/SectionInfo";
+import Button from "../../../../common/Button";
+import SectionInfo from "../../../../common/SectionInfo";
+import { useNavigate } from "react-router-dom";
 
 const ChangeProfile = () => {
+    const navigate = useNavigate();
     return (
         <Wrapper>
             <h1>Change Password</h1>
@@ -13,19 +15,21 @@ const ChangeProfile = () => {
                 text={"Your password will always remain private."}
                 icon={<Lock />}
             />
-            <div className="line__break"></div>
-            <Button value={"RESET PASSWORD"} />
+            <Button
+                onClick={() => navigate("/account/forgot-password-reset")}
+                value={"RESET PASSWORD"}
+            />
         </Wrapper>
     );
 };
 
 const Wrapper = styled.div`
-    padding: 20px;
+    padding: 8px 20px;
 
     h1 {
         font-weight: bold;
         margin-bottom: 30px;
-        font-size: 2.4rem;
+        font-size: 2.2rem;
     }
 
     .section__info {
@@ -35,7 +39,7 @@ const Wrapper = styled.div`
         justify-content: center;
 
         h3 {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 400;
             line-height: 25px;
             margin-bottom: 14px;
@@ -45,11 +49,7 @@ const Wrapper = styled.div`
             font-weight: 200;
             display: flex;
             align-items: center;
-            font-size: 14px;
-
-            svg {
-                margin-right: 10px;
-            }
+            font-size: 13px;
         }
     }
 

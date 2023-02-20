@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useContext, useState } from "react";
+import { NavLink, Route, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useContext, useState, Component, memo } from "react";
 import List from "../../pages/profile/components/List";
 import ButtonBorder from "../../common/ButtonBorder";
 import IndexesContext from "../../setup/app-context-menager/RecipeNameContext";
@@ -10,28 +10,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useAuth } from "../../setup/auth/useAuth";
 import { useQuery } from "@tanstack/react-query";
+import { useLayoutData } from "./hooks/useLayoutData";
+import ProfileGreet from "./components/ProfileGreet";
 
-const MyProfile = ({ listContent, staticList }) => {
-    const { arrayOfRecipeNames, setArrayOfRecipeNames } =
-        useContext(IndexesContext);
-    const { userDataContext } = useContext(AuthContext);
-    const { isLoading, isAuthenticated, getAccessTokenSilently, user } =
-        useAuth0();
-    const [data, setdata] = useState([]);
-    // const { validated, authenticated, userDataContext } =
-    //     useContext(AuthContext);
-    const { token, currentUser } = useAuth();
-    const [userData] = useState();
-
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         console.log(currentUser);
-    //     }
-    // }, [currentUser]);
-    // useEffect(() => {
-    //     console.log("fetched user data");
-    //     fetchUserData();
-    // }, []);
+const MyProfile = ({ listContent, staticList, setLists }) => {
+    const params = useParams();
+    const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId } = useContext(IndexesContext);
+    const { userData } = useContext(AuthContext);
+    const { user, isLoading } = useAuth0();
 
     useEffect(() => {
         if (arrayOfRecipeNames.length !== 0) {
@@ -42,46 +28,42 @@ const MyProfile = ({ listContent, staticList }) => {
 
     const handleDeletionOfIndexes = async () => {
         await fetch(`/api/auth/${user?.email}/deleteFavs`, {
-            method: "PUT",
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 titles: arrayOfRecipeNames,
-                email: user?.email,
+                collectionId: collectionId,
             }),
         });
     };
 
+    useEffect(() => {
+        if (params.id) {
+            const comp = {
+                id: listContent.length + 1,
+                component: "SavedItems",
+                route: `/collection/${params.id}`,
+            };
+
+            if (!listContent.map((x) => x.route === comp.route).includes(true)) {
+                listContent.push(comp);
+            }
+        }
+    }, [params.id]);
+
     return (
         <Container>
             <div className="profile">
-                {!userDataContext ? (
-                    <h4>Loading...</h4>
-                ) : (
-                    <div className="profile-greet">
-                        <img src={userDataContext?.picture} alt="" />
-                        <div>
-                            <h3>Hi, {userDataContext?.email} </h3>
-                            <ButtonBorder value={"View Public Profile"} />
-                        </div>
-                    </div>
-                )}
+                {!userData ? <h4>Loading...</h4> : <ProfileGreet />}
                 <div className="profile-info">
                     <ul>
                         {listContent
-                            .filter((list) => list.component !== "SavedItems")
+                            .filter((list) => list.text && list)
                             .map((list, id) => (
-                                <CustomLink
-                                    to={"/account/profile" + list.route}
-                                    key={id}
-                                >
-                                    <List
-                                        className={
-                                            list.selected ? "selected" : ""
-                                        }
-                                        list={list}
-                                    />
+                                <CustomLink to={"/account/profile" + list.route} key={id}>
+                                    <List className={list.selected ? "selected" : ""} list={list} />
                                 </CustomLink>
                             ))}
                     </ul>
@@ -91,12 +73,12 @@ const MyProfile = ({ listContent, staticList }) => {
                 {listContent.map((list) => {
                     if (list.selected) {
                         const Component = staticList[list.component];
-                        return <Component key={list.id} />;
+
+                        return <Component key={list.id} data={userData} />;
                     }
                 })}
             </div>
         </Container>
-        // </motion.div>
     );
 };
 
@@ -106,24 +88,35 @@ const CustomLink = styled(NavLink)`
 `;
 
 const Container = styled(motion.div)`
-    border-radius: 5px;
+    position: relative;
     width: 100%;
-    background-color: #fffdfb;
-    padding: 50px 0;
+    min-height: 85vh;
+    max-width: 100%;
+    width: 1250px;
+    margin: 0 auto;
     display: flex;
+    justify-content: space-between;
+
+    @media (max-width: 1162px) {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 
     .components {
-        width: 75%;
+        width: 960px;
+
+        /* @media (max-width: 70vw) {
+            width: 80vw;
+        } */
     }
 
     .profile {
-        width: 25%;
-        margin-right: 20px;
+        min-width: 280px;
 
         h4 {
             margin-bottom: 20px;
             text-align: center;
-            padding: 20px;
+            padding: 22px;
         }
     }
 

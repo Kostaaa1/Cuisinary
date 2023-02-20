@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const path = require("path");
 const jwtCheck = require("./jwtCheck");
 
 // config
@@ -25,16 +26,14 @@ app.use(function (req, res, next) {
 });
 
 // Middleware
-app.use(express.static("public"));
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api", require("./routes/recipes"));
 app.use("/api/auth", require("./routes/auth"));
-app.get("/api/validate", jwtCheck, (req, res) => {
-    res.send({ valid: true });
-});
+app.use("/api/user", require("./routes/users"));
 
 // Errors
 app.use((err, req, res, next) => {

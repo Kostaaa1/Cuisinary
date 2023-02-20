@@ -1,34 +1,48 @@
-import { KeyboardArrowDown, SupervisorAccount } from "@material-ui/icons";
+import { useAuth0 } from "@auth0/auth0-react";
+import axios from "axios";
+import { useContext } from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
+import SectionInfo from "../../../common/SectionInfo";
+import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import { useAuth } from "../../../setup/auth/useAuth";
+import {
+    AddAPhoto,
+    KeyboardArrowDown,
+    SupervisorAccount,
+} from "@material-ui/icons";
 
 const PersonalInfo = () => {
     const [clicked, setClicked] = useState(true);
     const [preview, setPreview] = useState("");
-    const { currentUser } = useAuth();
     const [image, setImage] = useState("");
+    const { currentUser } = useAuth();
+    const { user } = useAuth0();
+    const [buttonSave, setButtonSave] = useState(false);
+
     const [publicForm, setPublicForm] = useState({
         displayName: "",
         tagline: "",
-        preview: "",
     });
-    // const [buttonSave, setButtonSave] = useState(false);
 
     useEffect(() => {
         if (image) {
             const reader = new FileReader();
-            reader.onloadend = () => {
+            reader.readAsDataURL(image);
+            reader.onload = () => {
                 setPreview(reader.result);
             };
-            reader.readAsDataURL(image);
         } else {
             setPreview(null);
         }
     }, [image]);
 
     const handleImage = (e) => {
+        if (e.target.value !== "") {
+            setButtonSave(true);
+        }
+
         const file = e.target.files[0];
         if (file) {
             setImage(file);
@@ -38,48 +52,96 @@ const PersonalInfo = () => {
     };
 
     const handleInput = (e) => {
+        if (e.target.value !== "") {
+            setButtonSave(true);
+        }
+
         const data = {
             ...publicForm,
             [e.target.id]: e.target.value,
         };
+
         setPublicForm({ ...data });
     };
 
-    const submitForm = (e) => {
-        e.preventDefault();
-        setPublicForm({ ...publicForm, preview: preview });
+    const updateUser = async (form) => {
+        try {
+            await fetch(`/api/user/${user.email}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: form,
+                }),
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const submitForm = async (e) => {
+        try {
+            e.preventDefault();
+            const formData = new FormData();
+            if (image) {
+                formData.append("file", image);
+
+                await axios.post(`/api/user/${user?.email}/addImage`, formData);
+            }
+
+            if (publicForm.displayName || publicForm.tagline) {
+                updateUser({
+                    nickname: publicForm.displayName,
+                    tagline: publicForm.tagline,
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        window.location.reload();
     };
 
     return (
-        <FormWrapper onSubmit={submitForm}>
+        // <FormWrapper onSubmit={submitForm}>
+        <FormWrapper>
             {!currentUser ? (
                 <Loading />
             ) : (
                 <>
-                    <div className="public__section">
+                    <div className="public-section">
                         <h1>Public Profile Settings</h1>
-                        <input
-                            type="submit"
-                            value={"SAVE CHANGES"}
-                            className={`btn__save`}
-                        />
+                        {buttonSave ? (
+                            <input
+                                type="submit"
+                                value={"SAVE CHANGES"}
+                                className={`btn-save highlight`}
+                                onClick={submitForm}
+                            />
+                        ) : (
+                            <input
+                                type="submit"
+                                value={"SAVE CHANGES"}
+                                disabled
+                                className={`btn-save`}
+                                onClick={submitForm}
+                            />
+                        )}
                     </div>
-                    <div className="section__info">
-                        <h3>
-                            The information on this page will be displayed on
-                            your public profile, which is visible to other
-                            users.
-                        </h3>
-                        <span>
-                            <SupervisorAccount />
-                            The information on this page will be displayed
-                            publicly and will be visible to others
-                        </span>
-                        <div className="line__break"></div>
-                    </div>
+                    <SectionInfo
+                        value={
+                            "The information on this page will be displayed on your public profile, which is visible to other users."
+                        }
+                        icon={<SupervisorAccount />}
+                        text={
+                            "The information on this page will be displayed publicly and will be visible to others"
+                        }
+                    />
+
                     <DynamicForm>
                         <div
-                            className="head__info"
+                            className="head-info"
                             onClick={() => setClicked(!clicked)}
                         >
                             <h3>About Me</h3>
@@ -89,19 +151,20 @@ const PersonalInfo = () => {
                         </div>
                         {clicked && (
                             <>
-                                <div className="input__container">
-                                    <div className="form__control">
-                                        <div className="input__wrapper">
-                                            <label>Display Name*</label>
+                                <div className="input-container">
+                                    <div className="form-control">
+                                        <div className="input-wrapper">
+                                            <label>Display Name</label>
                                             <input
                                                 type="text"
                                                 id="displayName"
-                                                placeholder="Kosta"
-                                                required
+                                                placeholder={
+                                                    currentUser?.nickname
+                                                }
                                                 onChange={(e) => handleInput(e)}
                                             />
                                         </div>
-                                        <div className="input__wrapper">
+                                        <div className="input-wrapper">
                                             <label>Tagline</label>
                                             <textarea
                                                 cols="30"
@@ -113,15 +176,29 @@ const PersonalInfo = () => {
                                             ></textarea>
                                         </div>
                                     </div>
-                                    <div className="form__file">
+                                    <div className="form-file">
                                         <label htmlFor="input_file">
-                                            Add an image
+                                            <span>Add an image</span>
                                             <div>
-                                                <img src={preview} />
+                                                {preview ? (
+                                                    <img src={preview} alt="" />
+                                                ) : currentUser?.picture
+                                                      .image ? (
+                                                    <img
+                                                        src={
+                                                            currentUser?.picture
+                                                                .image
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <AddAPhoto className="addPhoto" />
+                                                )}
                                                 <h3>Profile photo</h3>
                                             </div>
                                         </label>
+
                                         <input
+                                            className="file"
                                             id="input_file"
                                             type="file"
                                             accept="image/png, image/jpeg"
@@ -148,14 +225,14 @@ const DynamicForm = styled.div`
         margin: 20px 0;
     }
 
-    .head__info {
+    .head-info {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 0 2rem;
 
         svg {
-            transition: all 0.3s 0s ease-in-out;
+            transition: all 0.2s 0s ease-in-out;
         }
 
         .click {
@@ -163,33 +240,48 @@ const DynamicForm = styled.div`
         }
     }
 
-    .input__container {
+    .input-container {
         padding: 1rem 2rem;
-        border-top: 1px solid rgba(0, 0, 0, 0.4);
+        border-top: 1px solid #b2b2b2;
         display: flex;
+        justify-content: space-between;
         width: 100%;
         height: 100%;
 
-        .form__file {
+        .form-file {
             input {
                 display: none;
             }
 
-            label > div {
+            div {
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 flex-direction: column;
-                height: 300px;
+                height: 270px;
+                margin-top: 10px;
+
                 cursor: pointer;
 
                 &:focus,
                 &:active {
-                    border: 4px solid #00367c;
+                    border: 3px solid #00367c;
                 }
 
                 h3 {
                     letter-spacing: 0;
+                }
+
+                svg {
+                    /* display: block; */
+                    border: 2px solid #ce4620;
+                    border-radius: 50%;
+                    width: 120px;
+                    height: 120px;
+                    padding: 30px;
+                    color: #ce4620;
+                    margin-bottom: 10px;
+                    overflow: visible;
                 }
 
                 img {
@@ -197,32 +289,30 @@ const DynamicForm = styled.div`
                     border-radius: 50%;
                     height: 120px;
                     width: 120px;
-                    margin-bottom: 10px;
+                    margin-bottom: 5px;
                     border: 2px solid #ce4620;
                 }
             }
         }
 
-        .form__file {
+        .form-file {
             display: flex;
-            justify-content: flex-start;
             flex-direction: column;
-            height: 100%;
             position: relative;
         }
 
-        .form__control {
-            width: 60%;
-            margin-right: 40px;
+        .form-control {
+            width: 65%;
 
-            .input__wrapper {
+            .input-wrapper {
                 display: flex;
                 flex-direction: column;
                 padding: 20px 0;
 
                 .tag {
                     padding: 15px 15px;
-                    font-size: 16px;
+                    font-size: 14px;
+                    height: 150px;
 
                     ::-webkit-scrollbar-track {
                         box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -242,9 +332,10 @@ const DynamicForm = styled.div`
             }
         }
 
-        .form__file {
-            width: 35%;
-            padding: 20px 0;
+        .form-file {
+            width: 32%;
+            margin: 20px 0 0 0;
+            max-height: 300px;
         }
 
         label {
@@ -253,21 +344,25 @@ const DynamicForm = styled.div`
             font-size: 14px;
         }
 
+        span {
+            margin: 50px 0;
+        }
+
         input {
             width: 100%;
             height: 40px;
             padding: 0 10px;
-            font-size: 16px;
+            font-size: 14px;
         }
     }
 `;
 
 const FormWrapper = styled.form`
     width: 100%;
-    padding: 20px;
+    padding: 8px 20px;
     position: relative;
 
-    .public__section {
+    .public-section {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -275,11 +370,12 @@ const FormWrapper = styled.form`
 
         h1 {
             font-weight: bold;
-            font-size: 2.4rem;
+            font-size: 2.2rem;
         }
 
-        .btn__save {
+        .btn-save {
             padding: 20px 35px;
+            font-size: 12px;
             font-weight: bold;
             color: white;
             background-color: #d9d9d9;
@@ -292,38 +388,18 @@ const FormWrapper = styled.form`
         .selected {
             background-color: #ce4620;
         }
-    }
 
-    .section__info {
-        display: flex;
-        align-items: flex-start;
-        flex-direction: column;
-        justify-content: center;
+        .highlight {
+            background-color: #ce4620;
+            cursor: pointer;
 
-        h3 {
-            font-size: 18px;
-            font-weight: 400;
-            line-height: 25px;
-            margin-bottom: 14px;
-        }
-
-        span {
-            font-weight: 200;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-
-            svg {
-                margin-right: 10px;
+            &:active,
+            &:focus {
+                outline: 2px solid #003e9b;
+                border-radius: 5px;
+                outline-offset: 1px;
             }
         }
-    }
-
-    .line__break {
-        width: 100%;
-        height: 1px;
-        margin: 40px 0;
-        background-color: rgba(0, 0, 0, 0.2);
     }
 `;
 

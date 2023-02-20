@@ -1,23 +1,24 @@
 import styled from "styled-components";
-const Loading = ({ margin }) => {
+
+const Loading = ({ styles }) => {
     return (
-        <Wrapper>
-            <LoadingCircle style={{ margin: margin }}></LoadingCircle>
+        <Wrapper style={styles}>
+            <LoadingCircle></LoadingCircle>
         </Wrapper>
     );
 };
 
 const Wrapper = styled.div`
-    position: absolute;
-    content: "";
-    top: 50%;
-    right: 0;
-    transform: translate(0, 50%);
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: "absolute";
+    content: "";
+    top: "50%";
+    right: "0";
+    transform: "translate(0, 50%)";
 `;
 
 const LoadingCircle = styled.div`

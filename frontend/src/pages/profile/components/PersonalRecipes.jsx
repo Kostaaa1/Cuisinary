@@ -12,7 +12,6 @@ const ChangeProfile = () => {
                 text={"Other users will see the recipes you've made public."}
                 icon={<SupervisorAccount />}
             />
-            <div className="line__break"></div>
             <div className="recipe__add">
                 <h2>You haven't created any recipes yet.</h2>
                 <p>To add a recipe click the button bellow</p>

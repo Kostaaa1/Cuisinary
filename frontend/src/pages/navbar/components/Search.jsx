@@ -37,14 +37,14 @@ const SearchForm = styled.form`
     display: flex;
     align-items: center;
     justify-content: space-around;
-    width: 480px;
+    max-width: 480px;
     height: 50px;
     padding: 0 0 0 12px;
 
     h4 {
         color: var(--main-color);
         font-weight: bold;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     .wrapper {

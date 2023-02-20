@@ -16,7 +16,6 @@ const CardDescription = ({ data }) => {
     const [favorite, setFavorite] = useState(false);
     const [recipeTitle, setRecipeTitle] = useState("");
     const [recipe, setRecipe] = useState();
-    const { currentUser } = useContext(AuthContext);
     const { user } = useAuth0();
 
     useEffect(() => {
@@ -72,7 +71,7 @@ const CardDescription = ({ data }) => {
 const Card = styled.div`
     background-color: white;
     border-radius: 4px;
-    height: 100%;
+    min-height: 350px;
     position: relative;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 

@@ -2,32 +2,30 @@ import styled from "styled-components";
 
 const Button = ({ value, onClick }) => {
     return (
-        <BtnWrap>
+        <div>
             <Btn onClick={onClick}> {value} </Btn>
-        </BtnWrap>
+        </div>
     );
 };
 
-const BtnWrap = styled.div`
-    padding: 1px;
-    &:active {
-        outline: 2px solid #003e9b;
-        border-radius: 5px;
-        width: fit-content;
-    }
-`;
-
 const Btn = styled.button`
-    padding: 16px 35px;
+    padding: 18px 35px;
     font-weight: bold;
     color: white;
     cursor: pointer;
     display: block;
     border: none;
-    font-size: 14px;
+    font-size: 12px;
     border-radius: 5px;
     letter-spacing: 1.1px;
     background-color: #ce4620;
+
+    &:active {
+        outline: 2px solid #003e9b;
+        border-radius: 5px;
+        outline-offset: 1px;
+        width: fit-content;
+    }
 `;
 
 export default Button;

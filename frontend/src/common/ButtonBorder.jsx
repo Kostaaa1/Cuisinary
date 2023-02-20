@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 
-const ButtonBorder = ({ value }) => {
-    return <Button> {value} </Button>;
+const ButtonBorder = ({ value, onClick }) => {
+    return <Button onClick={onClick}> {value} </Button>;
 };
 
 const Button = styled.div`
@@ -16,9 +16,9 @@ const Button = styled.div`
     display: block;
     text-align: center;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
     margin-top: 12px;
-    max-width: 170px;
+    max-width: 160px;
     cursor: pointer;
 
     &:hover {

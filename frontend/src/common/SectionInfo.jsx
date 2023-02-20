@@ -8,6 +8,7 @@ const SectionInfo = ({ value, text, icon }) => {
                 {icon}
                 {text}
             </span>
+            <div className="line-break"></div>
         </Section>
     );
 };
@@ -29,11 +30,17 @@ const Section = styled.section`
         font-weight: 200;
         display: flex;
         align-items: center;
-        font-size: 14px;
+        font-size: 13px;
 
         svg {
-            margin-right: 10px;
+            margin-right: 6px;
         }
+    }
+    .line-break {
+        width: 100%;
+        height: 1px;
+        margin: 30px 0 35px 0;
+        background-color: rgba(0, 0, 0, 0.2);
     }
 `;
 

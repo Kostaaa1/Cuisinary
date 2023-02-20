@@ -11,42 +11,23 @@ import { useAuth0 } from "@auth0/auth0-react";
 import AuthContext from "../../setup/app-context-menager/AuthContext";
 import Dropdown from "./components/Dropdown";
 import { motion } from "framer-motion";
+import Logo from "../../common/Logo";
 
 const Navbar = () => {
     const { user, loginWithPopup, isAuthenticated, logout, isLoading } =
         useAuth0();
-    const { authenticated, userLogout, currentUser } = useAuth();
-    const { userDataContext, setUserDataContext } = useContext(AuthContext);
+    const { authenticated, userLogout } = useAuth();
+    const { userData, setUserData } = useContext(AuthContext);
     const [searchClick, setSearchedClick] = useState(false);
     const showSearched = () => {
         setSearchedClick(!searchClick);
     };
 
-    useEffect(() => {
-        getUser();
-        // }, [userDataContext !== undefined]);
-    }, [user]);
-
-    const getUser = async () => {
-        try {
-            const res = await fetch(`/api/auth/${user?.email}`);
-            const data = await res.json();
-
-            console.log(data);
-            setUserDataContext(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     return (
-        <Header>
-            <Nav>
-                <Control>
-                    <Logo to={"/"}>
-                        Culinaryyy
-                        <GiKnifeFork className="logo" />
-                    </Logo>
+        <Nav>
+            <NavWrap>
+                <NavControl>
+                    <Logo to={"/"} />
                     {searchClick && <Search showSearched={showSearched} />}
                     {!searchClick && (
                         <ul className="wrapper">
@@ -75,7 +56,7 @@ const Navbar = () => {
                                                 </NavLink>
                                                 <NavLink
                                                     to={
-                                                        "/account/profile/collections"
+                                                        "/account/profile/collection"
                                                     }
                                                 >
                                                     <li>
@@ -114,31 +95,34 @@ const Navbar = () => {
                             <li className="underline">Newsletter</li>
                         </ul>
                     )}
-                </Control>
+                </NavControl>
                 <Category />
-            </Nav>
-        </Header>
+            </NavWrap>
+        </Nav>
     );
 };
 
-const Header = styled.header`
+const Nav = styled.nav`
     position: relative;
+    width: 100%;
     max-width: 100vw;
-    box-shadow: 0 0.125rem 0.375rem rgb(0 0 0 / 15%);
-    margin-top: 30px;
+    margin-bottom: 50px;
+    padding-top: 20px;
+    z-index: 10000;
+    box-shadow: 0 0.125rem 0.375rem rgb(0 0 0 / 20%);
 `;
 
-const Control = styled.div`
+const NavControl = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 `;
 
-const Nav = styled.nav`
+const NavWrap = styled.div`
     display: flex;
     flex-direction: column;
-    width: 1250px;
+    max-width: 1250px;
     margin: 0 auto;
     margin-bottom: 10px;
 
@@ -203,25 +187,6 @@ const Nav = styled.nav`
                 border: 20px solid yellow;
             }
         }
-    }
-`;
-
-const Logo = styled(Link)`
-    text-decoration: none;
-    font-size: 2rem;
-    font-weight: 600;
-    font-family: "Lobster two", cursive;
-    color: var(--main-color);
-    font-style: italic;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .logo {
-        font-size: 2.2rem;
-        color: #f7af30;
-        /* color: var(--main-color); */
-        margin-left: 4px;
     }
 `;
 
