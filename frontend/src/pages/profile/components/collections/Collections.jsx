@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Button from "../../../../common/Button";
 import SectionInfo from "../../../../common/SectionInfo";
 import FavoriteCollection from "./FavoriteCollection";
-import NewCollectionModal from "./NewCollectionModal";
+import CollectionModal from "../../../../common/CollectionModal";
 import NewCollectionCard from "./NewCollectionCard";
 import { useFavorites } from "../../hooks/useFavorites";
 import Loading from "../../../../common/Loading";
@@ -67,7 +67,7 @@ const SavedItems = () => {
           </div>
         </>
       )}
-      {showCollectionModal && <NewCollectionModal showModal={() => setShowCollectionModal(!showCollectionModal)} />}
+      {showCollectionModal && <CollectionModal showModal={() => setShowCollectionModal(!showCollectionModal)} />}
     </Collections>
   );
 };

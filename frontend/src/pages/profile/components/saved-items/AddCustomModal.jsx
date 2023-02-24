@@ -58,15 +58,21 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
   const submitForm = async (e) => {
     e.preventDefault();
-
     try {
+      const collectionArrayWithoutCurrentRecipe = layoutData
+        .filter(({ collName }) => checkedColls.includes(collName))
+        .filter(({ collRecipes }) => !collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle))
+        .map(({ collName }) => collName);
+
+      console.log(collectionArrayWithoutCurrentRecipe);
+
       await fetch(`/api/user/${user.email}/addToCustom`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          collections: checkedColls,
+          collections: collectionArrayWithoutCurrentRecipe,
           recipe: favorite,
         }),
       });

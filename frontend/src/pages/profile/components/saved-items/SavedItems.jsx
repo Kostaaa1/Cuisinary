@@ -12,6 +12,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../common/Loading";
 import { useAuth0 } from "@auth0/auth0-react";
+import CollectionModal from "../../../../common/CollectionModal";
 import DeleteCollection from "./DeleteCollection";
 import { useFavorites } from "../../hooks/useFavorites";
 import { useLayoutData } from "../../hooks/useLayoutData";
@@ -21,6 +22,7 @@ const Collections = () => {
   const location = useLocation();
   const params = useParams();
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
+  const [showEditCollectionModal, setShowEditCollectionModal] = useState(false);
   const navigate = useNavigate();
   const { userData } = useContext(AuthContext);
   const { user } = useAuth0();
@@ -64,12 +66,12 @@ const Collections = () => {
 
   useEffect(() => {
     const body = document.querySelector("body");
-    if (showDeleteCollectionModal) {
+    if (showDeleteCollectionModal || showEditCollectionModal) {
       body.classList.add("no-scroll");
     } else {
       body.classList.remove("no-scroll");
     }
-  }, [showDeleteCollectionModal]);
+  }, [showDeleteCollectionModal, showEditCollectionModal]);
 
   return (
     <Saved>
@@ -93,12 +95,11 @@ const Collections = () => {
                 />
                 <div className="wrap-flex">
                   <ButtonHover value={"DELETE"} icon={<Delete />} onClick={() => setShowDeleteCollectionModal(true)} />
-                  <ButtonHover value={"EDIT"} icon={<Edit />} />
+                  <ButtonHover value={"EDIT"} icon={<Edit />} onClick={() => setShowEditCollectionModal(true)} />
                 </div>
               </>
             )}
           </div>
-
           <div className="section-info">
             {collectionData?.collName === "All saved items" ? (
               <>
@@ -168,6 +169,12 @@ const Collections = () => {
               collectionTitle={collectionData.collName}
             />
           )}
+          {showEditCollectionModal && (
+            <CollectionModal
+              showModal={() => setShowEditCollectionModal(false)}
+              collectionTitle={collectionData?.collName}
+            />
+          )}
         </>
       )}
     </Saved>
@@ -176,6 +183,8 @@ const Collections = () => {
 
 const Saved = styled.div`
   position: relative;
+  width: 100%;
+  padding: 8px 20px;
   min-height: 100vh;
 
   h3 {
