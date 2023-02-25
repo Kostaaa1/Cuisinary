@@ -269,6 +269,7 @@ const DynamicForm = styled.div`
           width: 120px;
           margin-bottom: 5px;
           border: 2px solid #ce4620;
+          filter: saturate(100%);
         }
       }
     }

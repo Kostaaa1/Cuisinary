@@ -1,4 +1,4 @@
-import { Lock } from "@material-ui/icons";
+import { HttpsOutlined } from "@material-ui/icons";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Button from "../../../../common/Button";
@@ -43,7 +43,7 @@ const SavedItems = () => {
             </div>
             <SectionInfo
               value={"Create collections to organize your saved items"}
-              icon={<Lock />}
+              icon={<HttpsOutlined />}
               text={"Others can see your saved items and any collection you make public."}
             />
             <div>

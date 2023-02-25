@@ -17,9 +17,9 @@ import DeleteCollection from "./DeleteCollection";
 import { useFavorites } from "../../hooks/useFavorites";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import { useAuth } from "../../../../setup/auth/useAuth";
+import useNoScroll from "../../../../utils/useNoScroll";
 
 const Collections = () => {
-  const location = useLocation();
   const params = useParams();
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
   const [showEditCollectionModal, setShowEditCollectionModal] = useState(false);
@@ -28,6 +28,7 @@ const Collections = () => {
   const { user } = useAuth0();
 
   const { arrayOfRecipeNames, setArrayOfRecipeNames, setCollectionId, collectionId } = useContext(IndexesContext);
+  useNoScroll(showDeleteCollectionModal, showEditCollectionModal);
 
   const addRecipeName = async (id) => {
     const arr = [...arrayOfRecipeNames, id];
@@ -63,15 +64,6 @@ const Collections = () => {
     refetchOnMount: "always",
     enabled: !!user,
   });
-
-  useEffect(() => {
-    const body = document.querySelector("body");
-    if (showDeleteCollectionModal || showEditCollectionModal) {
-      body.classList.add("no-scroll");
-    } else {
-      body.classList.remove("no-scroll");
-    }
-  }, [showDeleteCollectionModal, showEditCollectionModal]);
 
   return (
     <Saved>
