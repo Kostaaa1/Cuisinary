@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -6,100 +6,95 @@ import { useContext } from "react";
 import AuthContext from "../app-context-menager/AuthContext";
 
 export const useAuth = () => {
-    const { user, isAuthenticated, getAccessTokenSilently, logout, isLoading } =
-        useAuth0();
-    const [currentUser, setCurrentUser] = useState();
-    const { userData, setUserData } = useContext(AuthContext);
-    const [authenticated, setAuthenticated] = useState(
-        JSON.parse(localStorage.getItem("validation")) || false
+  const { user, isAuthenticated, getAccessTokenSilently, logout, isLoading } = useAuth0();
+  const [currentUser, setCurrentUser] = useState();
+  const { userData, setUserData } = useContext(AuthContext);
+
+  const authenticated = useMemo(() => {
+    const item = localStorage.getItem(
+      "@@auth0spajs@@::LWAyzb9ustA8ktJ2j3tsFGiPUBj5zf5X::CatPiss123::openid profile email offline_access"
     );
 
-    useEffect(() => {
-        const item = localStorage.getItem("validation");
+    return !!item;
+  }, [
+    localStorage.getItem(
+      "@@auth0spajs@@::LWAyzb9ustA8ktJ2j3tsFGiPUBj5zf5X::CatPiss123::openid profile email offline_access"
+    ),
+  ]);
 
-        if (!item && isAuthenticated) {
-            localStorage.setItem("validation", true);
-            setAuthenticated(true);
+  useEffect(() => {
+    getUser();
+  }, [user]);
+
+  const getUser = async () => {
+    try {
+      if (user) {
+        const res = await fetch(`/api/auth/${user?.email}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${await getAccessTokenSilently()}`,
+          },
+        });
+        const data = await res.json();
+
+        if (!data) {
+          addNewUser();
         }
-    });
 
-    const userLogout = () => {
-        localStorage.clear();
-        logout();
-    };
+        setCurrentUser(data);
+        setUserData(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    useEffect(() => {
-        getUser();
-    }, [user]);
+  const addNewUser = async () => {
+    try {
+      const mockUser = {
+        nickname: user?.nickname,
+        email: user?.email,
+        name: user?.name,
+        firstName: "",
+        lastName: "",
+        birthDate: { month: "", day: "", year: "" },
+        zipCode: "",
+        tagline: "",
+        picture: {
+          fileName: "",
+          fileType: "",
+          fileSize: "",
+          image: "",
+          cloudinaryId: "",
+        },
+        collections: [
+          {
+            collName: "All saved items",
+            collDesc: "",
+            private: false,
+            collRecipes: [],
+          },
+        ],
+      };
+      const newUser = await fetch("/api/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: mockUser,
+          email: user?.email,
+        }),
+      });
 
-    const getUser = async () => {
-        try {
-            if (user) {
-                const res = await fetch(`/api/auth/${user?.email}`, {
-                    method: "GET",
-                    headers: {
-                        authorization: `Bearer ${await getAccessTokenSilently()}`,
-                    },
-                });
-                const data = await res.json();
+      const data = await newUser.json();
 
-                if (!data) {
-                    addNewUser();
-                }
+      setCurrentUser(data);
+      setUserData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-                setCurrentUser(data);
-                setUserData(data);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const addNewUser = async () => {
-        try {
-            const mockUser = {
-                nickname: user?.nickname,
-                email: user?.email,
-                name: user?.name,
-                firstName: "",
-                lastName: "",
-                birthDate: { month: "", day: "", year: "" },
-                zipCode: "",
-                picture: {
-                    fileName: "",
-                    fileType: "",
-                    fileSize: "",
-                    image: "",
-                    cloudinaryId: "",
-                },
-                collections: [
-                    {
-                        collName: "All saved items",
-                        collDesc: "",
-                        private: false,
-                        collRecipes: [],
-                    },
-                ],
-            };
-            const newUser = await fetch("/api/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    user: mockUser,
-                    email: user?.email,
-                }),
-            });
-
-            const data = await newUser.json();
-
-            setCurrentUser(data);
-            setUserData(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    return { userLogout, authenticated, currentUser };
+  return { authenticated, currentUser };
 };
