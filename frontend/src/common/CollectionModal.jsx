@@ -9,11 +9,11 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 
-const CollectionModal = ({ showModal, collectionTitle }) => {
+const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
   const params = useParams();
   const [collName, setCollName] = useState("");
   const [collDesc, setCollDesc] = useState("");
-  const [collPrivate, setCollPrivate] = useState(false);
+  const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
 
   const submitCollection = (e) => {
@@ -22,14 +22,18 @@ const CollectionModal = ({ showModal, collectionTitle }) => {
     const collectionData = {
       collName,
       collDesc,
-      private: collPrivate,
     };
 
-    console.log(collectionData);
-    // axios.post(`/api/user/${user?.email}/newCollection`, collectionData);
+    const filteredObject = Object.entries(collectionData)
+      .filter(([key, value]) => value)
+      .reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+
     axios.post(
       params.id ? `/api/user/${user?.email}/${params.id}/editCollection` : `/api/user/${user?.email}/newCollection`,
-      collectionData
+      { ...filteredObject, private: collPrivate }
     );
 
     showModal();
@@ -89,7 +93,12 @@ const CollectionModal = ({ showModal, collectionTitle }) => {
                   Private Collection
                   <Lock />
                 </label>
-                <input type="checkbox" className="check" onChange={(e) => setCollPrivate(e.currentTarget.checked)} />
+                <input
+                  type="checkbox"
+                  checked={collPrivate}
+                  className="check"
+                  onChange={(e) => setCollPrivate(e.currentTarget.checked)}
+                />
               </div>
               <span>Only you can see a private collection</span>
             </div>
