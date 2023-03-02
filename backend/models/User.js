@@ -1,56 +1,57 @@
 const mongoose = require("mongoose");
 
 const CollectionRecipeSchema = new mongoose.Schema({
-    recipeTitle: { type: String, unique: true, sparse: true },
-    recipe: {},
-    _id: false,
+  recipeTitle: { type: String },
+  recipe: {},
+  _id: false,
 });
 
 const BirthDate = new mongoose.Schema({
-    month: { type: String },
-    day: { type: String },
-    year: { type: String },
-    _id: false,
+  month: { type: String },
+  day: { type: String },
+  year: { type: String },
+  _id: false,
 });
 
 const ImageFile = new mongoose.Schema(
-    {
-        fileName: {
-            type: String,
-        },
-        image: {
-            type: String,
-        },
-        cloudinaryId: {
-            type: String,
-        },
-        fileType: {
-            type: String,
-        },
-        fileSize: {
-            type: String,
-        },
+  {
+    fileName: {
+      type: String,
     },
-    { _id: false, versionKey: false }
+    image: {
+      type: String,
+    },
+    cloudinaryId: {
+      type: String,
+    },
+    fileType: {
+      type: String,
+    },
+    fileSize: {
+      type: String,
+    },
+  },
+  { _id: false, versionKey: false }
 );
 
 const CollectionSchema = new mongoose.Schema({
-    collName: String,
-    collDesc: String,
-    private: Boolean,
-    uniqueId: { type: Number },
-    collRecipes: [CollectionRecipeSchema],
+  collName: String,
+  collDesc: String,
+  private: Boolean,
+  uniqueId: { type: Number },
+  collRecipes: [CollectionRecipeSchema],
 });
 
 const UserSchema = new mongoose.Schema({
-    nickname: { type: String, require: true },
-    email: { type: String, unique: true, require: true },
-    picture: ImageFile,
-    firstName: { type: String },
-    lastName: { type: String },
-    birthDate: BirthDate,
-    zipCode: { type: String },
-    collections: [CollectionSchema],
+  nickname: { type: String, require: true },
+  email: { type: String, unique: true, require: true },
+  picture: ImageFile,
+  tagline: { type: String },
+  firstName: { type: String },
+  lastName: { type: String },
+  birthDate: BirthDate,
+  zipCode: { type: String },
+  collections: [CollectionSchema],
 });
 
 // UserSchema.pre("save", function (next) {

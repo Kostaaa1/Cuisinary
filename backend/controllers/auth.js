@@ -39,10 +39,15 @@ module.exports = {
           "collections.collName": "All saved items",
         },
         {
-          $addToSet: {
+          $push: {
             "collections.$.collRecipes": {
-              recipeTitle: req.body.recipeTitle,
-              recipe: req.body.recipe,
+              $each: [
+                {
+                  recipeTitle: req.body.recipeTitle,
+                  recipe: req.body.recipe,
+                },
+              ],
+              $position: 0,
             },
           },
         },
@@ -55,22 +60,8 @@ module.exports = {
     }
   },
   deleteFavorite: async (req, res) => {
-    console.log(req.body.collectionId);
+    console.log(req.body);
     try {
-      // const user = await User.findOneAndUpdate(
-      //     {
-      //         email: req.params.email,
-      //         "collections.collName": "All saved items",
-      //     },
-      //     {
-      //         $pull: {
-      //             "collections.$.collRecipes": {
-      //                 // _id: { $in: req.body.ids },
-      //                 recipeTitle: { $in: req.body.titles },
-      //             },
-      //         },
-      //     }
-      // );
       let filter = {
         email: req.params.email,
         "collections.collName": "All saved items",
@@ -90,7 +81,7 @@ module.exports = {
         },
       });
 
-      res.status(200).json(`Deleted from collection ${req.body.collectionId}`);
+      res.status(200).json(user);
     } catch (error) {
       res.status(400).send(error.message);
       console.log(error);
