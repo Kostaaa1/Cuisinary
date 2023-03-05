@@ -15,7 +15,11 @@ const ChangeProfile = () => {
         text={"Your password will always remain private."}
         icon={<HttpsOutlined />}
       />
-      <Button onClick={() => navigate("/account/forgot-password-reset")} value={"RESET PASSWORD"} />
+      <Button
+        onClick={() => navigate("/account/forgot-password-reset")}
+        style={{ width: "200px", height: "60px" }}
+        value={"RESET PASSWORD"}
+      />
     </Wrapper>
   );
 };

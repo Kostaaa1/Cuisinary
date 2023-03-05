@@ -1,26 +1,24 @@
+import { Person } from "@material-ui/icons";
 import React, { useContext, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import ButtonBorder from "../../../common/ButtonBorder";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
 
 const ProfileGreet = () => {
   const { userData } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   return (
     <Greet>
-      <img
-        src={
-          !userData?.picture.image
-            ? "https://st3.depositphotos.com/4326917/12573/v/450/depositphotos_125734036-stock-illustration-user-sign-illustration-white-icon.jpg"
-            : `${userData?.picture.image}`
-        }
-        alt="profile-picture"
-        className="profile-picture"
-      />
+      {!userData?.picture.image ? (
+        <Person />
+      ) : (
+        <img src={`${userData?.picture.image}`} alt="profile-picture" className="profile-picture" />
+      )}
 
       <div>
         <h3>Hi, {userData?.firstName ? `${userData?.firstName} ${userData?.lastName}` : userData?.email}</h3>
-        <ButtonBorder value={"View Public Profile"} />
+        <ButtonBorder onClick={() => navigate(`/profile/${userData._id}`)} value={"View Public Profile"} />
       </div>
     </Greet>
   );
@@ -32,22 +30,25 @@ const Greet = styled.div`
   margin-bottom: 25px;
   padding: 0 10px;
 
-  img {
-    margin-right: 12px;
-    width: 60px;
-    height: 60px;
-    pointer-events: none;
-    filter: saturate(100%);
-  }
-
   h3 {
     word-break: break-all;
   }
 
+  img {
+    margin-right: 12px;
+    width: 70px;
+    height: 70px;
+    pointer-events: none;
+    filter: saturate(100%);
+  }
+
   svg {
-    font-size: 5rem;
-    color: #ce4620;
-    margin-right: 10px;
+    color: white;
+    background-color: #ce4620;
+    margin-right: 12px;
+    width: 70px;
+    height: 70px;
+    pointer-events: none;
   }
 `;
 

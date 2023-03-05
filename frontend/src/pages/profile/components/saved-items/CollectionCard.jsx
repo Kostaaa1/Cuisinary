@@ -6,25 +6,18 @@ import ButtonBorder from "../../../../common/ButtonBorder";
 import RemoveModal from "./RemoveModal";
 import Loading from "../../../../common/Loading";
 import AddCustomModal from "./AddCustomModal";
+import useNoScroll from "../../../../utils/useNoScroll";
 
 const CollectionCard = ({ favorite, addRecipeName, showDeleteCollectionModal }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  useNoScroll(showModal, showRemoveModal);
 
   const closeModal = () => {
     setShowRemoveModal(false);
     setShowModal(false);
   };
-
-  useEffect(() => {
-    const body = document.querySelector("body");
-    if (showModal || showRemoveModal) {
-      body.classList.add("no-scroll");
-    } else {
-      body.classList.remove("no-scroll");
-    }
-  }, [showModal, showRemoveModal]);
 
   return (
     <Card>
@@ -103,7 +96,7 @@ const Card = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1;
 
     button {
       /* margin-bottom: 1200px; */
@@ -186,7 +179,7 @@ const Delete = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
+  z-index: 1;
 
   svg {
     color: var(--red-color);

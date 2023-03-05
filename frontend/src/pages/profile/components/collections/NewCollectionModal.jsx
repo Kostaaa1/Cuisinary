@@ -25,7 +25,6 @@ const NewCollection = ({ showModal, collectionTitle }) => {
       private: collPrivate,
     };
 
-    console.log(collectionData);
     // axios.post(`/api/user/${user?.email}/newCollection`, collectionData);
     axios.post(
       params.id ? `/api/user/${user?.email}/${params.id}/editCollection` : `/api/user/${user?.email}/newCollection`,

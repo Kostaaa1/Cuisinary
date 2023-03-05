@@ -18,6 +18,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId } = useContext(IndexesContext);
   const { userData } = useContext(AuthContext);
   const { user, isLoading } = useAuth0();
+  const { layoutData } = useLayoutData();
 
   useEffect(() => {
     if (arrayOfRecipeNames.length !== 0) {
@@ -27,16 +28,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   }, [location.pathname !== "/account/profile/saved-items"]);
 
   const handleDeletionOfIndexes = async () => {
-    await fetch(`/api/auth/${user?.email}/deleteFavs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        titles: arrayOfRecipeNames,
-        collectionId: collectionId,
-      }),
-    });
+    const data = { titles: arrayOfRecipeNames, collectionId: collectionId };
+    await axios.post(`/api/auth/${user?.email}/deleteFavs`, data);
   };
 
   useEffect(() => {
@@ -86,34 +79,31 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
 const CustomLink = styled(NavLink)`
   text-decoration: none;
   color: var(--main-color);
+
+  &:last-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const Container = styled(motion.div)`
   position: relative;
-  width: 100%;
-  min-height: 85vh;
-  max-width: 100%;
-  width: 1250px;
-  margin: 0 auto;
+  margin: 200px auto;
   display: flex;
-  justify-content: space-between;
+  width: 100%;
+  max-width: 1250px;
 
-  @media (max-width: 1162px) {
-    padding-left: 20px;
-    padding-right: 20px;
+  @media screen and (max-width: 1250px) {
+    padding: 0 20px;
   }
 
   .components {
-    width: 76%;
-
-    /* @media (max-width: 70vw) {
-            width: 80vw;
-        } */
+    width: 940px;
+    max-width: 100%;
   }
 
   .profile {
-    max-width: 280px;
-    /* min-width: 260px; */
+    min-width: 280px;
+    margin-right: 30px;
 
     h4 {
       margin-bottom: 20px;
@@ -154,32 +144,8 @@ const Container = styled(motion.div)`
       width: 100%;
     }
 
-    ul li {
-      display: inline-flex;
-      justify-content: flex-start;
-      align-items: center;
-      margin-right: 12px;
-      list-style: none;
-      padding: 0.9rem 0.4rem;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      padding-left: 12px;
-
-      svg {
-        color: #ce4620;
-        margin-right: 10px;
-        font-size: 16px;
-      }
-
-      &:hover:not(.selected) {
-        background-color: rgba(0, 0, 0, 0.16);
-        color: #ce4620;
-      }
-    }
-
     .selected {
       border-left: 3px solid #ce4620;
-      border-top: 1px solid rgba(0, 0, 0, 0.3);
       font-weight: bold;
       color: #ce4620;
     }

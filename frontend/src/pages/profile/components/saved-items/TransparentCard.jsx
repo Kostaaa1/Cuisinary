@@ -61,6 +61,7 @@ const Card = styled.div`
   min-height: 370px;
   position: relative;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  z-index: 1;
 
   @media (max-width: 1030px) {
     width: 270px;
@@ -74,7 +75,7 @@ const Card = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1;
 
     button {
       margin-bottom: 120px;

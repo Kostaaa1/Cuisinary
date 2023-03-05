@@ -37,7 +37,7 @@ const Category = () => {
     },
     {
       visibility: false,
-      name: "INGEDIENTS",
+      name: "INGREDIENTS",
       categories: [
         { list: "Chicken", query: "chicken" },
         { list: "Beef", query: "beef" },
@@ -150,7 +150,6 @@ const Wrapper = styled.div`
     /* outline: 1px solid black; */
     letter-spacing: 1px;
     margin-right: 40px;
-
     color: var(--main-color);
     cursor: pointer;
   }
@@ -165,7 +164,6 @@ const CategoryDropdown = styled.ul`
   background-color: white;
   border-radius: 3px;
   flex-direction: column;
-  z-index: 10;
   padding: 4px 12px;
 
   li {

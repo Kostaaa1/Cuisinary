@@ -1,5 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
@@ -20,31 +21,31 @@ export const useLayoutData = () => {
       data: {},
     },
   ]);
-  const [layoutData, setLayoutData] = useState([]);
   const { userData } = useContext(AuthContext);
   const { currentUser } = useAuth();
   const [test, setTest] = useState([]);
   const { user } = useAuth0();
 
-  useEffect(() => {
-    if (currentUser) {
-      setLayoutData(currentUser.collections);
-    }
-  });
+  const layoutData = useMemo(() => {
+    return currentUser?.collections;
+  }, [currentUser]);
 
-  const destructuredArray = layoutData?.map((coll) =>
-    coll.collRecipes.map((recipes) => ({
-      data: { image: recipes?.recipe.image },
-    }))
-  );
+  const destructuredArray = useMemo(() => {
+    return layoutData?.map((coll) =>
+      coll.collRecipes.map((recipes) => ({
+        data: { image: recipes?.recipe.image },
+      }))
+    );
+  }, [layoutData]);
 
-  const layoutArr = destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
+  const layoutArr = useMemo(() => {
+    return destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
+  }, [destructuredArray, mockData]);
 
   return {
     layoutArr,
-    length,
     destructuredArray,
     layoutData,
-    setLayoutData,
+    currentUser,
   };
 };

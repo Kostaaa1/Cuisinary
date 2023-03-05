@@ -8,19 +8,21 @@ import SectionInfo from "../../../common/SectionInfo";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import { useAuth } from "../../../setup/auth/useAuth";
 import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from "@material-ui/icons";
+import { useRef } from "react";
+import useAddFixed from "../hooks/useAddFixed";
 
-const PersonalInfo = () => {
+const PublicInfo = () => {
   const [clicked, setClicked] = useState(true);
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState("");
   const { currentUser } = useAuth();
   const { user } = useAuth0();
   const [buttonSave, setButtonSave] = useState(false);
-
-  const [publicForm, setPublicForm] = useState({
-    displayName: "",
-    tagline: "",
-  });
+  const [tagline, setTagline] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [showLoading, setShowLoading] = useState(false);
+  const publicRef = useRef(null);
+  useAddFixed(publicRef);
 
   useEffect(() => {
     if (image) {
@@ -47,26 +49,6 @@ const PersonalInfo = () => {
     }
   };
 
-  const handleInput = (e) => {
-    setPublicForm((prevState) => ({
-      ...prevState,
-      [e.target.id]: e.target.value,
-    }));
-
-    setButtonSave(true);
-
-    // if (e.target.value !== "") {
-    //     setButtonSave(true);
-    //   }
-
-    // const data = {
-    //   ...publicForm,
-    //   [e.target.id]: e.target.value,
-    // };
-
-    // setPublicForm({ ...data });
-  };
-
   const updateUser = async (form) => {
     try {
       await fetch(`/api/user/${user.email}`, {
@@ -86,39 +68,49 @@ const PersonalInfo = () => {
   const submitForm = async (e) => {
     try {
       e.preventDefault();
+
+      setShowLoading(true);
+      const form = { displayName: displayName, tagline: tagline };
       const formData = new FormData();
+      if (form.displayName || form.tagline) {
+        updateUser({
+          nickname: form.displayName,
+          tagline: form.tagline,
+        });
+      }
       if (image) {
         formData.append("file", image);
 
         await axios.post(`/api/user/${user?.email}/addImage`, formData);
       }
 
-      if (publicForm.displayName || publicForm.tagline) {
-        updateUser({
-          nickname: publicForm.displayName,
-          tagline: publicForm.tagline,
-        });
-      }
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }
-
-    window.location.reload();
   };
 
   return (
-    // <FormWrapper onSubmit={submitForm}>
-    <FormWrapper>
+    <Form onSubmit={submitForm}>
       {!currentUser ? (
         <Loading />
       ) : (
         <>
-          <div className="public-section">
+          <div className="public-section" ref={publicRef}>
             <h1>Public Profile Settings</h1>
-            {buttonSave ? (
-              <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} onClick={submitForm} />
+
+            {showLoading ? (
+              <button className={"btn-save"}>
+                <Loading styles={{ transform: "scale(0.8)" }} />
+              </button>
             ) : (
-              <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} onClick={submitForm} />
+              <>
+                {buttonSave ? (
+                  <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
+                ) : (
+                  <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
+                )}
+              </>
             )}
           </div>
           <SectionInfo
@@ -128,7 +120,6 @@ const PersonalInfo = () => {
             icon={<SupervisorAccount />}
             text={"The information on this page will be displayed publicly and will be visible to others"}
           />
-
           <DynamicForm>
             <div className="head-info" onClick={() => setClicked(!clicked)}>
               <h3>About Me</h3>
@@ -142,21 +133,26 @@ const PersonalInfo = () => {
                       <label>Display Name</label>
                       <input
                         type="text"
-                        id="displayName"
                         placeholder={currentUser?.nickname}
-                        onChange={(e) => handleInput(e)}
+                        onChange={(e) => {
+                          setDisplayName(e.target.value), setButtonSave(true);
+                        }}
+                        value={displayName}
                       />
                     </div>
                     <div className="input-wrapper">
                       <label>Tagline</label>
                       <textarea
                         cols="30"
-                        rows="6"
-                        id="tagline"
                         placeholder="Describe yourself in a nutshell"
-                        className="tag"
-                        onChange={(e) => handleInput(e)}
+                        className="tagline"
+                        value={tagline}
+                        maxLength={200}
+                        onChange={(e) => {
+                          setTagline(e.target.value), setButtonSave(true);
+                        }}
                       ></textarea>
+                      <span className="length">{tagline.length}/200</span>
                     </div>
                   </div>
                   <div className="form-file">
@@ -188,7 +184,7 @@ const PersonalInfo = () => {
           </DynamicForm>
         </>
       )}
-    </FormWrapper>
+    </Form>
   );
 };
 
@@ -287,26 +283,17 @@ const DynamicForm = styled.div`
         display: flex;
         flex-direction: column;
         padding: 20px 0;
+        font-size: 16px;
 
-        .tag {
+        .tagline {
           padding: 15px 15px;
-          font-size: 14px;
           height: 150px;
+        }
 
-          ::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background-color: #f5f5f5;
-          }
-          ::-webkit-scrollbar {
-            width: 12px;
-            background-color: #f5f5f5;
-          }
-          ::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-            background-color: #555;
-          }
+        .length {
+          color: var(--grey-color);
+          margin: 6px 0;
+          font-size: 12px;
         }
       }
     }
@@ -336,9 +323,8 @@ const DynamicForm = styled.div`
   }
 `;
 
-const FormWrapper = styled.form`
+const Form = styled.form`
   width: 100%;
-  padding: 8px 20px;
   position: relative;
 
   .public-section {
@@ -353,7 +339,9 @@ const FormWrapper = styled.form`
     }
 
     .btn-save {
-      padding: 20px 35px;
+      width: 200px;
+      height: 60px;
+      /* padding: 20px 35px; */
       font-size: 12px;
       font-weight: bold;
       color: white;
@@ -382,4 +370,4 @@ const FormWrapper = styled.form`
   }
 `;
 
-export default PersonalInfo;
+export default PublicInfo;

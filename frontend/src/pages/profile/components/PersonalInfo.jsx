@@ -1,12 +1,14 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { KeyboardArrowDown, HttpsOutlined, SupervisorAccount } from "@material-ui/icons";
-import { useContext } from "react";
+import axios from "axios";
+import { useContext, useRef } from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import SectionInfo from "../../../common/SectionInfo";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import { useAuth } from "../../../setup/auth/useAuth";
+import useAddFixed from "../hooks/useAddFixed";
 
 const PersonalInfo = () => {
   const [clicked, setClicked] = useState(true);
@@ -15,6 +17,7 @@ const PersonalInfo = () => {
   const { currentUser } = useAuth();
   const [month, setMonth] = useState("");
   const [day, setDay] = useState("");
+  const [showLoading, setShowLoading] = useState(false);
   const [year, setYear] = useState("");
   const [personalForm, setPersonalForm] = useState({
     firstName: "",
@@ -22,6 +25,8 @@ const PersonalInfo = () => {
     zipCode: "",
     birthDate: {},
   });
+  const personalRef = useRef(null);
+  useAddFixed(personalRef);
 
   const handleForm = (e) => {
     if (e.target.value !== "") {
@@ -34,15 +39,7 @@ const PersonalInfo = () => {
 
   const updateUser = async (personalForm) => {
     try {
-      await fetch(`/api/user/${user?.email}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: personalForm,
-        }),
-      });
+      await axios.post(`/api/user/${user?.email}`, { user: personalForm });
     } catch (error) {
       console.log(error);
     }
@@ -50,6 +47,7 @@ const PersonalInfo = () => {
 
   const submitForm = async (e) => {
     e.preventDefault();
+    setShowLoading(true);
 
     const birthDate = {
       month: month.padStart(2, "0"),
@@ -74,12 +72,21 @@ const PersonalInfo = () => {
         <Loading />
       ) : (
         <>
-          <div className="personal-section">
+          <div className="personal-section" ref={personalRef}>
             <h1>Personal Info</h1>
-            {buttonSave ? (
-              <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
+
+            {showLoading ? (
+              <button className={"btn-save"}>
+                <Loading styles={{ transform: "scale(0.8)" }} />
+              </button>
             ) : (
-              <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
+              <>
+                {buttonSave ? (
+                  <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
+                ) : (
+                  <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
+                )}
+              </>
             )}
           </div>
           <SectionInfo
@@ -87,7 +94,7 @@ const PersonalInfo = () => {
               "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
             }
             icon={<HttpsOutlined />}
-            text={"Only you can see the information on this page."}
+            text={"Only you can see the information on this page.  It will not be displayed for other users to see."}
           />
           <DynamicForm>
             <div className="head-info" onClick={() => setClicked(!clicked)}>
@@ -179,9 +186,8 @@ const PersonalInfo = () => {
 };
 
 const Form = styled.form`
-  width: 100%;
-  padding: 8px 20px;
   position: relative;
+  width: 100%;
 
   .personal-section {
     display: flex;
@@ -195,15 +201,16 @@ const Form = styled.form`
     }
 
     .btn-save {
-      padding: 18px 35px;
+      width: 200px;
+      height: 60px;
+      font-size: 12px;
       font-weight: bold;
       color: white;
+      background-color: #d9d9d9;
       display: block;
       border: none;
-      font-size: 12px;
       border-radius: 5px;
-      letter-spacing: 1.1px;
-      background-color: #d9d9d9;
+      letter-spacing: 1.2px;
     }
 
     .highlight {

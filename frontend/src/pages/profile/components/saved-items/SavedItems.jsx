@@ -14,10 +14,9 @@ import Loading from "../../../../common/Loading";
 import { useAuth0 } from "@auth0/auth0-react";
 import CollectionModal from "../../../../common/CollectionModal";
 import DeleteCollection from "./DeleteCollection";
-import { useFavorites } from "../../hooks/useFavorites";
+import useNoScroll from "../../../../utils/useNoScroll";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import { useAuth } from "../../../../setup/auth/useAuth";
-import useNoScroll from "../../../../utils/useNoScroll";
 
 const Collections = () => {
   const params = useParams();
@@ -26,8 +25,7 @@ const Collections = () => {
   const navigate = useNavigate();
   const { userData } = useContext(AuthContext);
   const { user } = useAuth0();
-
-  const { arrayOfRecipeNames, setArrayOfRecipeNames, setCollectionId, collectionId } = useContext(IndexesContext);
+  const { arrayOfRecipeNames, setArrayOfRecipeNames, setCollectionId } = useContext(IndexesContext);
   useNoScroll(showDeleteCollectionModal, showEditCollectionModal);
 
   const addRecipeName = async (id) => {
@@ -164,6 +162,7 @@ const Collections = () => {
           {showEditCollectionModal && (
             <CollectionModal
               showModal={() => setShowEditCollectionModal(false)}
+              isPrivate={collectionData?.private}
               collectionTitle={collectionData?.collName}
             />
           )}
@@ -227,7 +226,7 @@ const Saved = styled.div`
     }
 
     span {
-      font-weight: 200;
+      font-weight: 300;
       display: flex;
       align-items: center;
       justify-content: center;

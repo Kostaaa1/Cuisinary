@@ -13,6 +13,7 @@ import Dropdown from "./components/Dropdown";
 import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import RecipeNames from "../../setup/app-context-menager/RecipeNameContext";
+import image from "../../assets/images/image2.jpg";
 
 const Navbar = () => {
   const { showSearch, setShowSearch } = useContext(RecipeNames);
@@ -44,12 +45,7 @@ const Navbar = () => {
                     onMouseEnter={() => setShowDropdown(true)}
                     onMouseLeave={() => setShowDropdown(false)}
                   >
-                    <img
-                      src="https://st3.depositphotos.com/4326917/12573/v/450/depositphotos_125734036-stock-illustration-user-sign-illustration-white-icon.jpg"
-                      alt=""
-                      className="user"
-                    />{" "}
-                    My account
+                    <img src={image} alt="" className="user" /> My account
                     <ArrowDropDown className="arrow" />
                     {showDropdown && (
                       <Links>
@@ -99,10 +95,13 @@ const Navbar = () => {
 };
 
 const Nav = styled.nav`
-  position: relative;
+  position: fixed;
   width: 100vw;
+  top: 0;
+  background-color: white;
   margin-bottom: 50px;
-  height: 130px;
+  z-index: 10;
+  height: 135px;
   padding-top: 20px;
   box-shadow: 0 0.125rem 0.375rem rgb(0 0 0 / 20%);
 `;
@@ -113,6 +112,7 @@ const NavControl = styled.div`
   align-items: center;
   margin-bottom: 12px;
 `;
+
 const NavWrap = styled.div`
   display: flex;
   flex-direction: column;

@@ -6,134 +6,128 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 const RemoveModal = ({ title, onClick, remove }) => {
-    const params = useParams();
-    const [collection, setCollection] = useState("");
+  const params = useParams();
+  const [collection, setCollection] = useState("");
 
-    const handle = (e) => {
-        if (e.key !== "Escape") return;
-        onClick();
-    };
+  const handle = (e) => {
+    if (e.key !== "Escape") return;
+    onClick();
+  };
 
-    useEffect(() => {
-        document.addEventListener("keydown", handle);
-        if (params.name === "saved-items") {
-            setCollection("All Saved Items");
-        } else {
-            setCollection("Collection");
-        }
-    }, []);
+  useEffect(() => {
+    document.addEventListener("keydown", handle);
+    if (params.name === "saved-items") {
+      setCollection("All Saved Items");
+    } else {
+      setCollection("Collection");
+    }
+  }, []);
 
-    return (
-        <Modal
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
-            <Section>
-                <div className="favorite-header">
-                    <h3>Remove from {collection}</h3>
-                    <Close onClick={onClick} />
-                </div>
-                <div className="content">
-                    <p>
-                        Are you sure? Removing <span> {title}</span> will
-                        permanently delete it from all collections.
-                    </p>
-                    <div className="buttons-wrap">
-                        <button className="btn-border" onClick={onClick}>
-                            Cancel
-                        </button>
-                        <Button value={"Remove"} onClick={remove} />
-                    </div>
-                </div>
-            </Section>
-        </Modal>
-    );
+  return (
+    <Modal animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+      <Section>
+        <div className="favorite-header">
+          <h3>Remove from {collection}</h3>
+          <Close onClick={onClick} />
+        </div>
+        <div className="content">
+          <p>
+            Are you sure? Removing <span> {title}</span> will permanently delete it from all collections.
+          </p>
+          <div className="buttons-wrap">
+            <button className="btn-border" onClick={onClick}>
+              Cancel
+            </button>
+            <Button value={"Remove"} onClick={remove} />
+          </div>
+        </div>
+      </Section>
+    </Modal>
+  );
 };
 
 const Modal = styled(motion.div)`
-    position: fixed;
-    overflow: none;
-    content: "";
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 10000;
+  position: fixed;
+  overflow: none;
+  content: "";
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(22, 22, 22, 0.75);
+  z-index: 10000;
 `;
 
 const Section = styled.div`
-    background-color: white;
-    width: 380px;
-    min-height: 260px;
+  background-color: white;
+  width: 380px;
+  min-height: 260px;
 
-    .favorite-header {
-        display: flex;
+  .favorite-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 50px;
+    color: white;
+    background-color: #ce4620;
+
+    h3 {
+      font-weight: bold;
+    }
+
+    svg {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  }
+
+  .content {
+    padding: 0 20px;
+
+    p {
+      margin: 25px 0;
+      line-height: 1.6rem;
+      letter-spacing: 0.8px;
+      word-wrap: break-word;
+    }
+
+    p > span {
+      font-weight: bold;
+    }
+
+    .buttons-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+      margin-bottom: 10px;
+
+      .btn-border {
+        color: var(--main-color);
+        text-decoration: none;
+        padding: 14px 35px;
+        outline: 2px solid #ce4620;
+        font-weight: bold;
+        border-radius: 5px;
+        display: block;
+        text-align: center;
         align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        height: 50px;
-        color: white;
-        background-color: #ce4620;
+        font-size: 14px;
+        letter-spacing: 1.1px;
+        cursor: pointer;
+        border: none;
+        margin-right: 16px;
 
-        h3 {
-            font-weight: bold;
+        &:hover {
+          background-color: #ce4620;
+          color: white;
         }
-
-        svg {
-            cursor: pointer;
-            margin-right: 10px;
-        }
+      }
     }
-
-    .content {
-        padding: 0 20px;
-
-        p {
-            margin: 25px 0;
-            line-height: 1.6rem;
-            letter-spacing: 0.8px;
-            word-wrap: break-word;
-        }
-
-        p > span {
-            font-weight: bold;
-        }
-
-        .buttons-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: start;
-            margin-bottom: 10px;
-
-            .btn-border {
-                color: var(--main-color);
-                text-decoration: none;
-                padding: 14px 35px;
-                outline: 2px solid #ce4620;
-                font-weight: bold;
-                border-radius: 5px;
-                display: block;
-                text-align: center;
-                align-items: center;
-                font-size: 14px;
-                letter-spacing: 1.1px;
-                cursor: pointer;
-                border: none;
-                margin-right: 16px;
-
-                &:hover {
-                    background-color: #ce4620;
-                    color: white;
-                }
-            }
-        }
-    }
+  }
 `;
 
 export default RemoveModal;

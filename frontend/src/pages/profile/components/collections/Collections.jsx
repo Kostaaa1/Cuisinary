@@ -6,13 +6,15 @@ import SectionInfo from "../../../../common/SectionInfo";
 import FavoriteCollection from "./FavoriteCollection";
 import CollectionModal from "../../../../common/CollectionModal";
 import NewCollectionCard from "./NewCollectionCard";
-import { useFavorites } from "../../hooks/useFavorites";
 import Loading from "../../../../common/Loading";
 import { useAuth } from "../../../../setup/auth/useAuth";
 import { Auth0Context, useAuth0 } from "@auth0/auth0-react";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import useNoScroll from "../../../../utils/useNoScroll";
+import useAddFixed from "../../hooks/useAddFixed";
+import { useRef } from "react";
 
 const SavedItems = () => {
   const navigate = useNavigate();
@@ -20,15 +22,9 @@ const SavedItems = () => {
   const { layoutArr, length, destructuredArray, layoutData } = useLayoutData();
   const { currentUser } = useAuth();
   const { userData } = useContext(AuthContext);
-
-  useEffect(() => {
-    const body = document.querySelector("body");
-    if (showCollectionModal) {
-      body.classList.add("no-scroll");
-    } else {
-      body.classList.remove("no-scroll");
-    }
-  }, [showCollectionModal]);
+  useNoScroll(showCollectionModal);
+  const collectionRef = useRef(null);
+  useAddFixed(collectionRef);
 
   return (
     <Collections>
@@ -37,9 +33,13 @@ const SavedItems = () => {
       ) : (
         <>
           <div className="saved-items">
-            <div className="public-section">
+            <div className="collection-section" ref={collectionRef}>
               <h1>Saved Items & Collections</h1>
-              <Button onClick={() => setShowCollectionModal(true)} value={"NEW COLLECTION +"} />
+              <Button
+                onClick={() => setShowCollectionModal(true)}
+                style={{ width: "200px", height: "60px" }}
+                value={"NEW COLLECTION +"}
+              />
             </div>
             <SectionInfo
               value={"Create collections to organize your saved items"}
@@ -47,7 +47,7 @@ const SavedItems = () => {
               text={"Others can see your saved items and any collection you make public."}
             />
             <div>
-              <h3>{layoutData.length} Collections</h3>
+              <h3>{layoutData?.length} Collections</h3>
               <div className="collection-control">
                 {layoutData?.map((collection, id) => (
                   <FavoriteCollection
@@ -75,7 +75,7 @@ const SavedItems = () => {
 const Collections = styled.div`
   position: relative;
   width: 100%;
-  padding: 8px 20px;
+  /* padding: 8px 20px; */
   min-height: 100vh;
 
   .saved-items {
@@ -91,7 +91,7 @@ const Collections = styled.div`
     }
   }
 
-  .public-section {
+  .collection-section {
     display: flex;
     justify-content: space-between;
     align-items: center;

@@ -16,7 +16,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
   // const { user } = useAuth();
   const { layoutData, setLayoutData } = useLayoutData();
   const [showInput, setShowInput] = useState(false);
-  const [recipeNames, setRecipeNames] = useState([]);
+  const [collectionNames, setCollectionNames] = useState([]);
   const { user } = useAuth0();
 
   const handle = (e) => {
@@ -32,12 +32,13 @@ const AddCustomModal = ({ showModal, favorite }) => {
     try {
       e.preventDefault();
 
-      axios.post(`/api/user/${user?.email}/addCollection`, {
+      axios.post(`/api/user/${user?.email}/newCollection`, {
         collName: collName,
       });
 
-      setRecipeNames([{ collName: collName }, ...recipeNames]);
+      setCollectionNames([{ collName: collName }, ...collectionNames]);
       setShowInput(false);
+      layoutData.push({ collName: collName, collDesc: "", private: false, collRecipes: [] });
       setCollName("");
     } catch (error) {
       console.log(error);
@@ -45,7 +46,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
   };
 
   useEffect(() => {
-    setRecipeNames(layoutData);
+    setCollectionNames(layoutData);
   }, [layoutData]);
 
   const handleCheckbox = (e, collName) => {
@@ -59,12 +60,12 @@ const AddCustomModal = ({ showModal, favorite }) => {
   const submitForm = async (e) => {
     e.preventDefault();
     try {
-      const collectionArrayWithoutCurrentRecipe = layoutData
+      const collectionWithoutCurrentRecipe = layoutData
         .filter(({ collName }) => checkedColls.includes(collName))
         .filter(({ collRecipes }) => !collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle))
         .map(({ collName }) => collName);
 
-      console.log(collectionArrayWithoutCurrentRecipe);
+      console.log(collectionWithoutCurrentRecipe);
 
       await fetch(`/api/user/${user.email}/addToCustom`, {
         method: "POST",
@@ -72,7 +73,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          collections: collectionArrayWithoutCurrentRecipe,
+          collections: collectionWithoutCurrentRecipe,
           recipe: favorite,
         }),
       });
@@ -134,7 +135,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
                     <h5>NEW COLLECTION</h5>
                   </div>
                 )}
-                {recipeNames
+                {collectionNames
                   ?.filter((coll) => coll.collName !== "All saved items")
                   .map((coll, id) => (
                     <div key={id} className="input-wrap">
@@ -146,8 +147,8 @@ const AddCustomModal = ({ showModal, favorite }) => {
                   ))}
                 {!showInput && (
                   <div className="buttons">
-                    {checkedColls.length !== 0 ? <span>Uncheck All</span> : <div></div>}
-
+                    {/* {checkedColls.length !== 0 ? <span>Uncheck All</span> : <div></div>} */}
+                    <div></div>
                     <input className="submit" type="submit" value={"Done"} />
                   </div>
                 )}
@@ -171,7 +172,7 @@ const Modal = styled(motion.div)`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(22, 22, 22, 0.6);
+  background-color: rgba(22, 22, 22, 0.75);
   z-index: 10000;
   flex-wrap: wrap;
 `;
