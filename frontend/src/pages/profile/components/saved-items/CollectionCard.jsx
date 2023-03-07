@@ -7,11 +7,11 @@ import RemoveModal from "./RemoveModal";
 import Loading from "../../../../common/Loading";
 import AddCustomModal from "./AddCustomModal";
 import useNoScroll from "../../../../utils/useNoScroll";
+import { debounce } from "lodash";
 
-const CollectionCard = ({ favorite, addRecipeName, showDeleteCollectionModal }) => {
+const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   useNoScroll(showModal, showRemoveModal);
 
   const closeModal = () => {
@@ -19,9 +19,13 @@ const CollectionCard = ({ favorite, addRecipeName, showDeleteCollectionModal }) 
     setShowModal(false);
   };
 
+  const remove = () => {
+    addRecipeName(favorite.recipeTitle);
+  };
+
   return (
     <Card>
-      {loading && (
+      {favorite.loading && (
         <>
           <div className="transparent"></div>
           <Loading
@@ -46,7 +50,7 @@ const CollectionCard = ({ favorite, addRecipeName, showDeleteCollectionModal }) 
           onClick={() => setShowModal(true)}
         />
       </div>
-      {!loading && (
+      {!favorite.loading && (
         <Delete onClick={() => setShowRemoveModal(true)}>
           <Remove />
         </Delete>
@@ -54,21 +58,14 @@ const CollectionCard = ({ favorite, addRecipeName, showDeleteCollectionModal }) 
       {showRemoveModal && (
         <RemoveModal
           remove={() => {
-            setLoading(true);
-            setShowRemoveModal(false);
-
-            setTimeout(() => {
-              setLoading(false);
-              addRecipeName(favorite?.recipeTitle);
-            }, Math.random() * 1200);
+            remove();
+            addLoading();
           }}
           title={favorite.recipeTitle}
-          onClick={() => closeModal()}
+          onClick={closeModal}
         />
       )}
-      {showModal && (
-        <AddCustomModal favorite={favorite} onClick={() => closeModal()} showModal={() => setShowModal(false)} />
-      )}
+      {showModal && <AddCustomModal favorite={favorite} onClick={closeModal} showModal={() => setShowModal(false)} />}
     </Card>
   );
 };
