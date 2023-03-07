@@ -4,23 +4,19 @@ import { useEffect } from "react";
 import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
 import Loading from "../../../../common/Loading";
+import { debounce, throttle } from "lodash";
 
-const CollectionCard = ({ favorite, removeRecipeName }) => {
+const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
   const [loading, setLoading] = useState(false);
 
   const remove = () => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      removeRecipeName(favorite?.recipeTitle);
-    }, Math.random() * 800);
+    removeRecipeName(favorite.recipeTitle);
   };
 
   return (
     <Card>
       <>
-        {loading && (
+        {favorite.loading && (
           <>
             <div className="transparent"></div>
             <Loading
@@ -46,7 +42,13 @@ const CollectionCard = ({ favorite, removeRecipeName }) => {
         </div>
         {!loading && (
           <div className="transparent">
-            <button onClick={() => remove()}>Undo</button>
+            <button
+              onClick={() => {
+                remove(), addLoading();
+              }}
+            >
+              Undo
+            </button>
           </div>
         )}
       </>
@@ -143,4 +145,4 @@ const Card = styled.div`
   }
 `;
 
-export default CollectionCard;
+export default TransparentCard;
