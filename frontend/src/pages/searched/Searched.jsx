@@ -1,55 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import CardDescription from "../../common/CardDescription";
 import { useQuery } from "@tanstack/react-query";
 import SavedModal from "../../common/SavedModal";
+import { SearchOutlined } from "@material-ui/icons";
+import { Button } from "@material-ui/core";
+import RecipeNames from "../../setup/app-context-menager/RecipeNameContext";
+import SearchForm from "./components/SearchForm";
+import axios from "axios";
 
 const Searched = () => {
   let params = useParams();
   const [favorite, setFavorite] = useState(false);
 
   const fetchSearched = async () => {
-    const res = await fetch(`/api/searched/${params.search}`);
-    const data = await res.json();
-
-    if (data.length === 0) {
-      const res = await fetch(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${import.meta.env.VITE_API_KEY}&number=30&query=${
-          params.search
-        }`
-      );
+    try {
+      const res = await fetch(`/api/searched/${params.search}`);
       const data = await res.json();
 
-      if (data.results.length === 0) return [];
+      if (data.length === 0) {
+        const res = await fetch(
+          `https://api.spoonacular.com/recipes/complexSearch?apiKey=${import.meta.env.VITE_API_KEY}&number=30&query=${
+            params.search
+          }`
+        );
 
-      fetch("/api/searched/createSearched", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: params.search,
-          data: data,
-        }),
-      });
+        const data = await res.json();
+
+        if (data.results.length === 0) return [];
+
+        axios.post("/api/searched/createSearched", { name: params.search, data: data });
+        return data.results;
+      }
+
+      return data[0]?.data.results ?? [];
+    } catch (error) {
+      console.log(error);
     }
-    return data[0].data.results ?? [];
   };
 
   const { isLoading, data, isSuccess } = useQuery(["searched", params.search], fetchSearched);
 
   return (
     <Container>
-      <h2>Our {params.search} recipes:</h2>
+      <SearchForm />
+      {data?.length === 0 && (
+        <h3>
+          We do not have recipes for <span> {params.search}</span>
+        </h3>
+      )}
+      {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
       <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
         {isSuccess &&
           data.map((recipe, id) => (
             <CardDescription favorite={favorite} setFavorite={setFavorite} key={id} currentRecipe={recipe} />
           ))}
-
-        {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
       </Grid>
       {favorite && <SavedModal setFavorite={setFavorite} />}
     </Container>
@@ -61,14 +68,22 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   max-width: 1250px;
-  margin: 200px auto;
+  margin: 170px auto;
+  color: var(--main-color);
+
+  h3 {
+    color: var(--grey-color);
+    span {
+      text-decoration: underline;
+    }
+  }
 
   @media (max-width: 1270px) {
     padding: 0 25px;
   }
+
   h2 {
     color: var(--main-color);
-    margin: 40px 0;
   }
 `;
 
