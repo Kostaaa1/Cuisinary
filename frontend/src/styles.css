@@ -1,18 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Josefin+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Lobster+Two:ital@0;1&family=Lora:ital,wght@0,400;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;600;800;900&family=Roboto:wght@300;400;500;700&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200&family=Varela+Round&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Lobster+Two:ital@0;1&family=Lora:ital,wght@0,400;1,400;1,500&family=Murecho:wght@200;300;400;500;600;700;800;900&family=Sora:wght@200;300;400;500;600;700;800&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&family=Varela+Round&display=swap");
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
 
 *,
 *::after,
 *::before {
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", "SourceSansPro", sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
 :root {
-  --main-color: #0d0d0d;
+  --main-color: #585858;
   --red-color: #ce4620;
   --grey-color: #595959;
+  --blue-color: #003e9b;
 }
 
 body {
@@ -20,19 +29,16 @@ body {
   scroll-behavior: smooth;
   min-height: 100vh;
   background-color: #fff;
-  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
-}
-
-.no-scroll {
-  overflow: hidden;
-  padding-right: 17px;
+  overflow-x: hidden;
+  color: var(--main-color);
 }
 
 h1,
 h2,
 h3 {
   letter-spacing: -1.1px;
+  color: var(--main-color);
 }
 
 div {
@@ -44,7 +50,6 @@ img {
   cursor: pointer;
   object-fit: cover;
   max-width: 100%;
-  filter: saturate(85%);
 }
 
 input::-webkit-outer-spin-button,
@@ -55,4 +60,32 @@ input::-webkit-inner-spin-button {
 
 input[type="number"] {
   appearance: textfield;
+}
+
+.fixed-header {
+  position: fixed;
+  max-width: 100%;
+  width: 940px;
+  max-width: 100%;
+  top: 125px;
+  background-color: #fff;
+  align-items: center;
+  height: 100px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+@media screen and (max-width: 1250px) {
+  .fixed {
+    width: calc(100% - 350px);
+  }
+}
+
+body.no-scroll header {
+  padding-right: 17px;
+}
+
+.no-scroll {
+  overflow: hidden;
+  padding-right: 17px;
 }
