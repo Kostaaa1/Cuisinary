@@ -2,11 +2,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import RecipeNames from "../../../setup/app-context-menager/RecipeNameContext";
+import { motion } from "framer-motion";
 
-const Category = () => {
-  // const [dropdownVisible, setDropdownVisible] = useState(false);
-  const dropdownRef = useRef([]);
+const Navbar = () => {
   const navigate = useNavigate();
   const categoryNavigation = (query) => {
     navigate("/category/" + query);
@@ -90,7 +88,7 @@ const Category = () => {
   };
 
   return (
-    <CategorySection>
+    <Nav>
       {categoryData.map((category, index) => (
         <Wrapper key={index}>
           <h5
@@ -118,13 +116,14 @@ const Category = () => {
           </CategoryDropdown>
         </Wrapper>
       ))}
-    </CategorySection>
+    </Nav>
   );
 };
-const CategorySection = styled.div`
+
+const Nav = styled.nav`
   display: flex;
-  flex-direction: row;
-  margin-top: 12px;
+  align-items: center;
+  max-height: 20%;
 `;
 
 const Wrapper = styled.div`
@@ -132,7 +131,6 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
-  height: 35px;
 
   &:hover {
     text-decoration: underline;
@@ -147,10 +145,10 @@ const Wrapper = styled.div`
 
   h5 {
     line-height: 30px;
-    /* outline: 1px solid black; */
     letter-spacing: 1px;
     margin-right: 40px;
-    color: var(--main-color);
+    color: black;
+    font-size: 12px;
     cursor: pointer;
   }
 `;
@@ -169,7 +167,7 @@ const CategoryDropdown = styled.ul`
   li {
     padding: 15px 0;
     list-style: none;
-    font-size: 16px;
+    font-size: 14px;
     color: var(--grey-color);
     cursor: pointer;
     font-weight: 500;
@@ -180,4 +178,4 @@ const CategoryDropdown = styled.ul`
   }
 `;
 
-export default Category;
+export default Navbar;
