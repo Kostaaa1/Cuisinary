@@ -11,5 +11,6 @@ router.post("/:email/newCollection", UserController.newCollection);
 router.post("/:email/:id/editCollection", UserController.editCollection);
 router.post("/:email/:id/deleteCollection", UserController.deleteCollection);
 router.post("/:email/addToCustom", UserController.addToCustomCollection);
+router.post("/:email/addReview", UserController.addReview);
 
 module.exports = router;

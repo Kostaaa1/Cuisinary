@@ -1,9 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-const SingleFile = require("../models/singlefile");
 const cloudinary = require("../middleware/cloudinary");
-const autoIncrement = require("mongoose-auto-increment");
 
 const fileSizeFormatter = (bytes, decimal) => {
   if (bytes === 0) {
@@ -114,7 +112,6 @@ module.exports = {
       res.status(400).send(error.message);
     }
   },
-
   addToCustomCollection: async (req, res) => {
     try {
       const checkedCollections = req.body.collections;
@@ -156,6 +153,32 @@ module.exports = {
       );
 
       res.status(200).send(user);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  addReview: async (req, res) => {
+    console.log(req.params);
+    // console.log(req.body, req.params, "user review ran");
+    try {
+      const user = await User.findOneAndUpdate(
+        {
+          email: req.params.email,
+        },
+        {
+          $push: {
+            reviews: {
+              recipeTitle: req.body.recipeTitle,
+              recipeImage: req.body.recipeImage,
+              comment: req.body.comment,
+              starRating: req.body.starRating,
+            },
+          },
+        }
+      );
+
+      res.status(200).json(user);
+      return user;
     } catch (err) {
       res.status(400).send(err);
     }

@@ -23,6 +23,14 @@ module.exports = {
       res.status(400).send(error.message);
     }
   },
+  getUserId: async (req, res) => {
+    try {
+      const user = await User.findOne({ _id: req.params.id });
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
   validateUser: async (req, res) => {
     try {
       const user = await User.findOne({ email: req.params.email });
@@ -36,7 +44,7 @@ module.exports = {
       const user = await User.findOneAndUpdate(
         {
           email: req.params.email,
-          "collections.collName": "All saved items",
+          "collections.collName": "All Saved Items",
         },
         {
           $push: {
@@ -45,6 +53,8 @@ module.exports = {
                 {
                   recipeTitle: req.body.recipeTitle,
                   recipe: req.body.recipe,
+                  review: req.body.review,
+                  reviewIndex: req.body.reviewIndex,
                 },
               ],
               $position: 0,
@@ -64,9 +74,9 @@ module.exports = {
     try {
       let filter = {
         email: req.params.email,
-        "collections.collName": "All saved items",
+        "collections.collName": "All Saved Items",
       };
-      if (req.body.collectionId) {
+      if (req.body.collectionId !== "") {
         filter = {
           email: req.params.email,
           "collections._id": req.body.collectionId,
@@ -109,7 +119,7 @@ module.exports = {
       const user = await User.findOne(
         {
           email: req.params.email,
-          "collections.collName": "All saved items",
+          "collections.collName": "All Saved Items",
         },
         {
           "collections.$": 1,
