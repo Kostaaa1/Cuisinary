@@ -9,7 +9,6 @@ import { useState, memo, useEffect, useContext } from "react";
 import { useAuth } from "../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
 import AuthContext from "../../setup/app-context-menager/AuthContext";
-import Dropdown from "./components/Dropdown";
 import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import RecipeNames from "../../setup/app-context-menager/GlobalContext";
@@ -17,7 +16,6 @@ import image from "../../assets/images/image2.jpg";
 
 const Horizontal = () => {
   const { showSearch, setShowSearch } = useContext(RecipeNames);
-  // const {showSearch, setShowSearch} = useState(false);
   const [showDropdown, setShowDropdown] = useState();
   const { user, loginWithPopup, isAuthenticated, logout, isLoading } = useAuth0();
   const { authenticated } = useAuth();
@@ -28,12 +26,12 @@ const Horizontal = () => {
 
   return (
     <ScrolledHeader
-      initial={{ y: "20%", height: "90px" }}
+      initial={{ y: "30%", height: "90px" }}
       animate={{
         y: 0,
         height: "70px",
       }}
-      transition={{ duration: 0.15 }}
+      transition={{ duration: 0.18 }}
     >
       <HeaderControl>
         <Logo to={"/"} />
@@ -87,7 +85,6 @@ const Horizontal = () => {
                 <li className="underline list" onClick={loginWithPopup}>
                   <FaUserCircle className="user" /> Log in
                 </li>
-                <div className="divider-line"></div>
               </>
             )}
           </ul>

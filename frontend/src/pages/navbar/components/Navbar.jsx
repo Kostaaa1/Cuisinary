@@ -65,7 +65,6 @@ const Navbar = () => {
       categories: [
         { list: "Christmas", query: "christmas" },
         { list: "Thanksgiving", query: "thanksgiving" },
-        { list: "Hanukkah", query: "hanukkah" },
         { list: "Easter", query: "easter" },
       ],
     },

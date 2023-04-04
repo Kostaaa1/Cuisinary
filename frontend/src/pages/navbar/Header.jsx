@@ -2,26 +2,25 @@ import { GiKnifeFork } from "react-icons/gi";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Search from "./components/Search";
-import Category from "./components/Navbar";
+import Navbar from "./components/Navbar";
 import { ArrowDropDown, AccountCircle } from "@material-ui/icons";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
 import { useState, memo, useEffect, useContext } from "react";
 import { useAuth } from "../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
 import AuthContext from "../../setup/app-context-menager/AuthContext";
-import Dropdown from "./components/Dropdown";
+// import Dropdown from "./components/Dropdown";
 import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
-import image from "../../assets/images/image2.jpg";
 import ScrolledHeader from "./ScrolledHeader";
 
-const Navbar = () => {
+const Header = () => {
   const { showSearch, setShowSearch } = useContext(GlobalContext);
   const [showDropdown, setShowDropdown] = useState();
   const { user, loginWithPopup, isAuthenticated, logout, isLoading } = useAuth0();
   const { authenticated } = useAuth();
-  const [activateNav, setActivateNav] = useState(false);
+  const [activateScrolled, setActivateScrolled] = useState(false);
 
   const showSearched = () => {
     setShowSearch(!showSearch);
@@ -30,9 +29,9 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 200) {
-        setActivateNav(true);
+        setActivateScrolled(true);
       } else {
-        setActivateNav(false);
+        setActivateScrolled(false);
       }
     };
 
@@ -44,15 +43,9 @@ const Navbar = () => {
   });
 
   return (
-    <Header activateNav={activateNav}>
-      {!activateNav ? (
-        <VerticalHeader
-        // initial={{ height: "70px" }}
-        // animate={{
-        //   height: "110px",
-        // }}
-        // transition={{ duration: 0.15 }}
-        >
+    <HeaderContainer>
+      {!activateScrolled ? (
+        <VerticalHeader>
           <HeaderControl>
             <Logo to={"/"} />
             {showSearch && <Search showSearched={showSearched} />}
@@ -69,10 +62,10 @@ const Navbar = () => {
                       onMouseEnter={() => setShowDropdown(true)}
                       onMouseLeave={() => setShowDropdown(false)}
                     >
-                      <img src={image} alt="" className="user" /> My account
+                      <FaUserCircle className="user" /> My account
                       <ArrowDropDown className="arrow" />
                       {showDropdown && (
-                        <Links>
+                        <LinksWrap>
                           <ul className="user-links">
                             <NavLink to={"/account/profile"}>
                               <li onClick={() => setShowDropdown(false)}>My Profile</li>
@@ -91,7 +84,7 @@ const Navbar = () => {
                             </NavLink>
                             <li onClick={logout}>Log Out</li>
                           </ul>
-                        </Links>
+                        </LinksWrap>
                       )}
                     </li>
                     <div className="divider-line"></div>
@@ -112,16 +105,16 @@ const Navbar = () => {
               </ul>
             )}
           </HeaderControl>
-          <Category />
+          <Navbar />
         </VerticalHeader>
       ) : (
         <ScrolledHeader />
       )}
-    </Header>
+    </HeaderContainer>
   );
 };
 
-const Header = styled.header`
+const HeaderContainer = styled.header`
   position: fixed;
   width: 100%;
   top: 0;
@@ -188,7 +181,7 @@ const VerticalHeader = styled(motion.div)`
     height: 24px;
     margin: 10px;
     width: 0;
-    border-right: 1px solid #d9d9d9;
+    border: 1px solid #d9d9d9;
   }
 
   .underline:hover {
@@ -211,7 +204,7 @@ const VerticalHeader = styled(motion.div)`
   }
 `;
 
-const Links = styled.div`
+const LinksWrap = styled.div`
   .user-links {
     position: absolute;
     width: 230px;
@@ -251,4 +244,4 @@ const NavLink = styled(Link)`
   }
 `;
 
-export default memo(Navbar);
+export default memo(Header);
