@@ -1,4 +1,4 @@
-import { useEffect, memo } from "react";
+import { useEffect, memo, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import CardDescription from "../../common/CardDescription";
@@ -7,12 +7,23 @@ import styled from "styled-components";
 import { useState } from "react";
 import axios from "axios";
 import SavedModal from "../../common/SavedModal";
+import useSmoothScroll from "../../utils/useSmoothScroll";
+import AuthContext from "../../setup/app-context-menager/AuthContext";
 
 const Category = () => {
   const params = useParams();
   const [favorite, setFavorite] = useState(false);
+  const { userData } = useContext(AuthContext);
+  useSmoothScroll();
 
   const fetchCategorized = async () => {
+    // const postRes = await axios.get(
+    //   `https://api.spoonacular.com/recipes/complexSearch?apiKey=f4eb30e350ef4261a02e333108f3ad33&cuisine=japanese&number=30`
+    // );
+    // const post = await axios.post(`/api/category/${params.recipe}/createCategory`, {
+    //   name: params.recipe,
+    //   data: postRes.data,
+    // });
     const res = await axios.get(`/api/category/${params.recipe}`);
     const data = await res.data;
 
@@ -27,7 +38,13 @@ const Category = () => {
       <h2>Our {params.recipe} recipes:</h2>
       <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
         {categoryRecipes?.map((recipe, id) => (
-          <CardDescription favorite={favorite} setFavorite={setFavorite} key={id} currentRecipe={recipe} />
+          <CardDescription
+            favorite={favorite}
+            params={params.recipe}
+            setFavorite={setFavorite}
+            key={id}
+            currentRecipe={recipe}
+          />
         ))}
 
         {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
