@@ -1,41 +1,45 @@
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const Nutrition = () => {
+const Nutrition = ({ nutritions }) => {
   return (
-    <NutriotionFacts>
-      <div className="content-head">
-        <h1>Nutrition Facts</h1>
-        <span> (per serving) </span>
-      </div>
-      <div className="content-flex">
-        <div>
-          <span>50g</span>
-          <p>Calories</p>
-        </div>
-        <div>
-          <span>50g</span>
-          <p>Calories</p>
-        </div>
-        <div>
-          <span>50g</span>
-          <p>Calories</p>
-        </div>
-        <div>
-          <span>50g</span>
-          <p>Calories</p>
-        </div>
-      </div>
-    </NutriotionFacts>
+    <NutritionFacts>
+      {nutritions && (
+        <>
+          <div className="content-head">
+            <h1>Nutrition Facts</h1>
+            <span> (per serving) </span>
+          </div>
+          <div className="content-flex">
+            <div>
+              <span> {nutritions.calories + "cal"} </span>
+              <p>Calories</p>
+            </div>
+            <div>
+              <span> {nutritions.carbs} </span>
+              <p>Carbs</p>
+            </div>
+            <div>
+              <span> {nutritions.fat} </span>
+              <p>Fat</p>
+            </div>
+            <div>
+              <span> {nutritions.protein} </span>
+              <p>Protein</p>
+            </div>
+          </div>
+        </>
+      )}
+    </NutritionFacts>
   );
 };
 
-const NutriotionFacts = styled.div`
+const NutritionFacts = styled.div`
   width: 100%;
-  /* margin: 20px 0; */
 
   .content-head {
-    margin: 30px 0 14px 0;
     display: flex;
 
     h1 {
@@ -54,12 +58,14 @@ const NutriotionFacts = styled.div`
   .content-flex {
     display: flex;
     align-items: flex-start;
+    margin-top: 16px;
 
     div {
       width: 25%;
-      line-height: 2.2;
+      line-height: 1.6;
 
       span {
+        font-size: 16px;
         font-weight: 700;
       }
     }
