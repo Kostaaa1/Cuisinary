@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar,  } from "recharts";
 import styled from "styled-components";
-import { Star, StarBorder, StarHalf } from "@material-ui/icons";
+import { Star, StarBorder, StarHalf } from "material-icons";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import { RecipeContext } from "../Recipe";
 
