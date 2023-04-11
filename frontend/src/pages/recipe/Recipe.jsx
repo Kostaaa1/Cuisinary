@@ -1,4 +1,4 @@
-import { FavoriteBorder, Favorite, Star, StarHalf, StarBorder } from "@material-ui/icons";
+import { FavoriteBorder, Favorite, Star, StarHalf, StarBorder } from "material-icons";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
