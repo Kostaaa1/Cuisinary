@@ -1,4 +1,4 @@
-import { Add, Remove } from "@material-ui/icons";
+import { Add, Remove } from "@mui/icons-material";
 import { useState } from "react";
 import { useEffect } from "react";
 import styled from "styled-components";
@@ -16,7 +16,7 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
   return (
     <Card>
       <>
-        {favorite.loading && (
+        {/* {favorite.loading && (
           <>
             <div className="transparent"></div>
             <Loading
@@ -28,11 +28,12 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
               }}
             />
           </>
-        )}
+        )} */}
         <img src={favorite.recipe?.image} alt="" />
         <div className="card__desc">
           <h4>{favorite?.recipeTitle}</h4>
           <ButtonBorder
+            style={{ width: "160px", height: "36px" }}
             value={
               <p>
                 <Add /> <span> Add to collection </span>
@@ -57,13 +58,12 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
 };
 
 const Card = styled.div`
-  width: 30%;
+  position: relative;
+  width: 31%;
   display: flex;
   flex-direction: column;
-  min-height: 370px;
-  position: relative;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
-  z-index: 1;
+  min-height: 460px;
+  box-shadow: var(--card-shadow-border);
 
   @media (max-width: 1030px) {
     width: 270px;
@@ -85,9 +85,8 @@ const Card = styled.div`
       text-decoration: none;
       padding: 0.4rem 0.9rem;
       border: none;
-      outline: 1px solid #ce4620;
+      outline: 1px solid var(--red-color);
       font-weight: bold;
-      border-radius: 3px;
       display: block;
       text-align: center;
       align-items: center;
@@ -96,15 +95,13 @@ const Card = styled.div`
       cursor: pointer;
 
       &:hover {
-        background-color: #ce4620;
+        background-color: var(--red-color);
         color: white;
       }
     }
   }
 
   img {
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
     height: 80%;
   }
 
@@ -118,23 +115,16 @@ const Card = styled.div`
 
     h4 {
       text-align: start;
-      color: var(--main-color);
-      margin-bottom: 10px;
-      margin-top: 5px;
+      font-size: 18px;
+      color: var(--grey-color);
       cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-        text-decoration-color: var(--main-color);
-        text-underline-offset: 5px;
-        text-decoration-thickness: 10%;
-      }
     }
 
     p {
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      font-size: 12px;
 
       svg {
         color: var(--red-color);

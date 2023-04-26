@@ -5,15 +5,16 @@ import { motion } from "framer-motion";
 import CardDescription from "../../common/CardDescription";
 import { useQuery } from "@tanstack/react-query";
 import SavedModal from "../../common/SavedModal";
-import { SearchOutlined } from "@material-ui/icons";
-import { Button } from "@material-ui/core";
-import RecipeNames from "../../setup/app-context-menager/RecipeNameContext";
 import SearchForm from "./components/SearchForm";
 import axios from "axios";
 
 const Searched = () => {
   let params = useParams();
   const [favorite, setFavorite] = useState(false);
+
+  useEffect(() => {
+    window.scroll(0, 0);
+  }, []);
 
   const fetchSearched = async () => {
     try {
@@ -22,16 +23,15 @@ const Searched = () => {
 
       if (data.length === 0) {
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/complexSearch?apiKey=${import.meta.env.VITE_API_KEY}&number=30&query=${
+          `https://api.spoonacular.com/recipes/complexSearch?apiKey=${import.meta.env.VITE_API_KEY}&number=60&query=${
             params.search
           }`
         );
 
         const data = await res.json();
-
         if (data.results.length === 0) return [];
 
-        axios.post("/api/searched/createSearched", { name: params.search, data: data });
+        await axios.post("/api/searched/createSearched", { name: params.search, data: data });
         return data.results;
       }
 
@@ -55,7 +55,13 @@ const Searched = () => {
       <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
         {isSuccess &&
           data.map((recipe, id) => (
-            <CardDescription favorite={favorite} setFavorite={setFavorite} key={id} currentRecipe={recipe} />
+            <CardDescription
+              favorite={favorite}
+              params={params.search}
+              setFavorite={setFavorite}
+              key={id}
+              recipeData={recipe}
+            />
           ))}
       </Grid>
       {favorite && <SavedModal setFavorite={setFavorite} />}
@@ -67,7 +73,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1250px;
+  max-width: 1240px;
   margin: 170px auto;
   color: var(--main-color);
 

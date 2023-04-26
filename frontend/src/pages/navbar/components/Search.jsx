@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import styled from "styled-components";
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { Close } from "@material-ui/icons";
+import { Close } from "@mui/icons-material";
 import GlobalContext from "../../../setup/app-context-menager/GlobalContext";
 
 const Search = ({ showSearched }) => {
@@ -44,9 +44,9 @@ const SearchForm = styled.form`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 100%;
-  max-width: 450px;
-  height: 50px;
+  width: 470px;
+  max-width: 100%;
+  height: 55px;
   right: 0;
   padding: 0 0 0 12px;
 
@@ -86,13 +86,13 @@ const Wrapper = styled.div`
     align-items: center;
     justify-content: center;
     height: 100%;
-    width: 60px;
+    width: 70px;
     color: white;
     cursor: pointer;
     background-color: var(--red-color);
 
     svg {
-      font-size: 12px;
+      font-size: 14px;
     }
   }
 

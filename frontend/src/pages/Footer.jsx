@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Instagram, Twitter, Pinterest, Facebook } from "@material-ui/icons";
+import { Instagram, Twitter, Pinterest, Facebook } from "@mui/icons-material";
 import Logo from "../common/Logo";
 const Footer = () => {
   const categories = ["DINNERS", "MEALS", "INGREDIENTS", "CUISINES", "OCCASIONS"];
@@ -37,8 +37,9 @@ const Footer = () => {
 };
 
 const Foot = styled.footer`
-  position: relative;
-  margin-top: 50px;
+  position: sticky;
+  bottom: 0;
+  left: 0;
   width: 100vw;
   border-top: 1px solid rgb(0 0 0 / 22%);
 
@@ -53,7 +54,9 @@ const Foot = styled.footer`
     left: 50%;
     transform: translate(-50%);
     margin: 0 auto;
-    width: 1250px;
+    width: 1240px;
+    max-width: 100%;
+
     height: 400px;
     display: flex;
     align-items: center;

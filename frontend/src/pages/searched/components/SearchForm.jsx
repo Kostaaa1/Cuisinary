@@ -1,15 +1,14 @@
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import RecipeNames from "../../../setup/app-context-menager/RecipeNameContext";
-import { Close, SearchOutlined } from "@material-ui/icons";
-import { Button } from "@material-ui/core";
+import GlobalContext from "../../../setup/app-context-menager/GlobalContext";
+import { Close, SearchOutlined } from "@mui/icons-material";
 import { useNavigate, useParams } from "react-router-dom";
 
 const SearchForm = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [searchValue, setSearhValue] = useState(params.search ? params.search : "");
-  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(RecipeNames);
+  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(GlobalContext);
 
   const submitHandler = (e) => {
     e.preventDefault();

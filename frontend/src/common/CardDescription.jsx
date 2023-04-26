@@ -1,55 +1,42 @@
 import { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { Star, StarHalf, StarRate, FavoriteBorder, Favorite } from "@material-ui/icons";
+import { FavoriteBorder, Favorite } from "@mui/icons-material";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useLayoutData } from "../pages/profile/hooks/useLayoutData";
 import axios from "axios";
 import useNoScroll from "../utils/useNoScroll";
+import AuthContext from "../setup/app-context-menager/AuthContext";
 
-const CardDescription = ({ currentRecipe, favorite, setFavorite }) => {
-  const [recipeTitle, setRecipeTitle] = useState("");
-  const [recipe, setRecipe] = useState();
-  const { user } = useAuth0();
-  const { layoutData } = useLayoutData();
+const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
+  const { userData } = useContext(AuthContext);
   const [heart, setHeart] = useState(false);
   useNoScroll(favorite);
 
-  useEffect(() => {
-    setRecipeTitle(currentRecipe.title);
+  const addRecipeToFavorites = async () => {
+    try {
+      let checkForRecipe = userData.collections[0]?.collRecipes.find(
+        (recipes) => recipes.recipeTitle === recipeData.title
+      );
+      userData.collections[0]?.collRecipes.push({ recipeTitle: recipeData.title });
+      if (checkForRecipe) return;
 
-    const recipeData = { ...currentRecipe };
-    delete recipeData.title;
+      setFavorite(true);
+      setHeart(true);
 
-    setRecipe(recipeData);
-  }, []);
-
-  const addRecipeToFavorites = async (e) => {
-    setFavorite(true);
-    setHeart(true);
-
-    let checkForRecipe = layoutData[0]?.collRecipes
-      .map((recipes) => currentRecipe.title === recipes.recipeTitle)
-      .includes(true);
-    if (checkForRecipe) return;
-
-    axios.post(`/api/auth/${user?.email}`, { recipeTitle: recipeTitle, recipe: recipe });
+      console.log(recipeData.id);
+      await axios.post(`/api/auth/${userData?.email}`, { id: recipeData.id });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <Card key={currentRecipe.id} className="card">
-      <Link to={"/recipe/" + currentRecipe.id}>
-        <img src={currentRecipe.image} alt="" />
+    <Card key={recipeData?.id} className="card">
+      <Link to={"/recipe/" + recipeData?.id}>
+        <img src={recipeData?.image} alt="" />
         <div className="card-desc">
-          <h4>{currentRecipe.title}</h4>
-          <div className="star-rating">
-            <Star />
-            <Star />
-            <Star />
-            <Star />
-            <StarHalf />
-            <span className="ratings">0 Ratings</span>
-          </div>
+          <h5> {params?.toUpperCase()} </h5>
+          <h3>{recipeData?.title}</h3>
         </div>
       </Link>
       <div className="favorite" onClick={(e) => addRecipeToFavorites(e)}>
@@ -62,15 +49,12 @@ const CardDescription = ({ currentRecipe, favorite, setFavorite }) => {
 const Card = styled.div`
   position: relative;
   background-color: white;
-  border-radius: 4px;
-  min-height: 370px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  min-height: 360px;
+  box-shadow: var(--card-shadow-border);
 
   img {
     width: 100%;
-    height: 60%;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
+    height: 220px;
   }
 
   a {
@@ -83,7 +67,7 @@ const Card = styled.div`
     right: 10px;
     width: 50px;
     height: 50px;
-    background-color: #ce4620;
+    background-color: var(--red-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -101,37 +85,25 @@ const Card = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: 1rem;
+    padding: 1.2rem 0.7rem;
 
-    h4 {
-      text-align: start;
-      color: #1f1f1f;
-      margin-bottom: 10px;
-      margin-top: 5px;
-      font-size: 1.3rem;
+    h5 {
+      letter-spacing: 1.4px;
+      color: var(--grey-color);
     }
 
-    .star-rating {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      span {
-        color: black;
-        font-size: 14px;
-        margin-left: 10px;
-      }
-      svg {
-        font-size: 1.2rem;
-        color: #ce4620;
-      }
+    h3 {
+      text-align: start;
+      color: var(--main-color);
+      margin: 12px 0;
+      font-size: 22px !important;
     }
   }
 
   &:hover {
-    h4 {
+    h3 {
       text-decoration: underline;
-      text-decoration-color: #f27121;
+      text-decoration-color: var(--red-color);
       text-underline-offset: 5px;
       text-decoration-thickness: 8%;
     }

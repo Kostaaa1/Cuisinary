@@ -1,18 +1,19 @@
-import { Add, Remove } from "@material-ui/icons";
-import { useState } from "react";
-import { useEffect } from "react";
+import { Add, Remove } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
 import RemoveModal from "./RemoveModal";
 import Loading from "../../../../common/Loading";
 import AddCustomModal from "./AddCustomModal";
 import useNoScroll from "../../../../utils/useNoScroll";
-import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [summary, setSummary] = useState("");
   useNoScroll(showModal, showRemoveModal);
+  const navigate = useNavigate();
 
   const closeModal = () => {
     setShowRemoveModal(false);
@@ -27,21 +28,16 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
     <Card>
       {favorite.loading && (
         <>
-          <div className="transparent"></div>
-          <Loading
-            styles={{
-              position: "absolute",
-              content: "",
-              bottom: "13%",
-              right: "0",
-            }}
-          />
+          <div className="transparent-card">
+            <Loading className="loading" />
+          </div>
         </>
       )}
-      <img src={favorite.recipe?.image} alt="" />
-      <div className="card-desc">
-        <h4>{favorite?.recipeTitle}</h4>
+      <img src={favorite.recipe?.image} alt="" onClick={() => navigate(`/recipe/${favorite.recipe.id}`)} />
+      <div className="card-content">
+        <h4 onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}>{favorite?.recipeTitle}</h4>
         <ButtonBorder
+          style={{ width: "160px", height: "36px" }}
           value={
             <p>
               <Add /> <span> Add to collection </span>
@@ -72,17 +68,21 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
 
 const Card = styled.div`
   position: relative;
-  width: 30%;
+  width: 31%;
   display: flex;
   flex-direction: column;
-  min-height: 370px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  min-height: 460px;
+  box-shadow: var(--card-shadow-border);
+
+  .loading {
+    transform: translate(0, -55px);
+  }
 
   @media (max-width: 1030px) {
     width: 270px;
   }
 
-  .transparent {
+  .transparent-card {
     position: absolute;
     background-color: rgba(245, 245, 245, 0.73);
     content: "";
@@ -94,39 +94,13 @@ const Card = styled.div`
     align-items: center;
     justify-content: center;
     z-index: 1;
-
-    button {
-      /* margin-bottom: 1200px; */
-      color: var(--main-color);
-      text-decoration: none;
-      padding: 0.4rem 0.9rem;
-      border: none;
-      /* padding: 16px 35px; */
-      outline: 1px solid #ce4620;
-      font-weight: bold;
-      border-radius: 3px;
-      display: block;
-      text-align: center;
-      align-items: center;
-      font-size: 14px;
-      margin-top: 12px;
-      max-width: 170px;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #ce4620;
-        color: white;
-      }
-    }
   }
 
   img {
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
     height: 80%;
   }
 
-  .card-desc {
+  .card-content {
     padding: 1rem;
     height: 200px;
     display: flex;
@@ -134,15 +108,24 @@ const Card = styled.div`
     justify-content: space-between;
     flex-wrap: wrap;
 
+    .summary {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      outline: 1px solid black;
+      font-size: 14px;
+      font-weight: 400 !important;
+    }
+
     h4 {
       text-align: start;
-      color: var(--main-color);
-      margin-bottom: 10px;
-      margin-top: 5px;
+      color: var(--grey-color);
       cursor: pointer;
+      font-size: 18px;
 
       &:hover {
         text-decoration: underline;
+        color: var(--main-color);
         text-decoration-color: var(--main-color);
         text-underline-offset: 5px;
         text-decoration-thickness: 10%;
@@ -153,6 +136,7 @@ const Card = styled.div`
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      font-size: 12px;
 
       svg {
         color: var(--red-color);

@@ -1,47 +1,72 @@
-import { ArrowForwardIos, Person } from "@material-ui/icons";
-import React, { useRef, useState } from "react";
-import { useEffect, useContext } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Person } from "@mui/icons-material";
+import React, { useEffect, useRef, useState } from "react";
+import { useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import Loading from "../../../../common/Loading";
 import NavigationWrap from "../../../../common/NavigationWrap";
 import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import FavoriteCollection from "../collections/FavoriteCollection";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import useSmoothScroll from "../../../../utils/useSmoothScroll";
 
 const UserInfo = () => {
   const navigate = useNavigate();
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const { userData } = useContext(AuthContext);
-  const { layoutData, setLayoutData, layoutArr } = useLayoutData();
+  const { layoutData, layoutArr, collections } = useLayoutData();
   const [activeIndex, setActiveIndex] = useState(0);
   const h3Refs = [useRef(null), useRef(null), useRef(null)];
   const params = useParams();
+  const queryClient = useQueryClient();
+
   const handleClick = (index) => {
     setActiveIndex(index);
   };
   const url = window.location.href.slice(21);
   const navigationLinks = [
     { url: "/", content: "Home" },
-    { url: `/profile/${userData?._id}`, content: userData?.nickname },
     { url: "/account/profile/collection", content: "Saved Items & Collections" },
+    { url: `/profile/${userData?._id}`, content: userData?.nickname },
   ];
+  useSmoothScroll();
+
+  const fetchUserData = async () => {
+    const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
+    const data = await res.json();
+
+    layoutData(data.collections);
+
+    return data;
+  };
+
+  const { data: inspectUserData = {}, isFetching } = useQuery(["user-info"], fetchUserData, {
+    enabled: !!userData,
+    refetchOnMount: "always",
+  });
+
+  useEffect(() => {
+    return () => {
+      queryClient.setQueryData(["user-info"], {});
+    };
+  }, [queryClient]);
 
   return (
     <Section>
-      {!userData ? (
-        <Loading />
+      {Object.keys(inspectUserData).length === 0 && !isImageLoaded ? (
+        <Loading className="loading" />
       ) : (
         <>
           <ProfileWrap>
-            {userData?.picture.image ? (
-              <img src={userData?.picture.image} alt="" />
-            ) : (
-              <Person className="profile-svg" />
+            {inspectUserData?.picture?.image && (
+              <img src={inspectUserData.picture.image} onLoad={() => setIsImageLoaded(true)} alt="avatar" />
             )}
+            {!inspectUserData.picture?.image && <Person className="profile-svg" />}
             <div className="profile-info">
               <NavigationWrap links={navigationLinks} />
-              <h1>{userData?.nickname}</h1>
-              <p>{userData?.tagline} </p>
+              <h1>{inspectUserData?.nickname}</h1>
+              <p>{inspectUserData?.tagline} </p>
             </div>
           </ProfileWrap>
           <ProfileContent>
@@ -57,28 +82,32 @@ const UserInfo = () => {
                   REVIEWS
                 </h5>
               </div>
-              <div className="collection-flex">
-                <h4> {layoutData?.length} Collections </h4>
-                <div className="collection-wrap">
-                  {activeIndex === 0 &&
-                    layoutData
-                      ?.filter((x) => !x.private)
-                      .map((collection, id) => (
-                        <FavoriteCollection
-                          key={id}
-                          collection={collection}
-                          layoutArr={layoutArr[id]}
-                          onClick={() => {
-                            navigate(
-                              collection.collName === "All saved items"
-                                ? `${url}/collection/all-saved-items`
-                                : `${url}/collection/${collection._id}`
-                            );
-                          }}
-                        />
-                      ))}
+              {layoutData.length > 0 && collections?.length > 0 && (
+                <div className="collection-flex">
+                  <h3> {collections?.length} Collections </h3>
+                  {collections && (
+                    <div className="collection-wrap">
+                      {activeIndex === 0 &&
+                        collections
+                          ?.filter((collection) => !collection.private)
+                          .map((collection, id) => (
+                            <FavoriteCollection
+                              key={id}
+                              collection={collection}
+                              layoutArr={layoutArr[id]}
+                              onClick={() => {
+                                navigate(
+                                  collection.collName === "All Saved Items"
+                                    ? `${url}/collection/all-saved-items`
+                                    : `${url}/collection/${collection._id}`
+                                );
+                              }}
+                            />
+                          ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
           </ProfileContent>
         </>
@@ -96,6 +125,11 @@ const ProfileWrap = styled.div`
   align-items: center;
   background-color: white;
 
+  img {
+    width: 330px;
+    height: 330px;
+  }
+
   @media (max-width: 910px) {
     flex-direction: column;
     flex-wrap: wrap;
@@ -103,14 +137,12 @@ const ProfileWrap = styled.div`
 
   .profile-info {
     position: relative;
-    border-radius: 2px;
-    right: 20px;
+    right: 24px;
     top: -50px;
     width: 100%;
     background-color: #fff;
     max-width: 100%;
     word-break: break-all;
-    /* border: 1px solid rgb(0 0 0 / 20%); */
     box-shadow: 0 0.12rem 0.375rem rgb(0 0 0 / 32%);
     border-left: 5px solid #46c5b5;
     min-height: 140px;
@@ -119,6 +151,11 @@ const ProfileWrap = styled.div`
     justify-content: space-around;
     flex-wrap: wrap;
     padding: 24px 28px;
+
+    & > h1 {
+      font-size: 2.2rem;
+      margin-top: 16px;
+    }
 
     @media (max-width: 910px) {
       top: 0;
@@ -130,22 +167,15 @@ const ProfileWrap = styled.div`
 
   .profile-svg {
     color: white;
-    background-color: #ce4620;
+    background-color: var(--red-color);
     width: 320px;
     height: 320px;
-    pointer-events: none;
-  }
-
-  img {
-    width: 320px;
-    height: 320px;
-    filter: saturate(100%);
     pointer-events: none;
   }
 `;
 
 const ProfileContent = styled.div`
-  margin: 20px 0;
+  margin: 18px 0;
 
   .saved {
     width: 910px;
@@ -162,31 +192,35 @@ const ProfileContent = styled.div`
 
     .saved-wrapper {
       display: flex;
-      /* flex-direction: column; */
-      /* align-content: flex-start; */
       width: 100%;
-      margin: 60px 0 10px 0;
-      overflow-x: scroll;
+      margin: 50px 0 12px 0;
 
       h5 {
         width: max-content;
-        /* line-height: 30px; */
+        line-height: 30px;
         color: var(--grey-color);
         cursor: pointer;
-        font-size: 0.9rem;
+        font-weight: 800;
+        font-size: 14px;
         padding: 0 16px;
+
+        &:hover {
+          color: var(--main-color);
+          border-bottom: 3px solid var(--red-color);
+        }
       }
     }
 
     .selected {
+      color: var(--grey-color) !important;
       border-bottom: 3px solid var(--red-color);
       color: black;
     }
 
     .collection-flex {
-      h4 {
+      & > h3 {
+        font-size: 18px !important;
         margin: 50px 0 30px 0;
-        font-weight: 500;
       }
 
       .collection-wrap {
@@ -204,15 +238,14 @@ const Section = styled.section`
   min-height: 100vh;
   margin: 200px auto;
   max-width: 100%;
-  width: 1250px;
+  width: 1240px;
 
-  @media (max-width: 1250px) {
-    padding: 0 22px;
+  .loading {
+    transform: translate(0, -420px);
   }
 
-  h1 {
-    font-size: 2.2rem;
-    margin: 16px 0;
+  @media (max-width: 1240px) {
+    padding: 0 22px;
   }
 `;
 

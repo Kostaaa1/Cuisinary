@@ -17,6 +17,7 @@ const fileSizeFormatter = (bytes, decimal) => {
 // CRUD OPERATIONS
 module.exports = {
   updateUser: async (req, res) => {
+    console.log(req.body);
     try {
       const updateData = {};
       Object.entries(req.body.user).forEach(([key, value]) => {
@@ -30,25 +31,30 @@ module.exports = {
   },
   updateProfileImage: async (req, res) => {
     try {
-      const userImage = await User.findOneAndUpdate({ email: req.params.email }, {});
+      const { path, originalname, mimetype, size } = req.file;
+      const { email } = req.params;
+      const userImage = await User.findOneAndUpdate({ email: email }, {});
 
       let { cloudinaryId } = userImage.picture;
 
       if (cloudinaryId) {
-        await cloudinary.uploader.destroy(cloudinaryId, (res) => {
-          console.log(res);
+        await cloudinary.uploader.destroy(cloudinaryId, () => {
+          console.log("Deleted from cloudinary");
         });
       }
 
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await cloudinary.uploader.upload(path, {
+        transformation: [{ width: 350, height: 350, fetch_format: "auto" }],
+      });
+
       const user = await User.findOneAndUpdate(
-        { email: req.params.email },
+        { email: email },
         {
           $set: {
             picture: {
-              fileName: req.file.originalname,
-              fileType: req.file.mimetype,
-              fileSize: fileSizeFormatter(req.file.size, 2),
+              fileName: originalname,
+              fileType: mimetype,
+              fileSize: fileSizeFormatter(size, 2),
               image: result.secure_url,
               cloudinaryId: result.public_id,
             },
@@ -56,7 +62,7 @@ module.exports = {
         }
       );
 
-      res.status(200).send(user);
+      res.status(200).send(user.picture);
     } catch (error) {
       res.status(400).send(error.message);
     }
@@ -157,26 +163,54 @@ module.exports = {
       res.status(400).send(err);
     }
   },
-  addReview: async (req, res) => {
-    console.log(req.params);
-    // console.log(req.body, req.params, "user review ran");
+  createUserReview: async (req, res) => {
     try {
+      const { recipeTitle, recipeId, recipeImage, comment, starRating } = req.body;
+      const { email } = req.params;
       const user = await User.findOneAndUpdate(
         {
-          email: req.params.email,
+          email: email,
         },
         {
           $push: {
             reviews: {
-              recipeTitle: req.body.recipeTitle,
-              recipeImage: req.body.recipeImage,
-              comment: req.body.comment,
-              starRating: req.body.starRating,
+              recipeTitle: recipeTitle,
+              recipeImage: recipeImage,
+              recipeId: recipeId,
+              comment: comment,
+              starRating: starRating,
             },
           },
         }
       );
 
+      res.status(200).json(user);
+      return user;
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  editUserReview: async (req, res) => {
+    try {
+      const { recipeTitle, recipeImage, comment, starRating } = req.body;
+      const { email } = req.params;
+
+      const user = await User.findOneAndUpdate(
+        {
+          email: req.params.email,
+        },
+        {
+          $set: {
+            reviews: {
+              recipeTitle: recipeTitle,
+              recipeImage: recipeImage,
+              comment: comment,
+              starRating: starRating,
+            },
+          },
+        },
+        { new: true }
+      );
       res.status(200).json(user);
       return user;
     } catch (err) {

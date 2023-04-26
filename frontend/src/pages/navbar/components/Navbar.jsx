@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -70,7 +70,7 @@ const Navbar = () => {
     },
   ]);
 
-  const hanldeDropDownEnter = (visibility, index) => {
+  const hanldeDropDownEnter = (index) => {
     setCategoryData(
       categoryData.map((category, i) =>
         i === index ? { ...categoryData[index], visibility: true } : { ...category, visibility: false }
@@ -78,7 +78,7 @@ const Navbar = () => {
     );
   };
 
-  const hanldeDropDownLeave = (visibility, index) => {
+  const hanldeDropDownLeave = (index) => {
     setCategoryData(
       categoryData.map((category, i) =>
         i === index ? { ...categoryData[index], visibility: false } : { ...category, visibility: false }
@@ -89,28 +89,26 @@ const Navbar = () => {
   return (
     <Nav>
       {categoryData.map((category, index) => (
-        <Wrapper key={index}>
-          <h5
-            onMouseEnter={() => hanldeDropDownEnter(category.visibility, index)}
-            onMouseLeave={() => hanldeDropDownLeave(category.visibility, index)}
-          >
+        <Wrapper key={category.name}>
+          <h5 onMouseEnter={() => hanldeDropDownEnter(index)} onMouseLeave={() => hanldeDropDownLeave(index)}>
             {category.name}
           </h5>
           <CategoryDropdown
-            onMouseEnter={() => hanldeDropDownEnter(category.visibility, index)}
-            onMouseLeave={() => hanldeDropDownLeave(category.visibility, index)}
+            onMouseEnter={() => hanldeDropDownEnter(index)}
+            onMouseLeave={() => hanldeDropDownLeave(index)}
             className="ul-dropdown"
             style={{ display: category.visibility ? "flex" : "none" }}
           >
-            {category.categories.map((data, id) => (
-              <li
-                key={id}
-                onClick={(e) => {
-                  categoryNavigation(data.query), hanldeDropDownLeave(category.visibility, index);
-                }}
-              >
-                {data.list}
-              </li>
+            {category.categories.map((data) => (
+              <div key={data.query} className="li-control">
+                <li
+                  onClick={() => {
+                    categoryNavigation(data.query), hanldeDropDownLeave(index);
+                  }}
+                >
+                  {data.list}
+                </li>
+              </div>
             ))}
           </CategoryDropdown>
         </Wrapper>
@@ -144,8 +142,8 @@ const Wrapper = styled.div`
 
   h5 {
     line-height: 30px;
-    letter-spacing: 1px;
-    margin-right: 40px;
+    letter-spacing: 1.6px;
+    margin-right: 36px;
     color: black;
     font-size: 12px;
     cursor: pointer;
@@ -159,20 +157,19 @@ const CategoryDropdown = styled.ul`
   transform: translate(-5%);
   width: 210px;
   background-color: white;
-  border-radius: 3px;
   flex-direction: column;
-  padding: 4px 12px;
 
-  li {
-    padding: 15px 0;
-    list-style: none;
-    font-size: 14px;
-    color: var(--grey-color);
-    cursor: pointer;
-    font-weight: 500;
+  .li-control {
+    li {
+      color: var(--main-color);
+      margin: 2px 12px;
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: -0.6px;
+    }
 
     &:hover {
-      color: #312f2f;
+      background: #f3f3f3;
     }
   }
 `;

@@ -1,35 +1,37 @@
 import styled from "styled-components";
-import { NavLink, Route, useNavigate, useParams } from "react-router-dom";
+import { NavLink, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useContext, useState, Component, memo } from "react";
 import List from "../../pages/profile/components/List";
-import ButtonBorder from "../../common/ButtonBorder";
-import IndexesContext from "../../setup/app-context-menager/RecipeNameContext";
+import GlobalContext from "../../setup/app-context-menager/GlobalContext";
 import AuthContext from "../../setup/app-context-menager/AuthContext";
 import { motion } from "framer-motion";
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useAuth } from "../../setup/auth/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import { useLayoutData } from "./hooks/useLayoutData";
 import ProfileGreet from "./components/ProfileGreet";
+import { useAuth, useUser } from "../../setup/auth/useAuth";
 
 const MyProfile = ({ listContent, staticList, setLists }) => {
   const params = useParams();
-  const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId } = useContext(IndexesContext);
-  const { userData } = useContext(AuthContext);
-  const { user, isLoading } = useAuth0();
-  const { layoutData } = useLayoutData();
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+  const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId, collectionParams } = useContext(GlobalContext);
+  const { refetchedUser } = useAuth();
+  const { userData, useUpdateUserCache } = useContext(AuthContext);
+  const { refetch } = useUser();
 
   useEffect(() => {
     if (arrayOfRecipeNames.length !== 0) {
-      handleDeletionOfIndexes();
+      handleDeletionOfRecipes();
       setArrayOfRecipeNames([]);
+      refetch();
     }
   }, [location.pathname !== "/account/profile/saved-items"]);
 
-  const handleDeletionOfIndexes = async () => {
-    const data = { titles: arrayOfRecipeNames, collectionId: collectionId };
-    await axios.post(`/api/auth/${user?.email}/deleteFavs`, data);
+  const handleDeletionOfRecipes = async () => {
+    const recipeNames = {
+      titles: arrayOfRecipeNames,
+      collectionId: collectionParams === "saved-items" ? "" : collectionId,
+    };
+    axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
   };
 
   useEffect(() => {
@@ -48,31 +50,39 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   });
 
   return (
-    <Container>
-      <div className="profile">
-        {!userData ? <h4>Loading...</h4> : <ProfileGreet />}
-        <div className="profile-info">
-          <ul>
-            {listContent
-              .filter((list) => list.text && list)
-              .map((list, id) => (
-                <CustomLink to={"/account/profile" + list.route} key={id}>
-                  <List className={list.selected ? "selected" : ""} list={list} />
-                </CustomLink>
-              ))}
-          </ul>
+    <Wrapper>
+      <Container>
+        <div className="profile">
+          {!userData && !loading ? (
+            <div className="h4-div">
+              <h4>Loading...</h4>
+            </div>
+          ) : (
+            <ProfileGreet onLoad={() => setLoading(true)} />
+          )}
+          <div className="profile-info">
+            <ul>
+              {listContent
+                .filter((list) => list.text && list)
+                .map((list, id) => (
+                  <CustomLink to={"/account/profile" + list.route} key={id}>
+                    <List className={list.selected ? "selected" : ""} list={list} />
+                  </CustomLink>
+                ))}
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className="components">
-        {listContent.map((list) => {
-          if (list.selected) {
-            const Component = staticList[list.component];
+        <div className="components">
+          {listContent.map((list) => {
+            if (list.selected) {
+              const Component = staticList[list.component];
 
-            return <Component key={list.id} data={userData} />;
-          }
-        })}
-      </div>
-    </Container>
+              return <Component key={list.id} data={userData} />;
+            }
+          })}
+        </div>
+      </Container>
+    </Wrapper>
   );
 };
 
@@ -85,58 +95,57 @@ const CustomLink = styled(NavLink)`
   }
 `;
 
+const Wrapper = styled.section`
+  background-color: #f2f2f2;
+`;
+
 const Container = styled(motion.div)`
+  margin: 0 auto;
+  padding: 200px 0;
   position: relative;
-  margin: 200px auto;
   display: flex;
-  width: 100%;
-  max-width: 1250px;
+  width: 1240px;
+  max-width: 100%;
+
+  .loading {
+    transform: translate(0, -325px) scale(1.2);
+  }
 
   @media screen and (max-width: 1250px) {
-    padding: 0 20px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .components {
-    width: 940px;
+    position: relative;
+    background-color: #fff;
+    min-height: calc(100vh - 200px);
+    width: 100%;
     max-width: 100%;
+    word-break: break-all;
+    padding: 22px 26px;
   }
 
   .profile {
-    min-width: 280px;
-    margin-right: 30px;
+    min-width: 180px;
+    height: 120px;
+    margin-right: 25px;
+    background-color: #fff;
 
-    h4 {
-      margin-bottom: 20px;
-      text-align: center;
-      padding: 22px;
-    }
-  }
+    .h4-div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
 
-  .profile-greet {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 25px;
-    padding: 0 10px;
-
-    img {
-      margin-right: 12px;
-      width: 60px;
-      height: 60px;
-      pointer-events: none;
-    }
-
-    h3 {
-      word-break: break-all;
-    }
-
-    svg {
-      font-size: 5rem;
-      color: #ce4620;
-      margin-right: 10px;
+      h4 {
+        font-size: 16px;
+      }
     }
   }
 
   .profile-info {
+    background-color: #fff;
     ul {
       display: flex;
       justify-content: center;
@@ -145,9 +154,9 @@ const Container = styled(motion.div)`
     }
 
     .selected {
-      border-left: 3px solid #ce4620;
+      border-left: 3px solid var(--red-color);
       font-weight: bold;
-      color: #ce4620;
+      color: var(--red-color);
     }
   }
 `;

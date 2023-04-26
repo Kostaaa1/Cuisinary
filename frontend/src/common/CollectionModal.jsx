@@ -3,20 +3,25 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Button from "./Button";
-import { Close, Lock, Add } from "@material-ui/icons";
+import { Close, HttpsOutlined, Add } from "@mui/icons-material";
 import { useEffect } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 
-const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
+const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate }) => {
   const params = useParams();
-  const [collName, setCollName] = useState("");
-  const [collDesc, setCollDesc] = useState("");
+  const [collName, setCollName] = useState(collectionTitle ? collectionTitle : "");
+  const [collDesc, setCollDesc] = useState(collectionDesc ? collectionDesc : "");
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
 
-  const submitCollection = (e) => {
+  const handleCollectionName = (name) => {
+    // if (name.length > 20) return;
+    setCollName(name);
+  };
+
+  const submitCollection = async (e) => {
     e.preventDefault();
 
     const collectionData = {
@@ -24,16 +29,16 @@ const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
       collDesc,
     };
 
-    const filteredObject = Object.entries(collectionData)
-      .filter(([key, value]) => value)
-      .reduce((obj, [key, value]) => {
-        obj[key] = value;
-        return obj;
-      }, {});
+    // const filteredObject = Object.entries(collectionData)
+    //   .filter(([key, value]) => value)
+    //   .reduce((obj, [key, value]) => {
+    //     obj[key] = value;
+    //     return obj;
+    //   }, {});
 
-    axios.post(
+    await axios.post(
       params.id ? `/api/user/${user?.email}/${params.id}/editCollection` : `/api/user/${user?.email}/newCollection`,
-      { ...filteredObject, private: collPrivate }
+      { ...collectionData, private: collPrivate }
     );
 
     showModal();
@@ -43,6 +48,8 @@ const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
     if (e.key !== "Escape") return;
     showModal();
   };
+
+  console.log(collDesc);
 
   useEffect(() => {
     document.addEventListener("keydown", handle);
@@ -69,10 +76,14 @@ const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
             <div>
               <label>Collection Name</label>
               <input
+                required
+                maxLength={40}
                 type="text"
-                placeholder={params.id ? collectionTitle : "Give your collection a name"}
-                onChange={(e) => setCollName(e.target.value)}
+                value={collName}
+                onChange={(e) => handleCollectionName(e.target.value)}
+                placeholder={"Give your collection a name"}
               />
+              <span className="ta-length">{collName.length}/40 characters</span>
             </div>
             <div>
               <label>Description (optional)</label>
@@ -81,18 +92,19 @@ const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
                 rows="6"
                 id="tagline"
                 type="text"
+                placeholder={!collDesc && "Add description"}
                 maxLength="300"
-                placeholder="Describe your collection"
+                value={collDesc}
                 onChange={(e) => setCollDesc(e.target.value)}
               />
-              <span>{collDesc.length}/300 characters</span>
+              <span className="ta-length">{collDesc.length}/300 characters</span>
             </div>
             <div className="checkbox">
-              <div>
-                <label>
+              <div className="wrap">
+                <p>
                   Private Collection
-                  <Lock />
-                </label>
+                  <HttpsOutlined />
+                </p>
                 <input
                   type="checkbox"
                   checked={collPrivate}
@@ -104,7 +116,11 @@ const CollectionModal = ({ showModal, collectionTitle, isPrivate }) => {
             </div>
             <div className="button">
               <p onClick={showModal}>Cancel</p>
-              <Button type={"submit"} value={"Create Collection"} />
+              <Button
+                type={"submit"}
+                value={params.id ? "Edit Collection" : "Create Collection"}
+                style={{ width: "180px", height: "50px", fontSize: "14px" }}
+              />
             </div>
           </form>
         </div>
@@ -148,19 +164,20 @@ const Section = styled.div`
       width: 100%;
       height: 50px;
       color: white;
-      background-color: #ce4620;
+      background-color: var(--red-color);
 
       .header-flex {
         display: flex;
         align-items: center;
 
         .add-svg {
-          margin-right: 8px;
+          margin-right: 4px;
         }
 
         h3 {
           font-weight: 600;
           margin: 0;
+          color: white;
         }
       }
 
@@ -181,6 +198,11 @@ const Section = styled.div`
         margin-bottom: 10px;
       }
 
+      .ta-length {
+        font-weight: 400;
+        font-size: 12px;
+      }
+
       input {
         width: 100%;
         height: 50px;
@@ -189,6 +211,7 @@ const Section = styled.div`
       }
 
       textarea {
+        resize: none;
         padding: 15px 10px;
         font-size: 14px;
       }
@@ -202,25 +225,30 @@ const Section = styled.div`
     .checkbox {
       display: flex;
 
-      div {
+      .wrap {
         display: flex;
         flex-direction: row-reverse;
         justify-content: start;
-        align-items: center;
+        align-content: center;
+        text-align: center;
+        font-size: 14px;
+
+        svg {
+          color: var(--grey-color);
+          transform: scale(1.4);
+          font-size: 14px;
+          margin-left: 6px;
+        }
 
         label {
           margin: 0;
           display: flex;
-          font-weight: 500;
-
-          svg {
-            margin-left: 5px;
-            font-size: 16px;
-          }
+          font-weight: bold;
         }
       }
 
       span {
+        font-weight: 400;
         font-size: 12px;
       }
 
@@ -228,7 +256,7 @@ const Section = styled.div`
         width: 20px;
         height: 20px;
         margin-right: 10px;
-        border-radius: 5px;
+        border-radius: 3px;
         cursor: pointer;
       }
     }
@@ -243,10 +271,11 @@ const Section = styled.div`
       justify-content: flex-end;
 
       p {
-        color: #ce4620;
+        color: var(--red-color);
         text-decoration: underline;
         cursor: pointer;
-        margin-right: 15px;
+        font-size: 14px;
+        margin-right: 16px;
       }
     }
   }

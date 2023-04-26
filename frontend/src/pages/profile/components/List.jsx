@@ -22,26 +22,29 @@ const List = ({ list }) => {
 };
 
 const Li = styled.li`
-  width: 100%;
+  color: var(--main-color);
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
   margin-right: 12px;
   list-style: none;
   padding: 0.9rem 0.4rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.2);
-  cursor: pointer;
+  border-top: 1px solid rgba(0, 0, 0, 0.18);
   padding-left: 12px;
+  font-weight: 400;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
 
   svg {
-    color: #ce4620;
+    color: var(--red-color);
     margin-right: 10px;
     font-size: 16px;
   }
 
   &:hover:not(.selected) {
-    background-color: rgba(0, 0, 0, 0.16);
-    color: #ce4620;
+    background-color: var(--grey-hover-color);
+    color: var(--red-color);
   }
 `;
 

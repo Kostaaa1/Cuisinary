@@ -6,7 +6,7 @@ import { MdRiceBowl } from "react-icons/md";
 const Logo = ({ style }) => {
   return (
     <CulinaryLogo style={style} to={"/"}>
-      Culinary
+      Cuisinary
       <MdRiceBowl className="logo" />
     </CulinaryLogo>
   );
@@ -18,7 +18,7 @@ const CulinaryLogo = styled(Link)`
   font-weight: 900;
   font-family: "Lobster Two", "Helvetica", sans-serif;
   font-style: italic;
-  color: var(--main-color);
+  color: var(--red-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,9 +27,9 @@ const CulinaryLogo = styled(Link)`
 
   .logo {
     font-size: 2.2rem;
-    color: #f7af30;
+    color: var(--gold-color);
     /* color: var(--main-color); */
-    margin-left: 2px;
+    /* margin-left: 2px; */
   }
 `;
 

@@ -1,4 +1,4 @@
-import { Add } from "@material-ui/icons";
+import { Add } from "@mui/icons-material";
 import styled from "styled-components";
 
 const NewCollectionCard = ({ onClick }) => {
@@ -18,9 +18,9 @@ const Card = styled.div`
   flex-direction: column;
   width: 270px;
   font-size: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: var(--card-shadow-border);
   overflow: hidden;
-  min-height: 370px;
+  min-height: 400px;
 
   h3 {
     margin: -50px auto;

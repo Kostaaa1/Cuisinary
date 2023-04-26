@@ -12,7 +12,7 @@ export const profileLists = [
     text: "Personal Info",
     selected: false,
     component: "PersonalInfo",
-    route: "",
+    route: "/",
   },
   {
     id: 1,

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Lobster+Two:ital@0;1&family=Lora:ital,wght@0,400;1,400;1,500&family=Murecho:wght@200;300;400;500;600;700;800;900&family=Sora:wght@200;300;400;500;600;700;800&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&family=Varela+Round&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&family=Lato:wght@300;400;700;900&family=Lobster+Two:ital@0;1&family=Nunito:wght@200;300;400;500;600;700;800;900&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap");
 
 html,
 body {
@@ -9,36 +9,62 @@ body {
 *,
 *::after,
 *::before {
-  font-family: "Inter", "SourceSansPro", sans-serif;
+  font-family: "Inter", sans-serif;
   margin: 0;
   padding: 0;
+  font-size: 0.9rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
 :root {
-  --main-color: #585858;
+  --main-color: rgba(0, 0, 0, 0.95);
   --red-color: #ce4620;
   --grey-color: #595959;
   --blue-color: #003e9b;
+  --gold-color: #f7af30;
+  --grey-hover-color: #d9d9d9;
+  --light-grey-hover-color: #f0f0f0;
+  --input-border-color: #b2b2b2;
+  --profile-background: #f2f2f2;
+  --card-shadow-border: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 }
 
 body {
   display: block;
   scroll-behavior: smooth;
   min-height: 100vh;
+  font-size: 0.9rem;
   background-color: #fff;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
   color: var(--main-color);
+  letter-spacing: -0.2px !important;
+}
+
+input,
+textarea {
+  border: 1px solid var(--input-border-color);
+}
+
+input:read-only {
+  border: 1px solid #b2b2b2;
 }
 
 h1,
 h2,
 h3 {
-  letter-spacing: -1.1px;
+  letter-spacing: -0.6px !important;
   color: var(--main-color);
+}
+
+h3 {
+  font-size: 18px !important;
+}
+
+p {
+  font-size: 16px;
 }
 
 div {
@@ -75,17 +101,37 @@ input[type="number"] {
   z-index: 2;
 }
 
-@media screen and (max-width: 1250px) {
+@media screen and (max-width: 1240px) {
   .fixed {
     width: calc(100% - 350px);
   }
 }
 
 body.no-scroll header {
-  padding-right: 17px;
+  padding-right: 12px;
 }
 
 .no-scroll {
   overflow: hidden;
-  padding-right: 17px;
+  padding-right: 12px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background-color: var(--input-border-color);
+  border: 1px solid var(--grey-hover-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--grey-color);
 }

@@ -1,12 +1,14 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import { useAuth } from "../../../setup/auth/useAuth";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../../../setup/auth/useAuth";
 
 export const useLayoutData = () => {
+  const { userData } = useContext(AuthContext);
+  const [collections, setCollections] = useState([]);
+  const { user } = useAuth0();
   const [mockData, setMockData] = useState([
     {
       data: {},
@@ -21,31 +23,41 @@ export const useLayoutData = () => {
       data: {},
     },
   ]);
-  const { userData } = useContext(AuthContext);
-  const { currentUser } = useAuth();
-  const [test, setTest] = useState([]);
-  const { user } = useAuth0();
 
-  const layoutData = useMemo(() => {
-    return currentUser?.collections;
-  }, [currentUser]);
+  // const layoutData = (collections) => {
+  //   if (collections) {
+  //     setCollections(collections);
+  //   } else {
+  //     setCollections([]);
+  //   }
+  // };
 
-  const destructuredArray = useMemo(() => {
-    return layoutData?.map((coll) =>
-      coll.collRecipes.map((recipes) => ({
-        data: { image: recipes?.recipe.image },
-      }))
-    );
-  }, [layoutData]);
+  const layoutData = useCallback(
+    (collections) => {
+      if (userData) {
+        if (collections) {
+          setCollections(collections);
+        } else {
+          setCollections([]);
+        }
+      }
+    },
+    [user, userData]
+  );
 
   const layoutArr = useMemo(() => {
+    let destructuredArray = collections?.map((coll) =>
+      coll.collRecipes.map((recipes) => ({
+        data: { image: recipes.recipe?.image },
+      }))
+    );
     return destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
-  }, [destructuredArray, mockData]);
+  }, [collections, mockData]);
 
   return {
     layoutArr,
-    destructuredArray,
+    collections,
     layoutData,
-    currentUser,
+    userData,
   };
 };

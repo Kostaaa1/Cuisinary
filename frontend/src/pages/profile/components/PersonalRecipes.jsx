@@ -1,9 +1,9 @@
 import styled from "styled-components";
-import { SupervisorAccount } from "@material-ui/icons";
+import { SupervisorAccount } from "@mui/icons-material";
 import Button from "../../../common/Button";
 import SectionInfo from "../../../common/SectionInfo";
 
-const ChangeProfile = () => {
+const PersonalRecipes = () => {
   return (
     <Wrapper>
       <h1>Personal Recipes</h1>
@@ -25,6 +25,7 @@ const Wrapper = styled.div`
   padding: 20px;
 
   .recipe__add {
+    margin: 32px 0;
     display: flex;
     width: 100%;
     align-items: center;
@@ -32,6 +33,8 @@ const Wrapper = styled.div`
     flex-direction: column;
 
     h2 {
+      font-size: 24px;
+      line-height: 25px;
       color: var(--grey-color);
     }
 
@@ -42,7 +45,7 @@ const Wrapper = styled.div`
 
   h1 {
     font-weight: bold;
-    margin-bottom: 30px;
+    margin-bottom: 38px;
     font-size: 2.4rem;
   }
 
@@ -54,4 +57,4 @@ const Wrapper = styled.div`
   }
 `;
 
-export default ChangeProfile;
+export default PersonalRecipes;

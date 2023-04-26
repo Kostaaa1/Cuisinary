@@ -1,37 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { RecipeContext } from "../Recipe";
+import LineBreak from "../../../common/LineBreak";
 
-const Nutrition = ({ nutritions }) => {
+const Nutrition = () => {
+  const { recipe } = useContext(RecipeContext);
+
   return (
     <NutritionFacts>
-      {nutritions && (
+      {recipe && (
         <>
           <div className="content-head">
             <h1>Nutrition Facts</h1>
             <span> (per serving) </span>
           </div>
-          <div className="content-flex">
-            <div>
-              <span> {nutritions.calories + "cal"} </span>
-              <p>Calories</p>
-            </div>
-            <div>
-              <span> {nutritions.carbs} </span>
-              <p>Carbs</p>
-            </div>
-            <div>
-              <span> {nutritions.fat} </span>
-              <p>Fat</p>
-            </div>
-            <div>
-              <span> {nutritions.protein} </span>
-              <p>Protein</p>
-            </div>
+          <div className="content-flex" id="review-id">
+            {recipe?.nutrition?.nutrients
+              .filter(
+                (item) =>
+                  item.name === "Calories" ||
+                  item.name === "Fat" ||
+                  item.name === "Carbohydrates" ||
+                  item.name === "Protein"
+              )
+              .map((item, id) => (
+                <div key={id}>
+                  <h4> {item.amount.toString().split(".")[0] + item.unit} </h4>
+                  <p> {item.name === "Carbohydrates" ? "Carbs" : item.name} </p>
+                </div>
+              ))}
           </div>
         </>
       )}
+      <LineBreak className="line-break" />
     </NutritionFacts>
   );
 };
@@ -58,15 +61,16 @@ const NutritionFacts = styled.div`
   .content-flex {
     display: flex;
     align-items: flex-start;
-    margin-top: 16px;
+    margin-top: 24px;
 
     div {
       width: 25%;
       line-height: 1.6;
 
-      span {
+      h4 {
+        color: var(--main-color);
         font-size: 16px;
-        font-weight: 700;
+        font-weight: 600;
       }
     }
   }

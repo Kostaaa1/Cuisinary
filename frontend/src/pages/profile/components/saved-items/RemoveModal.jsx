@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Close, Lock } from "@material-ui/icons";
+import { Close, Lock } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import Button from "../../../../common/Button";
 import { useEffect, useState } from "react";
@@ -26,7 +26,7 @@ const RemoveModal = ({ title, onClick, remove }) => {
   return (
     <Modal animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       <Section>
-        <div className="favorite-header">
+        <div className="modal-header">
           <h3>Remove from {collection}</h3>
           <Close onClick={onClick} />
         </div>
@@ -38,7 +38,14 @@ const RemoveModal = ({ title, onClick, remove }) => {
             <button className="btn-border" onClick={onClick}>
               Cancel
             </button>
-            <Button value={"Remove"} onClick={remove} />
+            <Button
+              value={"Remove"}
+              onClick={() => {
+                remove();
+                onClick();
+              }}
+              style={{ width: "120px", height: "50px" }}
+            />
           </div>
         </div>
       </Section>
@@ -53,8 +60,8 @@ const Modal = styled(motion.div)`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
   display: flex;
+  height: 100%;
   align-items: center;
   justify-content: center;
   background-color: rgba(22, 22, 22, 0.75);
@@ -66,27 +73,29 @@ const Section = styled.div`
   width: 380px;
   min-height: 260px;
 
-  .favorite-header {
+  .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     height: 50px;
     color: white;
-    background-color: #ce4620;
+    background-color: var(--red-color);
+    padding: 0 20px;
 
     h3 {
+      color: #fff;
       font-weight: bold;
     }
 
     svg {
       cursor: pointer;
-      margin-right: 10px;
     }
   }
 
   .content {
-    padding: 0 20px;
+    padding: 20px;
+    padding-top: 10px;
 
     p {
       margin: 25px 0;
@@ -97,21 +106,22 @@ const Section = styled.div`
 
     p > span {
       font-weight: bold;
+      font-size: 16px;
     }
 
     .buttons-wrap {
       display: flex;
       align-items: center;
       justify-content: start;
-      margin-bottom: 10px;
 
       .btn-border {
         color: var(--main-color);
         text-decoration: none;
-        padding: 14px 35px;
-        outline: 2px solid #ce4620;
+        width: 120px;
+        height: 50px;
+        outline: 2px solid var(--red-color);
         font-weight: bold;
-        border-radius: 5px;
+        border-radius: 3px;
         display: block;
         text-align: center;
         align-items: center;
@@ -121,8 +131,13 @@ const Section = styled.div`
         border: none;
         margin-right: 16px;
 
+        &:active {
+          outline: 2px solid var(--blue-color);
+          outline-offset: 1px;
+        }
+
         &:hover {
-          background-color: #ce4620;
+          background-color: var(--red-color);
           color: white;
         }
       }

@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-const Loading = ({ styles }) => {
+const Loading = (props) => {
   return (
-    <Wrapper style={styles}>
+    <Wrapper className={props.className}>
       <LoadingCircle></LoadingCircle>
     </Wrapper>
   );
@@ -14,11 +14,10 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  position: "absolute";
+  position: absolute;
   content: "";
-  top: "50%";
-  right: "0";
-  transform: "translate(0, 50%)";
+  top: 0;
+  left: 0;
   z-index: 1;
 `;
 
@@ -27,7 +26,7 @@ const LoadingCircle = styled.div`
   width: 3.2em;
   height: 3.2em;
   border: 0.3em solid white;
-  border-top-color: #ce4620;
+  border-top-color: var(--red-color);
   border-radius: 50%;
   animation: spin 1.2s linear infinite;
 

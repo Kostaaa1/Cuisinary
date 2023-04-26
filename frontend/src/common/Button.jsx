@@ -1,30 +1,29 @@
 import styled from "styled-components";
 
-const Button = ({ value, onClick }) => {
+const Button = ({ value, onClick, style }) => {
   return (
-    <div>
-      <Btn onClick={onClick}> {value} </Btn>
-    </div>
+    <Btn style={style} onClick={onClick}>
+      {value}
+    </Btn>
   );
 };
 
 const Btn = styled.button`
-  padding: 18px 35px;
   font-weight: bold;
-  color: white;
+  color: #fff;
   cursor: pointer;
   display: block;
   border: none;
-  font-size: 12px;
-  border-radius: 5px;
+  font-size: 14px;
+  border-radius: 3px;
   letter-spacing: 1.1px;
-  background-color: #ce4620;
+  background-color: var(--red-color);
+  outline: 2px solid var(--red-color);
 
   &:active {
-    outline: 2px solid #003e9b;
-    border-radius: 5px;
+    outline: 2px solid var(--blue-color);
+    border-radius: 3px;
     outline-offset: 1px;
-    width: fit-content;
   }
 `;
 

@@ -1,5 +1,5 @@
-import { HttpsOutlined } from "@material-ui/icons";
-import { useContext, useEffect, useState } from "react";
+import { HttpsOutlined } from "@mui/icons-material";
+import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import Button from "../../../../common/Button";
 import SectionInfo from "../../../../common/SectionInfo";
@@ -7,80 +7,99 @@ import FavoriteCollection from "./FavoriteCollection";
 import CollectionModal from "../../../../common/CollectionModal";
 import NewCollectionCard from "./NewCollectionCard";
 import Loading from "../../../../common/Loading";
-import { useAuth } from "../../../../setup/auth/useAuth";
-import { Auth0Context, useAuth0 } from "@auth0/auth0-react";
-import { useLayoutData } from "../../hooks/useLayoutData";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 import useNoScroll from "../../../../utils/useNoScroll";
-import useAddFixed from "../../hooks/useAddFixed";
 import { useRef } from "react";
+import { useUser } from "../../../../setup/auth/useAuth";
+import useAddFixed from "../../hooks/useAddFixed";
 
 const SavedItems = () => {
+  const collectionRef = useRef(null);
   const navigate = useNavigate();
   const [showCollectionModal, setShowCollectionModal] = useState(false);
-  const { layoutArr, length, destructuredArray, layoutData } = useLayoutData();
-  const { currentUser } = useAuth();
-  const { userData } = useContext(AuthContext);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  // useAddFixed(collectionRef);
   useNoScroll(showCollectionModal);
-  const collectionRef = useRef(null);
-  useAddFixed(collectionRef);
+  const { userData, isLoading } = useUser();
+  const mockData = [
+    {
+      data: {},
+    },
+    {
+      data: {},
+    },
+    {
+      data: {},
+    },
+    {
+      data: {},
+    },
+  ];
+
+  const layoutArr = useMemo(() => {
+    let destructuredArray = userData?.collections?.map((coll) =>
+      coll.collRecipes.map((recipes) => ({
+        data: { image: recipes.recipe?.image },
+      }))
+    );
+    return destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
+  }, [userData, mockData]);
 
   return (
-    <Collections>
-      {!currentUser ? (
-        <Loading />
-      ) : (
-        <>
-          <div className="saved-items">
-            <div className="collection-section" ref={collectionRef}>
-              <h1>Saved Items & Collections</h1>
-              <Button
-                onClick={() => setShowCollectionModal(true)}
-                style={{ width: "200px", height: "60px" }}
-                value={"NEW COLLECTION +"}
+    <>
+      <Collections>
+        {!isLoading && !imageLoaded ? (
+          <Loading className="loading" />
+        ) : (
+          <>
+            <div className="saved-items">
+              <div className="collection-section" ref={collectionRef}>
+                <h1>Saved Items & Collections</h1>
+                <Button
+                  onClick={() => setShowCollectionModal(true)}
+                  style={{ width: "210px", height: "60px" }}
+                  value={"NEW COLLECTION +"}
+                />
+              </div>
+              <SectionInfo
+                value={"Create collections to organize your saved items"}
+                icon={<HttpsOutlined />}
+                text={"Others can see your saved items and any collection you make public."}
               />
-            </div>
-            <SectionInfo
-              value={"Create collections to organize your saved items"}
-              icon={<HttpsOutlined />}
-              text={"Others can see your saved items and any collection you make public."}
-            />
-            <div>
-              <h3>{layoutData?.length} Collections</h3>
-              <div className="collection-control">
-                {layoutData?.map((collection, id) => (
-                  <FavoriteCollection
-                    key={id}
-                    collection={collection}
-                    layoutArr={layoutArr[id]}
-                    onClick={() => {
-                      collection.collName === "All saved items"
-                        ? navigate("/account/profile/saved-items")
-                        : navigate(`/account/profile/collection/${collection._id}`);
-                    }}
-                  />
-                ))}
-                <NewCollectionCard onClick={() => setShowCollectionModal(true)} />
+              <div>
+                <h3 className="h3-space">{userData?.collections.length} Collections</h3>
+                <div className="collection-control">
+                  {userData?.collections.map((collection, id) => (
+                    <FavoriteCollection
+                      key={collection._id}
+                      collection={collection}
+                      layoutArr={layoutArr[id]}
+                      onLoad={() => {
+                        setImageLoaded(true);
+                      }}
+                      onClick={() => {
+                        collection.collName === "All Saved Items"
+                          ? navigate("/account/profile/saved-items")
+                          : navigate(`/account/profile/collection/${collection._id}`);
+                      }}
+                    />
+                  ))}
+                  <NewCollectionCard onClick={() => setShowCollectionModal(true)} />
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </Collections>
       {showCollectionModal && <CollectionModal showModal={() => setShowCollectionModal(!showCollectionModal)} />}
-    </Collections>
+    </>
   );
 };
 
 const Collections = styled.div`
-  position: relative;
-  width: 100%;
-  /* padding: 8px 20px; */
-  min-height: 100vh;
-
   .saved-items {
-    h3 {
-      margin-bottom: 20px;
+    .h3-space {
+      margin: 22px 0;
     }
 
     .collection-control {
@@ -99,10 +118,10 @@ const Collections = styled.div`
 
     h1 {
       font-weight: bold;
-      font-size: 2.2rem;
+      font-size: 38px;
     }
   }
-
+  /* 
   .section-info {
     display: flex;
     align-items: flex-start;
@@ -126,14 +145,7 @@ const Collections = styled.div`
         margin-right: 10px;
       }
     }
-  }
-
-  .line-break {
-    width: 100%;
-    height: 1px;
-    margin: 40px 0;
-    background-color: rgba(0, 0, 0, 0.2);
-  }
+  } */
 `;
 
 export default SavedItems;

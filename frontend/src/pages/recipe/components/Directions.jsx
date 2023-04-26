@@ -1,11 +1,29 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import LineBreak from "../../../common/LineBreak";
+import { RecipeContext } from "../Recipe";
+import { ImSpoonKnife } from "react-icons/im";
+import { Link } from "react-scroll";
 
-const Directions = ({ recipe }) => {
+const Directions = () => {
+  const { recipe } = useContext(RecipeContext);
+
   return (
     <Steps>
       <h1>Directions</h1>
-      <div dangerouslySetInnerHTML={{ __html: recipe.instructions }}></div>
+      <div className="text-container" dangerouslySetInnerHTML={{ __html: recipe?.instructions }}></div>
+      <div className="buttons">
+        <Link className="btn-highlight" to="review-id" smooth={true} duration={500}>
+          I MADE IT
+          <span>
+            <ImSpoonKnife />
+          </span>
+        </Link>
+        <Link to="link-to-similar" smooth={true} duration={500}>
+          SIMILAR
+        </Link>
+      </div>
+      <LineBreak className="line-break" />
     </Steps>
   );
 };
@@ -16,22 +34,69 @@ const Steps = styled.div`
     font-size: 34px;
   }
 
-  div {
-    font-size: 16px;
-    line-height: 2.2;
-  }
+  .buttons {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 42px 0 22px 0;
 
-  ol {
-    list-style: disc;
-    padding: 0 20px;
-
-    li {
-      font-size: 16px;
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--main-color);
+      outline: 4px solid var(--red-color);
+      font-weight: 800;
+      letter-spacing: 1px;
+      border: none;
+      width: 48%;
+      height: 46px;
+      cursor: pointer;
+
+      span {
+        background-color: #fff;
+        border-radius: 50%;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 8px;
+
+        svg {
+          color: var(--red-color);
+          font-size: 16px;
+        }
+      }
+
+      &:hover {
+        background-color: var(--red-color);
+        color: #fff;
+      }
     }
 
-    li::marker {
-      color: var(--gold-color);
+    .btn-highlight {
+      background-color: var(--red-color);
+      color: #fff;
+    }
+  }
+
+  .text-container {
+    font-size: 16px;
+    line-height: 2.2;
+
+    ol {
+      list-style: disc;
+      padding: 0 20px;
+
+      li {
+        font-size: 16px;
+        color: var(--main-color);
+      }
+
+      li::marker {
+        color: var(--gold-color);
+      }
     }
   }
 `;

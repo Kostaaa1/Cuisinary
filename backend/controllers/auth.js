@@ -1,26 +1,119 @@
+const axios = require("axios");
+const { Recipe } = require("../models/Recipe");
 const User = require("../models/User");
 
+const addRecipeToSavedCollection = async (email, data) => {
+  try {
+    console.log(data, "this is data");
+    const filter = {
+      email,
+      "collections.collName": "All Saved Items",
+    };
+    const update = {
+      $push: {
+        "collections.$.collRecipes": {
+          $each: [{ recipeTitle: data.recipeTitle, recipe: data.recipe }],
+          $position: 0,
+        },
+      },
+    };
+    const options = { unique: true, new: true, runValidators: true };
+    const user = await User.findOneAndUpdate(filter, update, options);
+    return user.collections[0];
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+};
+
 module.exports = {
-  addUser: async (req, res) => {
+  addToFavorite: async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.body.email });
+      const { email } = req.params;
+      const existingRecipe = await Recipe.findOne({ id: req.body.id });
+      let newRecipeData;
 
-      if (!user) {
-        const newUser = new User(req.body.user);
-        await newUser.save();
+      if (!existingRecipe) {
+        // const {
+        //   data: { title, id, imageType, image, summary },
+        // } = await axios.get(
+        //   `https://api.spoonacular.com/recipes/${req.body.id}/information?apiKey=${process.env.SPOONACULAR_API_KEY}&includeNutrition=true`
+        // );
+        const recipe = await axios.get(
+          `https://api.spoonacular.com/recipes/${req.body.id}/information?apiKey=${process.env.SPOONACULAR_API_KEY}&includeNutrition=true`
+        );
+        const { title, id, imageType, image, summary } = recipe.data;
 
-        res.status(200).json(newUser);
+        newRecipeData = {
+          recipeTitle: title,
+          recipe: {
+            id: id,
+            imageType: imageType,
+            image: image,
+            summary: summary,
+          },
+        };
+
+        Recipe.create({
+          id,
+          recipeTitle: title,
+          data: recipe.data,
+        });
+      } else {
+        newRecipeData = {
+          recipeTitle: existingRecipe.data.title,
+          recipe: {
+            id: existingRecipe.data.id,
+            imageType: existingRecipe.data.imageType,
+            image: existingRecipe.data.image,
+            summary: existingRecipe.data.summary,
+          },
+        };
       }
+
+      const collection = await addRecipeToSavedCollection(email, newRecipeData);
+      res.status(200).json(collection);
     } catch (error) {
       res.status(400).send(error.message);
     }
   },
-  getUser: async (req, res) => {
+  addUser: async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.params.email });
+      const { name, email, nickname } = req.body.user;
+      let user = await User.findOne({ email: req.params.email });
+
+      if (!user) {
+        const newUser = new User({
+          name: name,
+          email: email,
+          nickname: nickname,
+          firstName: "",
+          lastName: "",
+          birthDate: { month: "", day: "", year: "" },
+          zipCode: "",
+          tagline: "",
+          picture: {
+            fileName: "",
+            fileType: "",
+            fileSize: "",
+            image: "",
+            cloudinaryId: "",
+          },
+          collections: [
+            {
+              collName: "All Saved Items",
+              collDesc: "",
+              private: false,
+              collRecipes: [],
+            },
+          ],
+        });
+        await newUser.save();
+        res.status(201).json(newUser);
+        return;
+      }
       res.status(200).json(user);
     } catch (error) {
-      res.status(400).send(error.message);
+      res.status(404).send(error.message);
     }
   },
   getUserId: async (req, res) => {
@@ -31,46 +124,8 @@ module.exports = {
       res.status(400).send(error.message);
     }
   },
-  validateUser: async (req, res) => {
-    try {
-      const user = await User.findOne({ email: req.params.email });
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(400).send(error.message);
-    }
-  },
-  addToFavorite: async (req, res) => {
-    try {
-      const user = await User.findOneAndUpdate(
-        {
-          email: req.params.email,
-          "collections.collName": "All Saved Items",
-        },
-        {
-          $push: {
-            "collections.$.collRecipes": {
-              $each: [
-                {
-                  recipeTitle: req.body.recipeTitle,
-                  recipe: req.body.recipe,
-                  review: req.body.review,
-                  reviewIndex: req.body.reviewIndex,
-                },
-              ],
-              $position: 0,
-            },
-          },
-        },
-        { unique: true, new: true, runValidators: true }
-      );
 
-      res.status(200).json(user);
-    } catch (error) {
-      res.status(400).send(error.message);
-    }
-  },
   deleteFavorite: async (req, res) => {
-    console.log(req.body);
     try {
       let filter = {
         email: req.params.email,
@@ -83,15 +138,19 @@ module.exports = {
         };
       }
 
-      const user = await User.findOneAndUpdate(filter, {
-        $pull: {
-          "collections.$.collRecipes": {
-            recipeTitle: { $in: req.body.titles },
+      const user = await User.findOneAndUpdate(
+        filter,
+        {
+          $pull: {
+            "collections.$.collRecipes": {
+              recipeTitle: { $in: req.body.titles },
+            },
           },
         },
-      });
+        { new: true }
+      );
 
-      res.status(200).json(user);
+      res.status(200).json(user.collections);
     } catch (error) {
       res.status(400).send(error.message);
       console.log(error);

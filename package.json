@@ -1,27 +1,27 @@
 {
-    "name": "cuisine-react-final",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "server": "cd backend && npm run dev",
-        "client": "cd frontend && npm run dev",
-        "start": "concurrently \"npm run server\" \"npm run client\""
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Kostaaa1/Cuisine-mern-demo.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/Kostaaa1/Cuisine-mern-demo/issues"
-    },
-    "homepage": "https://github.com/Kostaaa1/Cuisine-mern-demo#readme",
-    "devDependencies": {
-        "concurrently": "^7.6.0",
-        "nodemon": "^2.0.20"
-    }
+  "name": "cuisine-react-final",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "start": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kostaaa1/Cuisine-mern-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kostaaa1/Cuisine-mern-demo/issues"
+  },
+  "homepage": "https://github.com/Kostaaa1/Cuisine-mern-demo#readme",
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "nodemon": "^2.0.20"
+  }
 }

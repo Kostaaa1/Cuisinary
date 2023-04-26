@@ -1,23 +1,19 @@
 import Home from "./home/Home";
-import Cuisine from "./Cuisine";
-import Recipe from "./Recipe";
+import Recipe from "./recipe/Recipe";
 import AddRecipe from "./AddRecipe";
 import Searched from "./searched/Searched";
 import MyProfile from "./profile/MyProfile";
 import Category from "./category/Category";
 import PasswordForm from "./profile/components/change-password/PasswordForm";
 import Success from "./profile/components/change-password/Success";
-// import Category from "./common/Category";
 import { useEffect, useState } from "react";
-import { Route, Routes, useLocation, useParams, Navigate } from "react-router-dom";
-import styled from "styled-components";
-import { motion } from "framer-motion";
+import { Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoutes from "../setup/auth/ProtectedRoutes";
-import { useAuth } from "../setup/auth/useAuth";
-// import { profileLists, StaticList } from "./constants-pages";
 import { profileLists, StaticList } from "../utils/constants/constants-pages";
 import UserInfo from "./profile/components/user/UserInfo";
 import CollectionPage from "./profile/components/user/CollectionPage";
+import Header from "./navbar/Header";
+import PersonalInfo from "./profile/components/PersonalInfo";
 
 const Pages = () => {
   const location = useLocation();
@@ -34,19 +30,23 @@ const Pages = () => {
     }
   }, [location.pathname]);
 
+  const shouldRenderHeader = !(
+    location.pathname === "/account/forgot-password-reset" || location.pathname === "/account/forgot-password-success"
+  );
+
   return (
     <>
+      {shouldRenderHeader && <Header />}
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
-        <Route path="/cuisine/:type" element={<Cuisine />} />
         <Route path="/searched/:search" element={<Searched />} />
         <Route path="/category/:recipe" element={<Category />} />
         <Route path="/recipe/:id" element={<Recipe />} />
-        <Route path="/account/addRecipe/" element={<AddRecipe />} />
-        <Route path="/account/forgot-password-reset" element={<PasswordForm />} />
-        <Route path="/account/forgot-password-success" element={<Success />} />
 
         <Route element={<ProtectedRoutes />}>
+          <Route path="/account/addRecipe/" element={<AddRecipe />} />
+          <Route path="/account/forgot-password-reset" element={<PasswordForm />} showHeader={false} />
+          <Route path="/account/forgot-password-success" element={<Success />} showHeader={false} />
           <Route
             path="/account/profile/"
             element={<MyProfile listContent={lists} staticList={StaticList} setLists={setLists} />}

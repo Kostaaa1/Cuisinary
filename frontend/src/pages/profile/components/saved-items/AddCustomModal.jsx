@@ -1,23 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import Button from "../../../../common/Button";
-import { Close, Lock, Add } from "@material-ui/icons";
+import { Close, Lock, Add } from "@mui/icons-material";
 import { useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../../../../setup/auth/useAuth";
-import { useLayoutData } from "../../hooks/useLayoutData";
+import { useAuth, useUser } from "../../../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
+import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 
 const AddCustomModal = ({ showModal, favorite }) => {
   const [collName, setCollName] = useState("");
   const [checkedColls, setCheckedColls] = useState([]);
-  // const { user } = useAuth();
-  const { layoutData, setLayoutData } = useLayoutData();
   const [showInput, setShowInput] = useState(false);
   const [collectionNames, setCollectionNames] = useState([]);
   const { user } = useAuth0();
+  const { userData } = useUser();
 
   const handle = (e) => {
     if (e.key !== "Escape") return;
@@ -38,16 +36,12 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
       setCollectionNames([{ collName: collName }, ...collectionNames]);
       setShowInput(false);
-      layoutData.push({ collName: collName, collDesc: "", private: false, collRecipes: [] });
+      collections.push({ collName: collName, collDesc: "", private: false, collRecipes: [] });
       setCollName("");
     } catch (error) {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    setCollectionNames(layoutData);
-  }, [layoutData]);
 
   const handleCheckbox = (e, collName) => {
     if (e.currentTarget.checked) {
@@ -59,24 +53,18 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
   const submitForm = async (e) => {
     e.preventDefault();
+
     try {
-      const collectionWithoutCurrentRecipe = layoutData
+      const collectionWithoutCurrentRecipe = userData?.collections
         .filter(({ collName }) => checkedColls.includes(collName))
         .filter(({ collRecipes }) => !collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle))
         .map(({ collName }) => collName);
 
-      console.log(collectionWithoutCurrentRecipe);
-
-      await fetch(`/api/user/${user.email}/addToCustom`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          collections: collectionWithoutCurrentRecipe,
-          recipe: favorite,
-        }),
+      axios.post(`/api/user/${user.email}/addToCustom`, {
+        collections: collectionWithoutCurrentRecipe,
+        recipe: favorite,
       });
+
       showModal();
     } catch (error) {
       console.log(error);
@@ -135,8 +123,8 @@ const AddCustomModal = ({ showModal, favorite }) => {
                     <h5>NEW COLLECTION</h5>
                   </div>
                 )}
-                {collectionNames
-                  ?.filter((coll) => coll.collName !== "All saved items")
+                {userData?.collections
+                  ?.filter((coll) => coll.collName !== "All Saved Items")
                   .map((coll, id) => (
                     <div key={id} className="input-wrap">
                       <label>
@@ -147,7 +135,6 @@ const AddCustomModal = ({ showModal, favorite }) => {
                   ))}
                 {!showInput && (
                   <div className="buttons">
-                    {/* {checkedColls.length !== 0 ? <span>Uncheck All</span> : <div></div>} */}
                     <div></div>
                     <input className="submit" type="submit" value={"Done"} />
                   </div>
@@ -197,6 +184,10 @@ const Section = styled.div`
         align-items: center;
         height: 80px;
         outline: 1px solid rgba(0, 0, 0, 0.2);
+
+        h2 {
+          font-size: 18px;
+        }
       }
 
       .main-form-div {
@@ -215,6 +206,10 @@ const Section = styled.div`
             align-items: center;
             width: max-content;
             margin-bottom: 5px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
 
             h5 {
               cursor: pointer;
@@ -254,6 +249,10 @@ const Section = styled.div`
         form {
           overflow: auto;
           height: 250px;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
 
           .add-collection {
             display: flex;
@@ -264,6 +263,7 @@ const Section = styled.div`
 
             svg {
               font-size: 1.4rem;
+              color: var(--grey-color);
               margin-right: 4px;
             }
 
@@ -287,6 +287,14 @@ const Section = styled.div`
               align-items: center;
               justify-content: center;
               cursor: pointer;
+              font-size: 16px;
+            }
+
+            input[type="text"] {
+              /* &:active, */
+              &:focus {
+                outline: 1px solid var(--input-border-color);
+              }
             }
 
             input:not(.add) {
@@ -323,13 +331,13 @@ const Section = styled.div`
             display: block;
             border: none;
             font-size: 12px;
-            border-radius: 5px;
+            border-radius: 3px;
             letter-spacing: 1.1px;
-            background-color: #ce4620;
+            background-color: var(--red-color);
 
             &:active {
-              outline: 2px solid #003e9b;
-              border-radius: 5px;
+              outline: 2px solid var(--blue-color);
+              border-radius: 3px;
               outline-offset: 1px;
               width: fit-content;
             }
@@ -356,6 +364,7 @@ const Section = styled.div`
       }
 
       span {
+        font-size: 16px;
         font-weight: 600;
       }
     }
@@ -367,7 +376,7 @@ const Section = styled.div`
       justify-content: space-between;
       height: 50px;
       color: white;
-      background-color: #ce4620;
+      background-color: var(--red-color);
 
       .header-flex {
         display: flex;
@@ -376,6 +385,7 @@ const Section = styled.div`
 
         h3 {
           margin: 0;
+          color: white;
           font-weight: 600;
         }
       }

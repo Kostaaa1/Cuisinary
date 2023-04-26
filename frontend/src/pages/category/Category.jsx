@@ -8,22 +8,13 @@ import { useState } from "react";
 import axios from "axios";
 import SavedModal from "../../common/SavedModal";
 import useSmoothScroll from "../../utils/useSmoothScroll";
-import AuthContext from "../../setup/app-context-menager/AuthContext";
 
 const Category = () => {
   const params = useParams();
   const [favorite, setFavorite] = useState(false);
-  const { userData } = useContext(AuthContext);
   useSmoothScroll();
 
   const fetchCategorized = async () => {
-    // const postRes = await axios.get(
-    //   `https://api.spoonacular.com/recipes/complexSearch?apiKey=f4eb30e350ef4261a02e333108f3ad33&cuisine=japanese&number=30`
-    // );
-    // const post = await axios.post(`/api/category/${params.recipe}/createCategory`, {
-    //   name: params.recipe,
-    //   data: postRes.data,
-    // });
     const res = await axios.get(`/api/category/${params.recipe}`);
     const data = await res.data;
 
@@ -31,24 +22,41 @@ const Category = () => {
     return category;
   };
 
-  const { isLoading, data: categoryRecipes, isSuccess } = useQuery(["category", params.recipe], fetchCategorized);
+  const { data: categoryRecipes } = useQuery(["category", params.recipe], fetchCategorized);
+
+  const CardDescriptionProps = (favorite, params, setFavorite, key, recipeData) => {
+    return (
+      <CardDescription
+        favorite={favorite}
+        params={params}
+        setFavorite={setFavorite}
+        key={key}
+        recipeData={recipeData}
+      />
+    );
+  };
 
   return (
     <Container>
-      <h2>Our {params.recipe} recipes:</h2>
-      <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-        {categoryRecipes?.map((recipe, id) => (
-          <CardDescription
-            favorite={favorite}
-            params={params.recipe}
-            setFavorite={setFavorite}
-            key={id}
-            currentRecipe={recipe}
-          />
-        ))}
-
-        {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
-      </Grid>
+      <h1>Explore {params.recipe.slice(0, 1).toUpperCase() + params.recipe.slice(1, params.recipe.length)} Recipes</h1>
+      {categoryRecipes?.length > 5 ? (
+        <>
+          <GridLayout>
+            {categoryRecipes
+              ?.slice(0, 3)
+              ?.map((recipe, id) => CardDescriptionProps(favorite, params.recipe, setFavorite, id, recipe))}
+          </GridLayout>
+          <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+            {categoryRecipes
+              ?.slice(3, categoryRecipes.length)
+              ?.map((recipe, id) => CardDescriptionProps(favorite, params.recipe, setFavorite, id, recipe))}
+          </Grid>
+        </>
+      ) : (
+        <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+          {categoryRecipes?.map((recipe, id) => CardDescriptionProps(favorite, params.recipe, setFavorite, id, recipe))}
+        </Grid>
+      )}
       {favorite && <SavedModal setFavorite={setFavorite} />}
     </Container>
   );
@@ -59,7 +67,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1250px;
+  max-width: 1240px;
   margin: 200px auto;
   height: 100%;
   background-color: white;
@@ -68,9 +76,24 @@ const Container = styled.div`
     padding: 0 25px;
   }
 
-  h2 {
+  h1 {
+    text-align: center;
     color: var(--main-color);
-    margin: 40px 0;
+    font-size: 32px;
+    margin-bottom: 32px;
+    letter-spacing: -0.9px !important;
+    font-weight: 800;
+  }
+`;
+
+const GridLayout = styled(motion.div)`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  grid-gap: 4.6rem;
+  padding-bottom: 60px;
+
+  img {
+    height: 240px;
   }
 `;
 

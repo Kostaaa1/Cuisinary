@@ -3,44 +3,57 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import ButtonHover from "../../../../common/ButtonHover";
-import { ArrowBack, ArrowForwardIos } from "@material-ui/icons";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
 import NavigationWrap from "../../../../common/NavigationWrap";
 import { useLayoutData } from "../../hooks/useLayoutData";
 import Loading from "../../../../common/Loading";
+import useSmoothScroll from "../../../../utils/useSmoothScroll";
+import { useUser } from "../../../../setup/auth/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import LineBreak from "../../../../common/LineBreak";
 
 const CollectionPage = () => {
   const navigate = useNavigate();
-  const { layoutData } = useLayoutData();
+  const { collections } = useLayoutData();
   const params = useParams();
   const [collectionData, setCollectionData] = useState([]);
-  const { userData } = useContext(AuthContext);
+  const { userData } = useUser();
+  useSmoothScroll();
+
+  const fetchUserData = async () => {
+    const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
+    const data = await res.json();
+
+    return data;
+  };
+
+  const { data: inspectUserData = {}, isFetching } = useQuery(["user-info"], fetchUserData, {
+    enabled: !!userData,
+    refetchOnMount: "always",
+  });
+
   const navigationLinks = [
     { url: "/", content: "Home" },
     { url: "/account/profile/collection", content: "Saved Items & Collections" },
-    { url: `/profile/${userData?._id}`, content: `${userData?.nickname}` },
+    { url: `/profile/${inspectUserData?._id}`, content: `${inspectUserData?.nickname}` },
   ];
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  useEffect(() => {
-    if (params.collectionId === "all-saved-items" && layoutData) {
-      setCollectionData(layoutData?.[0]);
+    if (params.collectionId === "all-saved-items" && !!inspectUserData) {
+      setCollectionData(inspectUserData.collections?.[0]);
     } else {
-      setCollectionData(layoutData?.filter((x) => x._id === params.collectionId)[0]);
+      setCollectionData(inspectUserData.collections?.filter((col) => col._id === params.collectionId)[0]);
     }
-  }, [layoutData]);
+  }, [inspectUserData]);
 
   return (
     <Page>
-      {collectionData && userData ? (
+      {collectionData && inspectUserData ? (
         <>
           <ButtonHover
             value={"BACK TO PROFILE"}
             icon={<ArrowBack />}
-            onClick={() => navigate(`/profile/${userData?._id}`)}
+            onClick={() => navigate(`/profile/${inspectUserData?._id}`)}
           />
           <NavigationWrap links={navigationLinks} style={{ margin: "40px 0 10px 0" }} />
           <div className="flex-wrap">
@@ -49,20 +62,24 @@ const CollectionPage = () => {
               {" "}
               {collectionData.collDesc
                 ? collectionData.collDesc
-                : `All ${userData?.nickname}'s favorites in one place`}{" "}
+                : `All ${inspectUserData?.nickname}'s favorites in one place`}{" "}
             </p>
-            <CustomLink to={`/profile/${userData?._id}`}>
-              Collection by <span> {userData?.nickname} </span>
+            <CustomLink to={`/profile/${inspectUserData?._id}`}>
+              Collection by <span> {inspectUserData?.nickname} </span>
             </CustomLink>
           </div>
           <p>{collectionData.collRecipes?.length} items</p>
           <div className="collection-card">
-            {collectionData.collRecipes?.map((favorite, id) => (
-              <Card key={id}>
-                <img src={favorite?.recipe.image} alt="" />
-                <div className="wrap">
-                  <h4>{favorite?.recipeTitle}</h4>
-                </div>
+            <LineBreak className="line-break" />
+            {collectionData.collRecipes?.map((data, id) => (
+              <Card key={id} className="card">
+                <Link to={"/recipe/" + data.recipe.id}>
+                  <img src={data?.recipe.image} alt="" />
+                  <div className="card-desc">
+                    {/* <h5> {params?.toUpperCase()} </h5> */}
+                    <h3>{data?.recipeTitle}</h3>
+                  </div>
+                </Link>
               </Card>
             ))}
           </div>
@@ -106,9 +123,9 @@ const Page = styled.div`
   margin: 200px auto;
   height: 100%;
   max-width: 100%;
-  width: 1250px;
+  width: 1240px;
 
-  @media (max-width: 1250px) {
+  @media (max-width: 1240px) {
     padding: 0 22px;
   }
 
@@ -151,8 +168,11 @@ const Page = styled.div`
     flex-wrap: wrap;
     gap: 35px;
     width: 75%;
-    margin-top: 20px;
     row-gap: 40px;
+
+    .line-break {
+      margin: 22px 0;
+    }
 
     @media (max-width: 910px) {
       width: 100%;

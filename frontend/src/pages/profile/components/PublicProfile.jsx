@@ -6,22 +6,22 @@ import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import SectionInfo from "../../../common/SectionInfo";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import { useAuth } from "../../../setup/auth/useAuth";
-import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from "@material-ui/icons";
+import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from "@mui/icons-material";
 import { useRef } from "react";
 import useAddFixed from "../hooks/useAddFixed";
+import { useAuth, useUser } from "../../../setup/auth/useAuth";
 
 const PublicInfo = () => {
   const [clicked, setClicked] = useState(true);
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState("");
-  const { currentUser } = useAuth();
   const { user } = useAuth0();
   const [buttonSave, setButtonSave] = useState(false);
   const [tagline, setTagline] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [showLoading, setShowLoading] = useState(false);
   const publicRef = useRef(null);
+  const {  userData } = useUser();
   useAddFixed(publicRef);
 
   useEffect(() => {
@@ -49,22 +49,6 @@ const PublicInfo = () => {
     }
   };
 
-  const updateUser = async (form) => {
-    try {
-      await fetch(`/api/user/${user.email}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: form,
-        }),
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const submitForm = async (e) => {
     try {
       e.preventDefault();
@@ -73,14 +57,10 @@ const PublicInfo = () => {
       const form = { displayName: displayName, tagline: tagline };
       const formData = new FormData();
       if (form.displayName || form.tagline) {
-        updateUser({
-          nickname: form.displayName,
-          tagline: form.tagline,
-        });
+        axios.post(`/api/user/${user.email}`, { user: { nickname: form.displayName, tagline: form.tagline } });
       }
       if (image) {
         formData.append("file", image);
-
         await axios.post(`/api/user/${user?.email}/addImage`, formData);
       }
 
@@ -92,98 +72,95 @@ const PublicInfo = () => {
 
   return (
     <Form onSubmit={submitForm}>
-      {!currentUser ? (
-        <Loading />
-      ) : (
-        <>
-          <div className="public-section" ref={publicRef}>
-            <h1>Public Profile Settings</h1>
+      <>
+        <div className="public-section" ref={publicRef}>
+          <h1>Public Profile Settings</h1>
 
-            {showLoading ? (
-              <button className={"btn-save"}>
-                <Loading styles={{ transform: "scale(0.8)" }} />
-              </button>
-            ) : (
-              <>
-                {buttonSave ? (
-                  <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
-                ) : (
-                  <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
-                )}
-              </>
-            )}
+          {showLoading ? (
+            <button className={"btn-save"}>
+              <Loading className="scaled-loading" />
+            </button>
+          ) : (
+            <>
+              {buttonSave ? (
+                <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
+              ) : (
+                <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
+              )}
+            </>
+          )}
+        </div>
+        <SectionInfo
+          value={
+            "The information on this page will be displayed on your public profile, which is visible to other users."
+          }
+          icon={<SupervisorAccount />}
+          text={"The information on this page will be displayed publicly and will be visible to others"}
+        />
+        <DynamicForm>
+          <div className="head-info" onClick={() => setClicked(!clicked)}>
+            <h3>About Me</h3>
+            <KeyboardArrowDown className={clicked ? "click" : ""} />
           </div>
-          <SectionInfo
-            value={
-              "The information on this page will be displayed on your public profile, which is visible to other users."
-            }
-            icon={<SupervisorAccount />}
-            text={"The information on this page will be displayed publicly and will be visible to others"}
-          />
-          <DynamicForm>
-            <div className="head-info" onClick={() => setClicked(!clicked)}>
-              <h3>About Me</h3>
-              <KeyboardArrowDown className={clicked ? "click" : ""} />
-            </div>
-            {clicked && (
-              <>
-                <div className="input-container">
-                  <div className="form-control">
-                    <div className="input-wrapper">
-                      <label>Display Name</label>
-                      <input
-                        type="text"
-                        placeholder={currentUser?.nickname}
-                        onChange={(e) => {
-                          setDisplayName(e.target.value), setButtonSave(true);
-                        }}
-                        value={displayName}
-                      />
-                    </div>
-                    <div className="input-wrapper">
-                      <label>Tagline</label>
-                      <textarea
-                        cols="30"
-                        placeholder="Describe yourself in a nutshell"
-                        className="tagline"
-                        value={tagline}
-                        maxLength={200}
-                        onChange={(e) => {
-                          setTagline(e.target.value), setButtonSave(true);
-                        }}
-                      ></textarea>
-                      <span className="length">{tagline.length}/200</span>
-                    </div>
-                  </div>
-                  <div className="form-file">
-                    <label htmlFor="input_file">
-                      <span>Add an image</span>
-                      <div>
-                        {preview ? (
-                          <img src={preview} alt="" />
-                        ) : currentUser?.picture.image ? (
-                          <img src={currentUser?.picture.image} />
-                        ) : (
-                          <AddAPhoto className="addPhoto" />
-                        )}
-                        <h3>Profile photo</h3>
-                      </div>
-                    </label>
-
+          {clicked && (
+            <>
+              <div className="input-container">
+                <div className="form-control">
+                  <div className="input-wrapper">
+                    <label>Display Name</label>
                     <input
-                      className="file"
-                      id="input_file"
-                      type="file"
-                      accept="image/png, image/jpeg"
-                      onChange={handleImage}
+                      type="text"
+                      placeholder={userData?.nickname}
+                      onChange={(e) => {
+                        setDisplayName(e.target.value), setButtonSave(true);
+                      }}
+                      value={displayName}
                     />
                   </div>
+                  <div className="input-wrapper">
+                    <label>Tagline</label>
+                    <textarea
+                      cols="30"
+                      placeholder="Describe yourself in a nutshell"
+                      className="tagline"
+                      value={tagline}
+                      maxLength={200}
+                      onChange={(e) => {
+                        setTagline(e.target.value), setButtonSave(true);
+                      }}
+                    ></textarea>
+                    <span className="length">{tagline.length}/200</span>
+                  </div>
                 </div>
-              </>
-            )}
-          </DynamicForm>
-        </>
-      )}
+                <div className="form-file">
+                  <label htmlFor="input_file">
+                    <span>Add an image</span>
+                    <div>
+                      {preview ? (
+                        <img src={preview} alt="" />
+                      ) : userData?.picture.image ? (
+                        <img src={userData?.picture.image} />
+                      ) : (
+                        <AddAPhoto className="addPhoto" />
+                      )}
+                      <h3>Profile photo</h3>
+                    </div>
+                  </label>
+
+                  <input
+                    className="file"
+                    id="input_file"
+                    type="file"
+                    accept="image/png, image/jpeg"
+                    onChange={handleImage}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </DynamicForm>
+      </>
+      {/* )} */}
     </Form>
   );
 };
@@ -191,11 +168,13 @@ const PublicInfo = () => {
 const DynamicForm = styled.div`
   width: 100%;
   height: 100%;
+  margin: 22px 0;
   font-size: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--input-border-color);
 
   h3 {
     margin: 20px 0;
+    font-size: 24px;
   }
 
   .head-info {
@@ -216,7 +195,7 @@ const DynamicForm = styled.div`
 
   .input-container {
     padding: 1rem 2rem;
-    border-top: 1px solid #b2b2b2;
+    border-top: 1px solid var(--input-border-color);
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -227,6 +206,10 @@ const DynamicForm = styled.div`
         display: none;
       }
 
+      h3 {
+        font-size: 18px;
+      }
+
       div {
         display: flex;
         align-items: center;
@@ -234,26 +217,21 @@ const DynamicForm = styled.div`
         flex-direction: column;
         height: 270px;
         margin-top: 10px;
-
         cursor: pointer;
 
         &:focus,
         &:active {
-          border: 3px solid #00367c;
-        }
-
-        h3 {
-          letter-spacing: 0;
+          border: 3px solid var(--blue-color);
         }
 
         svg {
           /* display: block; */
-          border: 2px solid #ce4620;
+          border: 2px solid var(--red-color);
           border-radius: 50%;
           width: 120px;
           height: 120px;
           padding: 30px;
-          color: #ce4620;
+          color: var(--red-color);
           margin-bottom: 10px;
           overflow: visible;
         }
@@ -264,8 +242,7 @@ const DynamicForm = styled.div`
           height: 120px;
           width: 120px;
           margin-bottom: 5px;
-          border: 2px solid #ce4620;
-          filter: saturate(100%);
+          border: 2px solid var(--red-color);
         }
       }
     }
@@ -286,7 +263,7 @@ const DynamicForm = styled.div`
         font-size: 16px;
 
         .tagline {
-          padding: 15px 15px;
+          padding: 15px;
           height: 150px;
         }
 
@@ -324,9 +301,6 @@ const DynamicForm = styled.div`
 `;
 
 const Form = styled.form`
-  width: 100%;
-  position: relative;
-
   .public-section {
     display: flex;
     justify-content: space-between;
@@ -335,35 +309,40 @@ const Form = styled.form`
 
     h1 {
       font-weight: bold;
-      font-size: 2.2rem;
+      letter-spacing: -0.9px;
+      font-size: 38px;
     }
 
     .btn-save {
+      position: relative;
       width: 200px;
       height: 60px;
-      /* padding: 20px 35px; */
       font-size: 12px;
       font-weight: bold;
       color: white;
       background-color: #d9d9d9;
       display: block;
       border: none;
-      border-radius: 5px;
+      border-radius: 3px;
       letter-spacing: 1.2px;
+
+      .scaled-loading {
+        transform: scale(0.8) !important;
+      }
     }
 
     .selected {
-      background-color: #ce4620;
+      background-color: var(--red-color);
     }
 
     .highlight {
-      background-color: #ce4620;
+      background-color: var(--red-color);
       cursor: pointer;
 
       &:active,
       &:focus {
-        outline: 2px solid #003e9b;
-        border-radius: 5px;
+        outline: 2px solid var(--blue-color);
+        border-radius: 3px;
         outline-offset: 1px;
       }
     }

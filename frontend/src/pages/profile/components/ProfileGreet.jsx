@@ -1,24 +1,29 @@
-import { Person } from "@material-ui/icons";
 import React, { useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import ButtonBorder from "../../../common/ButtonBorder";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
+import PersonAvatar from "../../../common/PersonAvatar";
+import { useUser } from "../../../setup/auth/useAuth";
 
-const ProfileGreet = () => {
-  const { userData } = useContext(AuthContext);
+const ProfileGreet = ({ onLoad }) => {
+  const { userData } = useUser();
   const navigate = useNavigate();
+
   return (
     <Greet>
-      {!userData?.picture.image ? (
-        <Person />
+      {!userData?.picture?.image ? (
+        <PersonAvatar onLoad={onLoad} />
       ) : (
-        <img src={`${userData?.picture.image}`} alt="profile-picture" className="profile-picture" />
+        <img src={`${userData?.picture?.image}`} onLoad={onLoad} alt="profile-picture" className="profile-picture" />
       )}
-
       <div>
         <h3>Hi, {userData?.firstName ? `${userData?.firstName} ${userData?.lastName}` : userData?.email}</h3>
-        <ButtonBorder onClick={() => navigate(`/profile/${userData._id}`)} value={"View Public Profile"} />
+        <ButtonBorder
+          style={{ width: "140px", height: "36px" }}
+          onClick={() => navigate(`/profile/${userData._id}`)}
+          value={"View Public Profile"}
+        />
       </div>
     </Greet>
   );
@@ -27,28 +32,25 @@ const ProfileGreet = () => {
 const Greet = styled.div`
   display: flex;
   align-items: flex-start;
-  margin-bottom: 25px;
-  padding: 0 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
 
   h3 {
+    font-size: 18px;
     word-break: break-all;
   }
 
   img {
     margin-right: 12px;
-    width: 70px;
     height: 70px;
+    width: 70px;
     pointer-events: none;
-    filter: saturate(100%);
   }
 
   svg {
-    color: white;
-    background-color: #ce4620;
-    margin-right: 12px;
     width: 70px;
     height: 70px;
-    pointer-events: none;
   }
 `;
 

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Search from "./components/Search";
 import Category from "./components/Navbar";
-import { ArrowDropDown, AccountCircle } from "@material-ui/icons";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
 import { useState, memo, useEffect, useContext } from "react";
 import { useAuth } from "../../setup/auth/useAuth";
@@ -13,11 +12,12 @@ import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import RecipeNames from "../../setup/app-context-menager/GlobalContext";
 import image from "../../assets/images/image2.jpg";
+import Dropdown from "./components/Dropdown";
 
 const Horizontal = () => {
   const { showSearch, setShowSearch } = useContext(RecipeNames);
   const [showDropdown, setShowDropdown] = useState();
-  const { user, loginWithPopup, isAuthenticated, logout, isLoading } = useAuth0();
+  const { loginWithPopup, logout } = useAuth0();
   const { authenticated } = useAuth();
 
   const showSearched = () => {
@@ -45,41 +45,7 @@ const Horizontal = () => {
             </li>
             <div className="divider-line"></div>
             {authenticated ? (
-              <>
-                <li
-                  className="dropdown list"
-                  onMouseEnter={() => setShowDropdown(true)}
-                  onMouseLeave={() => setShowDropdown(false)}
-                >
-                  <div className="user-wrap">
-                    <img src={image} alt="" className="user" />
-                    <span>My account</span>
-                    <ArrowDropDown className="arrow" />
-                  </div>
-                  {showDropdown && (
-                    <Links>
-                      <ul className="user-links">
-                        <NavLink to={"/account/profile"}>
-                          <li onClick={() => setShowDropdown(false)}>My Profile</li>
-                        </NavLink>
-                        <NavLink to={"/account/profile/collection"}>
-                          <li onClick={() => setShowDropdown(false)}>Saved Items & Collections</li>
-                        </NavLink>
-                        <NavLink to={"/account/addRecipe"}>
-                          <li onClick={() => setShowDropdown(false)}>Add a Recipe</li>
-                        </NavLink>
-
-                        <div className="line-break"></div>
-
-                        <NavLink>
-                          <li onClick={() => setShowDropdown(false)}>Help</li>{" "}
-                        </NavLink>
-                        <li onClick={logout}>Log Out</li>
-                      </ul>
-                    </Links>
-                  )}
-                </li>
-              </>
+              <Dropdown />
             ) : (
               <>
                 <li className="underline list" onClick={loginWithPopup}>
@@ -105,13 +71,13 @@ const HeaderControl = styled.div`
 const ScrolledHeader = styled(motion.div)`
   display: flex;
   flex-direction: column;
-  max-width: 1250px;
+  max-width: 1240px;
   margin: 0 auto;
 
   .wrapper {
     display: flex;
     color: var(--main-color);
-    font-size: 14px;
+    font-size: 0.9rem;
     font-weight: 500;
     align-items: center;
 
@@ -123,12 +89,12 @@ const ScrolledHeader = styled(motion.div)`
   }
 
   ul li {
+    position: relative;
     list-style: none;
     display: flex;
     align-items: center;
     cursor: pointer;
     height: 50px;
-    letter-spacing: -0.5px;
 
     .user {
       margin-right: 7px;
@@ -141,7 +107,7 @@ const ScrolledHeader = styled(motion.div)`
 
     .search {
       color: var(--grey-color);
-      transform: scale(1.2);
+      transform: scale(1.3);
     }
   }
 
@@ -151,9 +117,9 @@ const ScrolledHeader = styled(motion.div)`
 
   .divider-line {
     height: 24px;
-    margin: 10px;
-    width: 0;
-    border-right: 1px solid #d9d9d9;
+    margin: 12px;
+    width: 1px;
+    background: #d9d9d9;
   }
 
   .underline:hover {
@@ -161,58 +127,6 @@ const ScrolledHeader = styled(motion.div)`
     text-decoration-color: var(--red-color);
     text-underline-offset: 5px;
     text-decoration-thickness: 10%;
-  }
-  .dropdown {
-    position: relative;
-    &:hover > div {
-      visibility: visible;
-    }
-    div {
-      &:focus {
-        visibility: hidden;
-        border: 20px solid yellow;
-      }
-    }
-  }
-`;
-
-const Links = styled.div`
-  .user-links {
-    position: absolute;
-    width: 230px;
-    background: white;
-    top: 100%;
-    left: 0;
-    transform: translateX(-5%);
-    z-index: 10;
-    flex-direction: column;
-    padding: 8px 12px;
-    font-weight: 500;
-    border-radius: 3px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
-    max-height: 500px;
-
-    li {
-      color: var(--main-color);
-      margin: 2px 0;
-      font-size: 14.5px;
-    }
-
-    .line-break {
-      width: 100%;
-      margin: 10px auto 15px auto;
-      border: 1px solid rgba(0, 0, 0, 0.14);
-    }
-  }
-`;
-
-const NavLink = styled(Link)`
-  text-decoration: none;
-  color: black;
-  width: 100%;
-
-  &:hover {
-    color: #6b6969;
   }
 `;
 

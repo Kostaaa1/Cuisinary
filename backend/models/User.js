@@ -1,13 +1,5 @@
 const mongoose = require("mongoose");
 
-const CollectionRecipeSchema = new mongoose.Schema({
-  recipeTitle: { type: String },
-  recipe: {},
-  reviewIndex: { type: Number },
-  review: { type: String },
-  _id: false,
-});
-
 const BirthDate = new mongoose.Schema({
   month: { type: String },
   day: { type: String },
@@ -36,12 +28,25 @@ const ImageFile = new mongoose.Schema(
   { _id: false, versionKey: false }
 );
 
-const PersonalReviews = new mongoose.Schema({
-  recipeTitle: { type: String },
-  recipeImage: { type: String },
-  starRating: { type: Number, required: true },
-  comment: { type: String },
-  created: { type: Date, default: new Date(Date.now()).toString() },
+const PersonalReviews = new mongoose.Schema(
+  {
+    recipeTitle: { type: String },
+    recipeId: { type: Number, required: true },
+    recipeImage: { type: String },
+    starRating: { type: Number, required: true },
+    comment: { type: String, trim: true },
+  },
+  { timestamps: true }
+);
+
+const CollectionRecipeSchema = new mongoose.Schema({
+  recipeTitle: { type: String, required: true },
+  recipe: {
+    id: { type: Number },
+    image: { type: String },
+    imageType: { type: String },
+    summary: { type: String },
+  },
   _id: false,
 });
 
@@ -54,8 +59,8 @@ const CollectionSchema = new mongoose.Schema({
 });
 
 const UserSchema = new mongoose.Schema({
-  nickname: { type: String, require: true },
-  email: { type: String, require: true },
+  nickname: { type: String, required: true },
+  email: { type: String, required: true },
   picture: ImageFile,
   tagline: { type: String },
   firstName: { type: String },

@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
+import { RecipeContext } from "../Recipe";
+import LineBreak from "../../../common/LineBreak";
 
-const Ingredients = ({ ingredients }) => {
+const Ingredients = () => {
+  const { recipe } = useContext(RecipeContext);
+
   return (
     <IngredientsContainer>
+      <LineBreak className="line-break" />
       <h1>Ingredients</h1>
       <ul>
-        {ingredients?.map((item, id) => (
+        {recipe?.extendedIngredients?.map((item, id) => (
           <li key={id}>{item.original}</li>
         ))}
       </ul>
@@ -16,6 +21,7 @@ const Ingredients = ({ ingredients }) => {
 
 const IngredientsContainer = styled.div`
   width: 100%;
+  margin: 20px 0 80px 0;
 
   h1 {
     margin: 18px 0;

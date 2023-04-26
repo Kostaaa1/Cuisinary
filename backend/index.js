@@ -31,6 +31,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", require("./routes/recipes"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/user", require("./routes/users"));
+app.use("/api/articles", require("./routes/articles"));
 
 // Errors
 app.use((err, req, res, next) => {

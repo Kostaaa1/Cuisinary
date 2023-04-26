@@ -1,27 +1,23 @@
 import Pages from "./pages/Pages";
 import Search from "./pages/navbar/components/Search";
-import { BrowserRouter, Link } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import "./styles.css";
-import Navbar from "./pages/navbar/Navbar";
-import { RecipeNamesProvider } from "./setup/app-context-menager/RecipeNameContext";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect } from "react";
-import { useAuth } from "./setup/auth/useAuth";
-import AuthContext, {
-    AuthContextProvider,
-} from "./setup/app-context-menager/AuthContext";
+import Header from "./pages/navbar/Header";
+import { GlobalContextProvider } from "./setup/app-context-menager/GlobalContext";
+import Footer from "./pages/Footer";
 
 function App() {
-    return (
-        // <AuthContextProvider>
-        <BrowserRouter>
-            <RecipeNamesProvider>
-                <Navbar />
-                <Pages />
-            </RecipeNamesProvider>
-        </BrowserRouter>
-        // </AuthContextProvider>
-    );
+  return (
+    // <AuthContextProvider>
+    <BrowserRouter>
+      <GlobalContextProvider>
+        {/* <Header /> */}
+        <Pages />
+        {/* <Footer /> */}
+      </GlobalContextProvider>
+    </BrowserRouter>
+    // </AuthContextProvider>
+  );
 }
 
 export default App;
