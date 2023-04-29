@@ -7,14 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import SavedModal from "../../common/SavedModal";
 import SearchForm from "./components/SearchForm";
 import axios from "axios";
+import useSmoothScroll from "../../utils/useSmoothScroll";
 
 const Searched = () => {
   let params = useParams();
   const [favorite, setFavorite] = useState(false);
-
-  useEffect(() => {
-    window.scroll(0, 0);
-  }, []);
+  useSmoothScroll();
 
   const fetchSearched = async () => {
     try {
@@ -35,7 +33,8 @@ const Searched = () => {
         return data.results;
       }
 
-      return data[0]?.data.results ?? [];
+      console.log(data);
+      return data[0]?.data ?? [];
     } catch (error) {
       console.log(error);
     }
