@@ -11,31 +11,30 @@ import { useNavigate } from "react-router-dom";
 const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [summary, setSummary] = useState("");
   useNoScroll(showModal, showRemoveModal);
   const navigate = useNavigate();
 
-  const closeModal = () => {
+  const closeModals = () => {
     setShowRemoveModal(false);
     setShowModal(false);
-  };
-
-  const remove = () => {
-    addRecipeName(favorite.recipeTitle);
   };
 
   return (
     <Card>
       {favorite.loading && (
-        <>
-          <div className="transparent-card">
-            <Loading className="loading" />
-          </div>
-        </>
+        <div className="transparent-card">
+          <Loading className="loading" />
+        </div>
       )}
-      <img src={favorite.recipe?.image} alt="" onClick={() => navigate(`/recipe/${favorite.recipe.id}`)} />
+      <img
+        src={favorite.recipe?.image}
+        alt=""
+        onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}
+      />
       <div className="card-content">
-        <h4 onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}>{favorite?.recipeTitle}</h4>
+        <h4 onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}>
+          {favorite?.recipeTitle}
+        </h4>
         <ButtonBorder
           style={{ width: "160px", height: "36px" }}
           value={
@@ -54,14 +53,20 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
       {showRemoveModal && (
         <RemoveModal
           remove={() => {
-            remove();
+            addRecipeName(favorite.recipeTitle);
             addLoading();
           }}
           title={favorite.recipeTitle}
-          onClick={closeModal}
+          onClick={closeModals}
         />
       )}
-      {showModal && <AddCustomModal favorite={favorite} onClick={closeModal} showModal={() => setShowModal(false)} />}
+      {showModal && (
+        <AddCustomModal
+          favorite={favorite}
+          onClick={closeModals}
+          showModal={() => setShowModal(false)}
+        />
+      )}
     </Card>
   );
 };
@@ -71,7 +76,7 @@ const Card = styled.div`
   width: 31%;
   display: flex;
   flex-direction: column;
-  min-height: 460px;
+  min-height: 420px;
   box-shadow: var(--card-shadow-border);
 
   .loading {
@@ -97,7 +102,7 @@ const Card = styled.div`
   }
 
   img {
-    height: 80%;
+    height: 70%;
   }
 
   .card-content {

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import styled from "styled-components";
 import { RecipeContext } from "../Recipe";
 import { FavoriteBorder, Favorite } from "@mui/icons-material";
@@ -11,15 +11,27 @@ const Description = () => {
   const { recipe, favorite, setFavorite } = useContext(RecipeContext);
   const { userData } = useUser();
 
+  const checkIfRecipeExists = () => {
+    let checkForRecipe = userData?.collections[0]?.collRecipes.find((recipes) => recipes.recipeTitle === recipe.title);
+    return checkForRecipe;
+  };
+
+  useEffect(() => {
+    const checkForRecipe = checkIfRecipeExists();
+    if (checkForRecipe) setFavorite(true);
+  }, [userData]);
+
   const saveRecipeInCollection = async () => {
     try {
-      let checkForRecipe = userData.collections[0]?.collRecipes.find((recipes) => recipes.recipeTitle === recipe.title);
+      const checkForRecipe = checkIfRecipeExists();
       userData.collections[0]?.collRecipes.push({ recipeTitle: recipe.title });
 
       if (checkForRecipe) {
         toast.info("This recipe is already in your collection!");
         return;
       }
+
+      setFavorite(true);
       await toast.promise(axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }), {
         pending: "Saving recipe...",
         success: "Recipe saved to your collection!",
@@ -28,10 +40,12 @@ const Description = () => {
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while saving the recipe!");
-    } finally {
-      setFavorite(true);
     }
   };
+
+  useEffect(() => {
+    console.log(recipe.image);
+  }, [recipe]);
 
   return (
     <Container>

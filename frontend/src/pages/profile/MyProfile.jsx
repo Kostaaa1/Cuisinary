@@ -1,30 +1,43 @@
 import styled from "styled-components";
-import { NavLink, Route, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  NavLink,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import React, { useEffect, useContext, useState, Component, memo } from "react";
 import List from "../../pages/profile/components/List";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
 import AuthContext from "../../setup/app-context-menager/AuthContext";
-import { motion } from "framer-motion";
 import axios from "axios";
 import ProfileGreet from "./components/ProfileGreet";
-import { useAuth, useUser } from "../../setup/auth/useAuth";
+import { useUser } from "../../setup/auth/useAuth";
+import Footer from "../Footer";
 
 const MyProfile = ({ listContent, staticList, setLists }) => {
   const params = useParams();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId, collectionParams } = useContext(GlobalContext);
-  const { refetchedUser } = useAuth();
-  const { userData, useUpdateUserCache } = useContext(AuthContext);
+  const {
+    arrayOfRecipeNames,
+    setArrayOfRecipeNames,
+    collectionId,
+    collectionParams,
+  } = useContext(GlobalContext);
+  const { userData } = useContext(AuthContext);
   const { refetch } = useUser();
 
   useEffect(() => {
-    if (arrayOfRecipeNames.length !== 0) {
+    if (
+      arrayOfRecipeNames.length !== 0 &&
+      location.pathname !== "/account/profile/saved-items"
+    ) {
       handleDeletionOfRecipes();
       setArrayOfRecipeNames([]);
       refetch();
     }
-  }, [location.pathname !== "/account/profile/saved-items"]);
+  }, [location.pathname]);
 
   const handleDeletionOfRecipes = async () => {
     const recipeNames = {
@@ -43,7 +56,9 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
         selected: true,
       };
 
-      if (!listContent.map((list) => list.route === comp.route).includes(true)) {
+      if (
+        !listContent.map((list) => list.route === comp.route).includes(true)
+      ) {
         setLists([...listContent, comp]);
       }
     }
@@ -66,7 +81,10 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                 .filter((list) => list.text && list)
                 .map((list, id) => (
                   <CustomLink to={"/account/profile" + list.route} key={id}>
-                    <List className={list.selected ? "selected" : ""} list={list} />
+                    <List
+                      className={list.selected ? "selected" : ""}
+                      list={list}
+                    />
                   </CustomLink>
                 ))}
             </ul>
@@ -82,6 +100,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
           })}
         </div>
       </Container>
+      <Footer />
     </Wrapper>
   );
 };
@@ -96,19 +115,20 @@ const CustomLink = styled(NavLink)`
 `;
 
 const Wrapper = styled.section`
+  position: relative;
   background-color: #f2f2f2;
+  min-height: 70vh;
 `;
 
-const Container = styled(motion.div)`
+const Container = styled.div`
   margin: 0 auto;
   padding: 200px 0;
-  position: relative;
   display: flex;
   width: 1240px;
   max-width: 100%;
 
   .loading {
-    transform: translate(0, -325px) scale(1.2);
+    transform: translate(0, -10px) scale(1.2);
   }
 
   @media screen and (max-width: 1250px) {
@@ -119,16 +139,14 @@ const Container = styled(motion.div)`
   .components {
     position: relative;
     background-color: #fff;
-    min-height: calc(100vh - 200px);
     width: 100%;
-    max-width: 100%;
     word-break: break-all;
-    padding: 22px 26px;
+    padding: 13px 26px 0 13px;
   }
 
   .profile {
-    min-width: 180px;
-    height: 120px;
+    min-width: 260px;
+    height: 100%;
     margin-right: 25px;
     background-color: #fff;
 
@@ -136,7 +154,7 @@ const Container = styled(motion.div)`
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      padding: 22px 0;
 
       h4 {
         font-size: 16px;
@@ -146,6 +164,8 @@ const Container = styled(motion.div)`
 
   .profile-info {
     background-color: #fff;
+    padding-top: 12px;
+
     ul {
       display: flex;
       justify-content: center;

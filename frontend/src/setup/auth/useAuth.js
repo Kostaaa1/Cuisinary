@@ -21,7 +21,11 @@ export const useUser = () => {
         const res = await axios.post(
           `/api/auth/${user?.email}/getUser`,
           { user: mockUser },
-          { headers: { authorization: `Bearer ${await getAccessTokenSilently()}` } }
+          {
+            headers: {
+              authorization: `Bearer ${await getAccessTokenSilently()}`,
+            },
+          }
         );
 
         return res.data || {};
@@ -40,14 +44,13 @@ export const useUser = () => {
 };
 
 export const useAuth = () => {
-  const { user } = useAuth0();
-  const queryClient = useQueryClient();
-  const [refetchedUser, setRefetchedUser] = useState(false);
+  const [setRefetchedUser] = useState(false);
 
   const authenticated = useMemo(() => {
     const item = localStorage.getItem(
       "@@auth0spajs@@::LWAyzb9ustA8ktJ2j3tsFGiPUBj5zf5X::CatPiss123::openid profile email offline_access"
     );
+    console.log(item);
     return !!item;
   }, [
     localStorage.getItem(
@@ -55,16 +58,5 @@ export const useAuth = () => {
     ),
   ]);
 
-  const useUpdateUserCache = (updateUserData) => {
-    queryClient.setQueryData(["user", user?.email], (oldData) => {
-      const newUserData = {
-        ...oldData,
-        ...updateUserData,
-      };
-
-      return newUserData;
-    });
-  };
-
-  return { authenticated, useUpdateUserCache, setRefetchedUser };
+  return { authenticated, setRefetchedUser };
 };

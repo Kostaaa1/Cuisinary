@@ -11,7 +11,8 @@ import SavedModal from "../../../common/SavedModal";
 
 const SimilarRecipes = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const { recipe, favoriteForSimilar, setFavoriteForSimilar } = useContext(RecipeContext);
+  const { recipe, favoriteForSimilar, setFavoriteForSimilar } =
+    useContext(RecipeContext);
   const [similarData, setSimilarData] = useState([]);
 
   useEffect(() => {
@@ -23,7 +24,9 @@ const SimilarRecipes = () => {
   const fetchSimilarRecipes = async () => {
     try {
       if (!!recipe?.title) {
-        const res = await axios.get(`/api/recipe/${recipe?.title}/getSimilarRecipes`);
+        const res = await axios.get(
+          `/api/recipe/${recipe?.title}/getSimilarRecipes`
+        );
         if (res.data) setIsLoading(false);
 
         setSimilarData(res.data);
@@ -43,9 +46,9 @@ const SimilarRecipes = () => {
               animate={{ opacity: 1 }}
               initial={{ opacity: 0 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
-              {similarData?.data?.slice(0, 16).map((recipe, id) => (
+              {similarData?.data.results?.slice(0, 16).map((recipe, id) => (
                 <CardDescription
                   params={similarData?.name}
                   key={id}
@@ -57,7 +60,9 @@ const SimilarRecipes = () => {
 
               {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
             </Grid>
-            {favoriteForSimilar && <SavedModal setFavorite={setFavoriteForSimilar} />}
+            {favoriteForSimilar && (
+              <SavedModal setFavorite={setFavoriteForSimilar} />
+            )}
           </Recipes>
         </>
       )}

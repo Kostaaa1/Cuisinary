@@ -80,6 +80,7 @@ module.exports = {
     try {
       const { name, email, nickname } = req.body.user;
       let user = await User.findOne({ email: req.params.email });
+      console.log(name, email);
 
       if (!user) {
         const newUser = new User({
@@ -124,7 +125,6 @@ module.exports = {
       res.status(400).send(error.message);
     }
   },
-
   deleteFavorite: async (req, res) => {
     try {
       let filter = {

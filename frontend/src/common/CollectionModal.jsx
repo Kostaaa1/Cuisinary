@@ -9,50 +9,59 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 
-const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate }) => {
+const CollectionModal = ({
+  showModal,
+  collectionTitle,
+  collectionDesc,
+  isPrivate,
+}) => {
   const params = useParams();
-  const [collName, setCollName] = useState(collectionTitle ? collectionTitle : "");
-  const [collDesc, setCollDesc] = useState(collectionDesc ? collectionDesc : "");
+  const [collName, setCollName] = useState(
+    collectionTitle ? collectionTitle : ""
+  );
+  const [collDesc, setCollDesc] = useState(
+    collectionDesc ? collectionDesc : ""
+  );
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
 
-  const handleCollectionName = (name) => {
-    // if (name.length > 20) return;
-    setCollName(name);
-  };
-
   const submitCollection = async (e) => {
     e.preventDefault();
+    try {
+      const collectionData = {
+        collName,
+        collDesc,
+      };
 
-    const collectionData = {
-      collName,
-      collDesc,
-    };
+      // const filteredObject = Object.entries(collectionData)
+      //   .filter(([key, value]) => value)
+      //   .reduce((obj, [key, value]) => {
+      //     obj[key] = value;
+      //     return obj;
+      //   }, {});
 
-    // const filteredObject = Object.entries(collectionData)
-    //   .filter(([key, value]) => value)
-    //   .reduce((obj, [key, value]) => {
-    //     obj[key] = value;
-    //     return obj;
-    //   }, {});
+      await axios.post(
+        params.id
+          ? `/api/user/${user?.email}/${params.id}/editCollection`
+          : `/api/user/${user?.email}/newCollection`,
+        { ...collectionData, private: collPrivate }
+      );
 
-    await axios.post(
-      params.id ? `/api/user/${user?.email}/${params.id}/editCollection` : `/api/user/${user?.email}/newCollection`,
-      { ...collectionData, private: collPrivate }
-    );
-
-    showModal();
-    window.location.reload();
+      showModal();
+      window.location.reload();
+    } catch (error) {}
   };
-  const handle = (e) => {
-    if (e.key !== "Escape") return;
-    showModal();
-  };
-
-  console.log(collDesc);
 
   useEffect(() => {
+    const handle = (e) => {
+      if (e.key !== "Escape") return;
+      showModal();
+    };
     document.addEventListener("keydown", handle);
+
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
   }, []);
 
   return (
@@ -60,7 +69,7 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       exit={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       style={{ display: showModal }}
     >
       <Section>
@@ -80,7 +89,7 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
                 maxLength={40}
                 type="text"
                 value={collName}
-                onChange={(e) => handleCollectionName(e.target.value)}
+                onChange={(e) => setCollName(e.target.value)}
                 placeholder={"Give your collection a name"}
               />
               <span className="ta-length">{collName.length}/40 characters</span>
@@ -97,7 +106,9 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
                 value={collDesc}
                 onChange={(e) => setCollDesc(e.target.value)}
               />
-              <span className="ta-length">{collDesc.length}/300 characters</span>
+              <span className="ta-length">
+                {collDesc.length}/300 characters
+              </span>
             </div>
             <div className="checkbox">
               <div className="wrap">

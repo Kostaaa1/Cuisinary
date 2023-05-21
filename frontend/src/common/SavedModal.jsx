@@ -1,33 +1,33 @@
 import { Check, Close } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 const SavedModal = ({ setFavorite }) => {
-  const close = () => {
-    setFavorite(false);
-  };
-
-  const handle = (e) => {
-    if (e.key !== "Escape") return;
-    close();
-  };
-
   useEffect(() => {
+    const handle = (e) => {
+      if (e.key !== "Escape") return;
+      close();
+    };
+
     document.addEventListener("keydown", handle);
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
   }, []);
 
   const click = (e) => {
+    const { className, tagName } = e.target;
     if (
-      e.target.className === "saved" ||
-      e.target.className === "" ||
-      e.target.tagName === "svg" ||
-      e.target.tagName === "path"
+      className === "saved" ||
+      className === "" ||
+      tagName === "svg" ||
+      tagName === "path"
     ) {
       null;
     } else {
-      close();
+      setFavorite(false);
     }
   };
 
@@ -37,7 +37,7 @@ const SavedModal = ({ setFavorite }) => {
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       exit={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
     >
       <Section>
         <div className="close">

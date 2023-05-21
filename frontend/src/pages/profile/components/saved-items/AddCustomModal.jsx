@@ -1,13 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { Close, Lock, Add } from "@mui/icons-material";
 import { useEffect } from "react";
 import axios from "axios";
-import { useAuth, useUser } from "../../../../setup/auth/useAuth";
+import { useUser } from "../../../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import { motion } from "framer-motion";
 
 const AddCustomModal = ({ showModal, favorite }) => {
   const [collName, setCollName] = useState("");
@@ -17,26 +16,33 @@ const AddCustomModal = ({ showModal, favorite }) => {
   const { user } = useAuth0();
   const { userData } = useUser();
 
-  const handle = (e) => {
-    if (e.key !== "Escape") return;
-    showModal();
-  };
-
   useEffect(() => {
+    const handle = (e) => {
+      if (e.key !== "Escape") return;
+      showModal();
+    };
+
     document.addEventListener("keydown", handle);
+
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
   }, []);
 
   const addNewCollection = async (e) => {
     try {
       e.preventDefault();
 
-      axios.post(`/api/user/${user?.email}/newCollection`, {
+      await axios.post(`/api/user/${user?.email}/newCollection`, {
         collName: collName,
       });
 
-      setCollectionNames([{ collName: collName }, ...collectionNames]);
+      userData.collections = [
+        { collName, collRecipes: [] },
+        ...userData.collections,
+      ];
+
       setShowInput(false);
-      collections.push({ collName: collName, collDesc: "", private: false, collRecipes: [] });
       setCollName("");
     } catch (error) {
       console.log(error);
@@ -57,7 +63,12 @@ const AddCustomModal = ({ showModal, favorite }) => {
     try {
       const collectionWithoutCurrentRecipe = userData?.collections
         .filter(({ collName }) => checkedColls.includes(collName))
-        .filter(({ collRecipes }) => !collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle))
+        .filter(
+          ({ collRecipes }) =>
+            !collRecipes.some(
+              ({ recipeTitle }) => recipeTitle === favorite.recipeTitle
+            )
+        )
         .map(({ collName }) => collName);
 
       axios.post(`/api/user/${user.email}/addToCustom`, {
@@ -76,7 +87,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       exit={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       style={{ display: showModal }}
     >
       <Section>
@@ -118,7 +129,10 @@ const AddCustomModal = ({ showModal, favorite }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="add-collection" onClick={() => setShowInput(true)}>
+                  <div
+                    className="add-collection"
+                    onClick={() => setShowInput(true)}
+                  >
                     <Add />
                     <h5>NEW COLLECTION</h5>
                   </div>
@@ -128,7 +142,11 @@ const AddCustomModal = ({ showModal, favorite }) => {
                   .map((coll, id) => (
                     <div key={id} className="input-wrap">
                       <label>
-                        <input type="checkbox" className="check" onChange={(e) => handleCheckbox(e, coll.collName)} />
+                        <input
+                          type="checkbox"
+                          className="check"
+                          onChange={(e) => handleCheckbox(e, coll.collName)}
+                        />
                         {coll.collName ? coll.collName : ""}
                       </label>
                     </div>

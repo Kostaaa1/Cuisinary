@@ -1,8 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -73,7 +71,9 @@ const Navbar = () => {
   const hanldeDropDownEnter = (index) => {
     setCategoryData(
       categoryData.map((category, i) =>
-        i === index ? { ...categoryData[index], visibility: true } : { ...category, visibility: false }
+        i === index
+          ? { ...categoryData[index], visibility: true }
+          : { ...category, visibility: false }
       )
     );
   };
@@ -81,7 +81,9 @@ const Navbar = () => {
   const hanldeDropDownLeave = (index) => {
     setCategoryData(
       categoryData.map((category, i) =>
-        i === index ? { ...categoryData[index], visibility: false } : { ...category, visibility: false }
+        i === index
+          ? { ...categoryData[index], visibility: false }
+          : { ...category, visibility: false }
       )
     );
   };
@@ -90,7 +92,10 @@ const Navbar = () => {
     <Nav>
       {categoryData.map((category, index) => (
         <Wrapper key={category.name}>
-          <h5 onMouseEnter={() => hanldeDropDownEnter(index)} onMouseLeave={() => hanldeDropDownLeave(index)}>
+          <h5
+            onMouseEnter={() => hanldeDropDownEnter(index)}
+            onMouseLeave={() => hanldeDropDownLeave(index)}
+          >
             {category.name}
           </h5>
           <CategoryDropdown

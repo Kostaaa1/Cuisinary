@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Close, Lock } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import { motion } from "framer-motion";
 import Button from "../../../../common/Button";
 import { useEffect, useState } from "react";
@@ -24,7 +24,12 @@ const RemoveModal = ({ title, onClick, remove }) => {
   }, []);
 
   return (
-    <Modal animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+    <Modal
+      animate={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Section>
         <div className="modal-header">
           <h3>Remove from {collection}</h3>
@@ -32,7 +37,8 @@ const RemoveModal = ({ title, onClick, remove }) => {
         </div>
         <div className="content">
           <p>
-            Are you sure? Removing <span> {title}</span> will permanently delete it from all collections.
+            Are you sure? Removing <span> {title}</span> will permanently delete
+            it from all collections.
           </p>
           <div className="buttons-wrap">
             <button className="btn-border" onClick={onClick}>
@@ -101,12 +107,12 @@ const Section = styled.div`
       margin: 25px 0;
       line-height: 1.6rem;
       letter-spacing: 0.8px;
-      word-wrap: break-word;
     }
 
     p > span {
       font-weight: bold;
       font-size: 16px;
+      word-break: keep-all;
     }
 
     .buttons-wrap {

@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { FavoriteBorder, Favorite } from "@mui/icons-material";
-import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import useNoScroll from "../utils/useNoScroll";
 import AuthContext from "../setup/app-context-menager/AuthContext";
@@ -17,13 +16,13 @@ const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
       let checkForRecipe = userData.collections[0]?.collRecipes.find(
         (recipes) => recipes.recipeTitle === recipeData.title
       );
-      userData.collections[0]?.collRecipes.push({ recipeTitle: recipeData.title });
-      if (checkForRecipe) return;
-
+      userData.collections[0]?.collRecipes.push({
+        recipeTitle: recipeData.title,
+      });
       setFavorite(true);
       setHeart(true);
+      if (checkForRecipe) return;
 
-      console.log(recipeData.id);
       await axios.post(`/api/auth/${userData?.email}`, { id: recipeData.id });
     } catch (error) {
       console.log(error);

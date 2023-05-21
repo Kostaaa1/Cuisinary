@@ -1,24 +1,18 @@
-import { GiKnifeFork } from "react-icons/gi";
-import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Search from "./components/Search";
-import Category from "./components/Navbar";
+import Navbar from "./components/Navbar";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
-import { useState, memo, useEffect, useContext } from "react";
-import { useAuth } from "../../setup/auth/useAuth";
+import { useState, memo, useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import AuthContext from "../../setup/app-context-menager/AuthContext";
 import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import RecipeNames from "../../setup/app-context-menager/GlobalContext";
-import image from "../../assets/images/image2.jpg";
 import Dropdown from "./components/Dropdown";
 
 const Horizontal = () => {
   const { showSearch, setShowSearch } = useContext(RecipeNames);
   const [showDropdown, setShowDropdown] = useState();
-  const { loginWithPopup, logout } = useAuth0();
-  const { authenticated } = useAuth();
+  const { loginWithPopup, logout, user } = useAuth0();
 
   const showSearched = () => {
     setShowSearch(!showSearch);
@@ -36,7 +30,7 @@ const Horizontal = () => {
       <HeaderControl>
         <Logo to={"/"} />
         {showSearch && <Search showSearched={showSearched} />}
-        {!showSearch && <Category />}
+        {!showSearch && <Navbar />}
 
         {!showSearch && (
           <ul className="wrapper">
@@ -44,7 +38,7 @@ const Horizontal = () => {
               <FaSearch className="search" onClick={showSearched} />
             </li>
             <div className="divider-line"></div>
-            {authenticated ? (
+            {user ? (
               <Dropdown />
             ) : (
               <>

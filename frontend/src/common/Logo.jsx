@@ -28,8 +28,6 @@ const CulinaryLogo = styled(Link)`
   .logo {
     font-size: 2.2rem;
     color: var(--gold-color);
-    /* color: var(--main-color); */
-    /* margin-left: 2px; */
   }
 `;
 

@@ -11,7 +11,9 @@ const fileSizeFormatter = (bytes, decimal) => {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "YB", "ZB"];
 
   const index = Math.floor(Math.log(bytes) / Math.log(1000));
-  return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm) + "-" + sizes[index]);
+  return parseFloat(
+    (bytes / Math.pow(1000, index)).toFixed(dm) + "-" + sizes[index]
+  );
 };
 
 // CRUD OPERATIONS
@@ -23,7 +25,10 @@ module.exports = {
       Object.entries(req.body.user).forEach(([key, value]) => {
         if (value) updateData[key] = value;
       });
-      const user = await User.findOneAndUpdate({ email: req.params.email }, { $set: updateData });
+      const user = await User.findOneAndUpdate(
+        { email: req.params.email },
+        { $set: updateData }
+      );
       res.status(200).json(user);
     } catch (error) {
       res.status(400).send(error.message);
@@ -133,7 +138,9 @@ module.exports = {
         {
           $push: {
             "collections.$[coll].collRecipes": {
-              $each: [{ recipeTitle: recipe.recipeTitle, recipe: recipe.recipe }],
+              $each: [
+                { recipeTitle: recipe.recipeTitle, recipe: recipe.recipe },
+              ],
               $position: 0,
             },
           },
@@ -143,7 +150,9 @@ module.exports = {
           arrayFilters: [{ "coll.collName": { $in: checkedCollections } }],
         }
       );
-      res.status(200).json(`Recipe added to ${JSON.stringify(checkedCollections)}`);
+      res
+        .status(200)
+        .json(`Recipe added to ${JSON.stringify(checkedCollections)}`);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -165,7 +174,8 @@ module.exports = {
   },
   createUserReview: async (req, res) => {
     try {
-      const { recipeTitle, recipeId, recipeImage, comment, starRating } = req.body;
+      const { recipeTitle, recipeId, recipeImage, comment, starRating } =
+        req.body;
       const { email } = req.params;
       const user = await User.findOneAndUpdate(
         {

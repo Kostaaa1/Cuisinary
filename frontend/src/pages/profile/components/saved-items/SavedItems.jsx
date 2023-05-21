@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { ArrowBack, Delete, Edit, HttpsOutlined, SupervisorAccount } from "@mui/icons-material";
+import {
+  ArrowBack,
+  Delete,
+  Edit,
+  HttpsOutlined,
+  SupervisorAccount,
+} from "@mui/icons-material";
 import { useContext, useEffect, useState } from "react";
 import CollectionCard from "./CollectionCard";
 import TransparentCard from "./TransparentCard";
@@ -19,14 +25,19 @@ import { useUser } from "../../../../setup/auth/useAuth";
 
 const Collections = () => {
   const params = useParams();
-  const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
-  const [showEditCollectionModal, setShowEditCollectionModal] = useState();
+  const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
+    useState(false);
+  const [showEditCollectionModal, setShowEditCollectionModal] = useState(false);
   const navigate = useNavigate();
-  // const { userData, refetch } = useContext(AuthContext);
   const { user } = useAuth0();
   const { userData, isLoading, setIsLoading } = useUser();
   const [collectionArray, setCollectionArray] = useState([]);
-  const { arrayOfRecipeNames, setArrayOfRecipeNames, setCollectionId, setCollectionParams } = useContext(GlobalContext);
+  const {
+    arrayOfRecipeNames,
+    setArrayOfRecipeNames,
+    setCollectionId,
+    setCollectionParams,
+  } = useContext(GlobalContext);
   useNoScroll(showDeleteCollectionModal, showEditCollectionModal);
 
   const addRecipeName = (recipeTitle) => {
@@ -54,7 +65,9 @@ const Collections = () => {
           : `/api/auth/${user?.email}/getSavedCollection`
       );
 
-      let arr = res.data.collRecipes.map((item) => item && { ...item, loading: false });
+      let arr = res.data.collRecipes.map(
+        (item) => item && { ...item, loading: false }
+      );
       setCollectionArray(arr);
       return res.data;
     } catch (error) {
@@ -62,19 +75,27 @@ const Collections = () => {
     }
   };
 
-  const { data: collectionData, isFetching } = useQuery(["collectionData"], fetchCollectionData, {
-    refetchOnMount: "always",
-    enabled: !!user,
-  });
+  const { data: collectionData, isFetching } = useQuery(
+    ["collectionData"],
+    fetchCollectionData,
+    {
+      refetchOnMount: "always",
+      enabled: !!user,
+    }
+  );
 
   const addLoading = (index) => {
     setCollectionArray((prevState) =>
-      prevState.map((recipe, i) => (i === index ? { ...recipe, loading: true } : recipe))
+      prevState.map((recipe, i) =>
+        i === index ? { ...recipe, loading: true } : recipe
+      )
     );
 
     setTimeout(() => {
       setCollectionArray((prevState) =>
-        prevState.map((recipe, i) => (i === index ? { ...recipe, loading: false } : recipe))
+        prevState.map((recipe, i) =>
+          i === index ? { ...recipe, loading: false } : recipe
+        )
       );
     }, Math.random() * 1200);
   };
@@ -95,8 +116,16 @@ const Collections = () => {
             />
             {params.name === "collection" && params.id && (
               <div className="wrap-flex">
-                <ButtonHover value={"DELETE"} icon={<Delete />} onClick={() => setShowDeleteCollectionModal(true)} />
-                <ButtonHover value={"EDIT"} icon={<Edit />} onClick={() => setShowEditCollectionModal(true)} />
+                <ButtonHover
+                  value={"DELETE"}
+                  icon={<Delete />}
+                  onClick={() => setShowDeleteCollectionModal(true)}
+                />
+                <ButtonHover
+                  value={"EDIT"}
+                  icon={<Edit />}
+                  onClick={() => setShowEditCollectionModal(true)}
+                />
               </div>
             )}
           </div>
@@ -119,7 +148,9 @@ const Collections = () => {
               <>
                 <h1>{collectionData?.collName}</h1>
                 <div className="height-div">
-                  {collectionData?.collDesc && <h3>{collectionData?.collDesc}</h3>}
+                  {collectionData?.collDesc && (
+                    <h3>{collectionData?.collDesc}</h3>
+                  )}
                   <p>
                     {collectionData?.private ? (
                       <span>
@@ -144,7 +175,10 @@ const Collections = () => {
           {collectionData?.collRecipes.length === 0 && (
             <section>
               <h2>You haven't saved anything yet. Start browsing!</h2>
-              <p>You can save items to your profile by clicking the heart icon in the share bar.</p>
+              <p>
+                You can save items to your profile by clicking the heart icon in
+                the share bar.
+              </p>
               <Button
                 value={"BACK HOME"}
                 onClick={() => navigate("/account/profile/collection")}
@@ -152,10 +186,13 @@ const Collections = () => {
               />
             </section>
           )}
-          {collectionArray.length > 0 && <h3 className="length">{collectionArray.length} items</h3>}
+          {collectionArray.length > 0 && (
+            <h3 className="length">{collectionArray.length} items</h3>
+          )}
           <div className="collection-control">
             {collectionArray.map((favorite, id) =>
-              arrayOfRecipeNames.includes(favorite?.recipeTitle) && !favorite.loading ? (
+              arrayOfRecipeNames.includes(favorite?.recipeTitle) &&
+              !favorite.loading ? (
                 <TransparentCard
                   key={id}
                   favorite={favorite}

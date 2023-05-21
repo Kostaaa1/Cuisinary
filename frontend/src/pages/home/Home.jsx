@@ -1,13 +1,16 @@
 import { motion } from "framer-motion";
 import styled from "styled-components";
-import Section from "./components/Section";
 import ArticleSection from "./components/ArticleSection";
 
 const Home = () => {
   return (
-    <Main animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+    <Main
+      animate={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <ArticleSection />
-      {/* <Section /> */}
     </Main>
   );
 };

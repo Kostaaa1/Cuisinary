@@ -38,9 +38,9 @@ const Collection = styled.div`
   display: flex;
   flex-direction: column;
   width: 270px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: var(--card-shadow-border);
   overflow: none;
-  height: 400px;
+  max-height: 400px;
 
   .collection-description {
     display: flex;
@@ -90,19 +90,13 @@ const Collection = styled.div`
   }
 
   .collection-layout {
+    height: 270px;
     display: grid;
-    height: 260px;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
-    gap: 2.5px;
+    gap: 3.5px;
 
     .grey-div {
       background: #b1b1b1;
-    }
-
-    div,
-    img {
-      width: 100%;
-      /* height: 180px; */
     }
 
     div:first-child,
@@ -113,7 +107,7 @@ const Collection = styled.div`
 
     div:nth-child(n + 2),
     img:nth-child(n + 2) {
-      /* height: 80px; */
+      height: 100%;
     }
 
     div:nth-child(2),
@@ -121,11 +115,13 @@ const Collection = styled.div`
       grid-row: 3 / 4;
       grid-column: 1 / 2;
     }
+
     div:nth-child(3),
     img:nth-child(3) {
       grid-row: 3 / 4;
       grid-column: 2 / 3;
     }
+
     div:nth-child(4),
     img:nth-child(4) {
       grid-row: 3 / 4;

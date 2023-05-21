@@ -13,7 +13,6 @@ import { profileLists, StaticList } from "../utils/constants/constants-pages";
 import UserInfo from "./profile/components/user/UserInfo";
 import CollectionPage from "./profile/components/user/CollectionPage";
 import Header from "./navbar/Header";
-import PersonalInfo from "./profile/components/PersonalInfo";
 
 const Pages = () => {
   const location = useLocation();
@@ -25,13 +24,18 @@ const Pages = () => {
 
     if (currentComponent.route !== route) {
       setLists(
-        profileLists.map((list) => (list.route === route ? { ...list, selected: true } : { ...list, selected: false }))
+        profileLists.map((list) =>
+          list.route === route
+            ? { ...list, selected: true }
+            : { ...list, selected: false }
+        )
       );
     }
   }, [location.pathname]);
 
   const shouldRenderHeader = !(
-    location.pathname === "/account/forgot-password-reset" || location.pathname === "/account/forgot-password-success"
+    location.pathname === "/account/forgot-password-reset" ||
+    location.pathname === "/account/forgot-password-success"
   );
 
   return (
@@ -43,25 +47,54 @@ const Pages = () => {
         <Route path="/category/:recipe" element={<Category />} />
         <Route path="/recipe/:id" element={<Recipe />} />
 
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/account/addRecipe/" element={<AddRecipe />} />
-          <Route path="/account/forgot-password-reset" element={<PasswordForm />} showHeader={false} />
-          <Route path="/account/forgot-password-success" element={<Success />} showHeader={false} />
-          <Route
-            path="/account/profile/"
-            element={<MyProfile listContent={lists} staticList={StaticList} setLists={setLists} />}
-          />
-          <Route
-            path="/account/profile/:name/"
-            element={<MyProfile listContent={lists} staticList={StaticList} setLists={setLists} />}
-          />
-          <Route
-            path="/account/profile/:name/:id"
-            element={<MyProfile listContent={lists} staticList={StaticList} setLists={setLists} />}
-          />
-          <Route path="/profile/:profileId" element={<UserInfo />} />
-          <Route path="/profile/:profileId/collection/:collectionId" element={<CollectionPage />} />
-        </Route>
+        {/* <Route element={<ProtectedRoutes />}> */}
+        <Route path="/account/addRecipe/" element={<AddRecipe />} />
+        <Route
+          path="/account/forgot-password-reset"
+          element={<PasswordForm />}
+          showHeader={false}
+        />
+        <Route
+          path="/account/forgot-password-success"
+          element={<Success />}
+          showHeader={false}
+        />
+        <Route
+          path="/account/profile/"
+          element={
+            <MyProfile
+              listContent={lists}
+              staticList={StaticList}
+              setLists={setLists}
+            />
+          }
+        />
+        <Route
+          path="/account/profile/:name/"
+          element={
+            <MyProfile
+              listContent={lists}
+              staticList={StaticList}
+              setLists={setLists}
+            />
+          }
+        />
+        <Route
+          path="/account/profile/:name/:id"
+          element={
+            <MyProfile
+              listContent={lists}
+              staticList={StaticList}
+              setLists={setLists}
+            />
+          }
+        />
+        <Route path="/profile/:profileId" element={<UserInfo />} />
+        <Route
+          path="/profile/:profileId/collection/:collectionId"
+          element={<CollectionPage />}
+        />
+        {/* </Route> */}
       </Routes>
     </>
   );

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const useNoScroll = () => {
+const useSmoothScroll = () => {
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -9,4 +9,4 @@ const useNoScroll = () => {
   }, []);
 };
 
-export default useNoScroll;
+export default useSmoothScroll;

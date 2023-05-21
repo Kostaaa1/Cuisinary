@@ -37,9 +37,10 @@ const Footer = () => {
 };
 
 const Foot = styled.footer`
-  position: sticky;
+  position: absolute;
   bottom: 0;
   left: 0;
+  background-color: #f2f2f2;
   width: 100vw;
   border-top: 1px solid rgb(0 0 0 / 22%);
 

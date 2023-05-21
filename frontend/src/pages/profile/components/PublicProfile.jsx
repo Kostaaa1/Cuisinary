@@ -6,22 +6,26 @@ import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import SectionInfo from "../../../common/SectionInfo";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from "@mui/icons-material";
+import {
+  AddAPhoto,
+  KeyboardArrowDown,
+  SupervisorAccount,
+} from "@mui/icons-material";
 import { useRef } from "react";
 import useAddFixed from "../hooks/useAddFixed";
-import { useAuth, useUser } from "../../../setup/auth/useAuth";
+import { useUser } from "../../../setup/auth/useAuth";
 
 const PublicInfo = () => {
+  const { userData } = useUser();
   const [clicked, setClicked] = useState(true);
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState("");
   const { user } = useAuth0();
   const [buttonSave, setButtonSave] = useState(false);
-  const [tagline, setTagline] = useState("");
+  const [tagline, setTagline] = useState(userData?.tagline);
   const [displayName, setDisplayName] = useState("");
   const [showLoading, setShowLoading] = useState(false);
   const publicRef = useRef(null);
-  const {  userData } = useUser();
   useAddFixed(publicRef);
 
   useEffect(() => {
@@ -48,16 +52,21 @@ const PublicInfo = () => {
       setImage(null);
     }
   };
+  useEffect(() => {
+    if (userData) setTagline(userData.tagline);
+  }, [userData]);
 
   const submitForm = async (e) => {
     try {
       e.preventDefault();
 
       setShowLoading(true);
-      const form = { displayName: displayName, tagline: tagline };
+      const form = { displayName, tagline };
       const formData = new FormData();
       if (form.displayName || form.tagline) {
-        axios.post(`/api/user/${user.email}`, { user: { nickname: form.displayName, tagline: form.tagline } });
+        await axios.post(`/api/user/${user.email}`, {
+          user: { nickname: form.displayName, tagline: form.tagline },
+        });
       }
       if (image) {
         formData.append("file", image);
@@ -83,9 +92,18 @@ const PublicInfo = () => {
           ) : (
             <>
               {buttonSave ? (
-                <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
+                <input
+                  type="submit"
+                  value={"SAVE CHANGES"}
+                  className={`btn-save highlight`}
+                />
               ) : (
-                <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
+                <input
+                  type="submit"
+                  value={"SAVE CHANGES"}
+                  disabled
+                  className={`btn-save`}
+                />
               )}
             </>
           )}
@@ -95,7 +113,9 @@ const PublicInfo = () => {
             "The information on this page will be displayed on your public profile, which is visible to other users."
           }
           icon={<SupervisorAccount />}
-          text={"The information on this page will be displayed publicly and will be visible to others"}
+          text={
+            "The information on this page will be displayed publicly and will be visible to others"
+          }
         />
         <DynamicForm>
           <div className="head-info" onClick={() => setClicked(!clicked)}>
@@ -129,7 +149,7 @@ const PublicInfo = () => {
                         setTagline(e.target.value), setButtonSave(true);
                       }}
                     ></textarea>
-                    <span className="length">{tagline.length}/200</span>
+                    <span className="length">{tagline?.length}/200</span>
                   </div>
                 </div>
                 <div className="form-file">
@@ -160,7 +180,6 @@ const PublicInfo = () => {
           )}
         </DynamicForm>
       </>
-      {/* )} */}
     </Form>
   );
 };
@@ -260,9 +279,10 @@ const DynamicForm = styled.div`
         display: flex;
         flex-direction: column;
         padding: 20px 0;
-        font-size: 16px;
+        font-size: 22px;
 
         .tagline {
+          font-size: 14px;
           padding: 15px;
           height: 150px;
         }

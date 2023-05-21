@@ -116,26 +116,22 @@ const Recipe = () => {
 
   return (
     <RecipeContext.Provider value={value}>
-      <>
+      {recipe && isFetched ? (
         <Wrapper>
-          {recipe && isFetched ? (
-            <>
-              <div className="container">
-                <RecipeHeader />
-                <Summary />
-                <Description />
-                <Ingredients />
-                <Directions />
-                <Nutrition />
-                <RecipeReviews />
-              </div>
-            </>
-          ) : (
-            <Loading className="loading" />
-          )}
+          <div className="container">
+            <RecipeHeader />
+            <Summary />
+            <Description />
+            <Ingredients />
+            <Directions />
+            <Nutrition />
+            <RecipeReviews />
+          </div>
         </Wrapper>
-        <SimilarRecipes />
-      </>
+      ) : (
+        <Loading className="loading" />
+      )}
+      <SimilarRecipes />
     </RecipeContext.Provider>
   );
 };
@@ -143,8 +139,9 @@ const Recipe = () => {
 const Wrapper = styled.div`
   width: 1040px;
   max-width: 100%;
-  padding: 250px 0 80px 0;
   margin: 0 auto;
+  height: 100%;
+  margin: 250px auto 0 auto;
 
   .line-break {
     margin: 26px 0;
@@ -153,10 +150,6 @@ const Wrapper = styled.div`
   h1 {
     color: var(--main-color);
     font-weight: 800;
-  }
-
-  .loading {
-    transform: translate(0, -250px);
   }
 
   .container {

@@ -20,6 +20,7 @@ const SavedItems = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   // useAddFixed(collectionRef);
   useNoScroll(showCollectionModal);
+
   const { userData, isLoading } = useUser();
   const mockData = [
     {
@@ -42,7 +43,9 @@ const SavedItems = () => {
         data: { image: recipes.recipe?.image },
       }))
     );
-    return destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
+    return destructuredArray?.map((el) =>
+      mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
+    );
   }, [userData, mockData]);
 
   return (
@@ -64,10 +67,14 @@ const SavedItems = () => {
               <SectionInfo
                 value={"Create collections to organize your saved items"}
                 icon={<HttpsOutlined />}
-                text={"Others can see your saved items and any collection you make public."}
+                text={
+                  "Others can see your saved items and any collection you make public."
+                }
               />
               <div>
-                <h3 className="h3-space">{userData?.collections.length} Collections</h3>
+                <h3 className="h3-space">
+                  {userData?.collections.length} Collections
+                </h3>
                 <div className="collection-control">
                   {userData?.collections.map((collection, id) => (
                     <FavoriteCollection
@@ -80,18 +87,26 @@ const SavedItems = () => {
                       onClick={() => {
                         collection.collName === "All Saved Items"
                           ? navigate("/account/profile/saved-items")
-                          : navigate(`/account/profile/collection/${collection._id}`);
+                          : navigate(
+                              `/account/profile/collection/${collection._id}`
+                            );
                       }}
                     />
                   ))}
-                  <NewCollectionCard onClick={() => setShowCollectionModal(true)} />
+                  <NewCollectionCard
+                    onClick={() => setShowCollectionModal(true)}
+                  />
                 </div>
               </div>
             </div>
           </>
         )}
       </Collections>
-      {showCollectionModal && <CollectionModal showModal={() => setShowCollectionModal(!showCollectionModal)} />}
+      {showCollectionModal && (
+        <CollectionModal
+          showModal={() => setShowCollectionModal(!showCollectionModal)}
+        />
+      )}
     </>
   );
 };

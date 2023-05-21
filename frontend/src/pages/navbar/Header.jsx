@@ -3,19 +3,19 @@ import Search from "./components/Search";
 import Navbar from "./components/Navbar";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
 import { useState, memo, useEffect, useContext } from "react";
-import { useAuth } from "../../setup/auth/useAuth";
+import { useUser } from "../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
 import Logo from "../../common/Logo";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
 import ScrolledHeader from "./ScrolledHeader";
 import Dropdown from "./components/Dropdown";
+import { useAuth } from "../../setup/auth/useAuth";
 
 const Header = () => {
   const { showSearch, setShowSearch } = useContext(GlobalContext);
-  const { loginWithPopup } = useAuth0();
-  const { authenticated } = useAuth();
+  const { loginWithPopup, logout, user } = useAuth0();
   const [activateScrolled, setActivateScrolled] = useState(false);
+  const { authenticated } = useAuth();
 
   const showSearched = () => {
     setShowSearch(!showSearch);
@@ -37,6 +37,10 @@ const Header = () => {
     };
   });
 
+  useEffect(() => {
+    console.log(authenticated);
+  }, [authenticated]);
+
   return (
     <HeaderContainer>
       {!activateScrolled ? (
@@ -50,7 +54,7 @@ const Header = () => {
                   <FaSearch className="search" onClick={showSearched} />
                 </li>
                 <div className="divider-line"></div>
-                {authenticated ? (
+                {user ? (
                   <>
                     <Dropdown />
                     <div className="divider-line"></div>
@@ -83,6 +87,7 @@ const Header = () => {
 const HeaderContainer = styled.header`
   position: fixed;
   width: 100%;
+  /* width: 100vw; */
   top: 0;
   left: 0;
   background-color: white;
@@ -96,14 +101,14 @@ const HeaderControl = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 80px;
-  margin-bottom: 8px;
 `;
 
-const VerticalHeader = styled(motion.div)`
+const VerticalHeader = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 1240px;
-  margin: 15px auto 10px auto;
+  margin: 0 auto;
+  padding-bottom: 8px;
 
   .wrapper {
     color: var(--main-color);

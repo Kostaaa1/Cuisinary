@@ -1,43 +1,46 @@
 import styled from "styled-components";
 import { Close, Delete, Lock } from "@mui/icons-material";
-import { motion } from "framer-motion";
 import Button from "../../../../common/Button";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { motion } from "framer-motion";
+import axios from "axios";
 
 const RemoveModal = ({ collectionTitle, onClick }) => {
   const { user } = useAuth0();
   const navigate = useNavigate();
   const params = useParams();
 
-  const handle = (e) => {
-    if (e.key !== "Escape") return;
-    onClick();
-  };
-
   useEffect(() => {
+    const handle = (e) => {
+      if (e.key !== "Escape") return;
+      onClick();
+    };
+
     document.addEventListener("keydown", handle);
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
   }, []);
 
-  const deleteCollection = () => {
-    fetch(`/api/user/${user.email}/${params.id}/deleteCollection`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: params.id,
-        email: user.email,
-      }),
+  const deleteCollection = async () => {
+    await axios.post(`/api/user/${user.email}/${params.id}/deleteCollection`, {
+      id: params.id,
+      email: user.email,
     });
 
     navigate("/account/profile/collection");
   };
 
   return (
-    <Modal animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-      <Section>
+    <Modal>
+      <Section
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        exit={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="modal-header">
           <span className="flex-header">
             <Delete />
@@ -47,13 +50,18 @@ const RemoveModal = ({ collectionTitle, onClick }) => {
         </div>
         <div className="content">
           <p>
-            Are you sure you want to delete your <span> {collectionTitle} </span> collection?
+            Are you sure you want to delete your
+            <span> {collectionTitle} </span> collection?
           </p>
           <div className="buttons-wrap">
             <button className="btn-border" onClick={onClick}>
               Cancel
             </button>
-            <Button value={"Delete"} onClick={deleteCollection} style={{ width: "120px", height: "50px" }} />
+            <Button
+              value={"Delete"}
+              onClick={deleteCollection}
+              style={{ width: "120px", height: "50px" }}
+            />
           </div>
         </div>
       </Section>
@@ -61,7 +69,7 @@ const RemoveModal = ({ collectionTitle, onClick }) => {
   );
 };
 
-const Modal = styled(motion.div)`
+const Modal = styled.div`
   position: fixed;
   overflow: none;
   content: "";
@@ -76,7 +84,7 @@ const Modal = styled(motion.div)`
   z-index: 10000;
 `;
 
-const Section = styled.div`
+const Section = styled(motion.div)`
   background-color: white;
   width: 380px;
 
@@ -106,9 +114,6 @@ const Section = styled.div`
       margin: 0;
       margin-left: 10px;
     }
-
-    svg {
-    }
   }
 
   .content {
@@ -121,13 +126,13 @@ const Section = styled.div`
 
     p {
       line-height: 1.6rem;
-      letter-spacing: 0.8px;
-      word-wrap: break-word;
+      letter-spacing: 0.6px;
     }
 
     p > span {
       font-size: 18px;
       font-weight: bold;
+      word-break: keep-all;
     }
 
     .buttons-wrap {

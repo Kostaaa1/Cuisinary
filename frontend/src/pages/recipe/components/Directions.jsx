@@ -4,6 +4,7 @@ import LineBreak from "../../../common/LineBreak";
 import { RecipeContext } from "../Recipe";
 import { ImSpoonKnife } from "react-icons/im";
 import { Link } from "react-scroll";
+import { South } from "@mui/icons-material";
 
 const Directions = () => {
   const { recipe } = useContext(RecipeContext);
@@ -21,6 +22,9 @@ const Directions = () => {
         </Link>
         <Link to="link-to-similar" smooth={true} duration={500}>
           SIMILAR
+          <span>
+            <South />
+          </span>
         </Link>
       </div>
       <LineBreak className="line-break" />

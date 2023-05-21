@@ -62,7 +62,7 @@ const Card = styled.div`
   width: 31%;
   display: flex;
   flex-direction: column;
-  min-height: 460px;
+  min-height: 420px;
   box-shadow: var(--card-shadow-border);
 
   @media (max-width: 1030px) {
@@ -102,7 +102,7 @@ const Card = styled.div`
   }
 
   img {
-    height: 80%;
+    height: 70%;
   }
 
   .card__desc {

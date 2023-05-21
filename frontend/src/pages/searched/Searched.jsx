@@ -9,7 +9,7 @@ import SearchForm from "./components/SearchForm";
 import axios from "axios";
 import useSmoothScroll from "../../utils/useSmoothScroll";
 
-const Searched = () => {
+const SearchedRecipes = () => {
   let params = useParams();
   const [favorite, setFavorite] = useState(false);
   useSmoothScroll();
@@ -21,15 +21,18 @@ const Searched = () => {
 
       if (data.length === 0) {
         const res = await fetch(
-          `https://api.spoonacular.com/recipes/complexSearch?apiKey=${import.meta.env.VITE_API_KEY}&number=60&query=${
-            params.search
-          }`
+          `https://api.spoonacular.com/recipes/complexSearch?apiKey=${
+            import.meta.env.VITE_API_KEY
+          }&number=60&query=${params.search}`
         );
 
         const data = await res.json();
         if (data.results.length === 0) return [];
 
-        await axios.post("/api/searched/createSearched", { name: params.search, data: data });
+        await axios.post("/api/searched/createSearched", {
+          name: params.search,
+          data: data,
+        });
         return data.results;
       }
 
@@ -40,7 +43,10 @@ const Searched = () => {
     }
   };
 
-  const { isLoading, data, isSuccess } = useQuery(["searched", params.search], fetchSearched);
+  const { isLoading, data, isSuccess } = useQuery(
+    ["searched", params.search],
+    fetchSearched
+  );
 
   return (
     <Container>
@@ -51,7 +57,12 @@ const Searched = () => {
         </h3>
       )}
       {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
-      <Grid animate={{ opacity: 1 }} initial={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
+      <Grid
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {isSuccess &&
           data.map((recipe, id) => (
             <CardDescription
@@ -98,4 +109,4 @@ const Grid = styled(motion.div)`
   grid-gap: 2rem;
 `;
 
-export default Searched;
+export default SearchedRecipes;

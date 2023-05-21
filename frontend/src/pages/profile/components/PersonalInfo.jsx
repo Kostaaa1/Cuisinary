@@ -1,44 +1,57 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { KeyboardArrowDown, HttpsOutlined, SupervisorAccount } from "@mui/icons-material";
+import { KeyboardArrowDown, HttpsOutlined } from "@mui/icons-material";
 import axios from "axios";
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import SectionInfo from "../../../common/SectionInfo";
-import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import { useAuth, useUser } from "../../../setup/auth/useAuth";
-import useAddFixed from "../hooks/useAddFixed";
+import { useUser } from "../../../setup/auth/useAuth";
 import { useEffect } from "react";
 
 const PersonalInfo = () => {
   const { userData, isLoading } = useUser();
   const [clicked, setClicked] = useState(true);
   const [buttonSave, setButtonSave] = useState(false);
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
-  const [year, setYear] = useState("");
   const [showLoading, setShowLoading] = useState(false);
   const personalRef = useRef(null);
   // useAddFixed(personalRef);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    zipCode: "",
+    email: "",
+  });
+  const [formBirthDate, setFormBirthDate] = useState({
+    month: "",
+    day: "",
+    year: "",
+  });
 
   useEffect(() => {
-    setFirstName(userData?.firstName || "");
-    setLastName(userData?.lastName || "");
-    setZipCode(userData?.zipCode || "");
-    setMonth(userData?.birthDate.month || "");
-    setDay(userData?.birthDate.day || "");
-    setYear(userData?.birthDate.year || "");
-    setEmail(userData?.email);
+    if (userData) {
+      const { firstName, lastName, email, zipCode, birthDate } = userData;
+      const { month, day, year } = birthDate;
+
+      setFormData({
+        firstName: firstName || "",
+        lastName: lastName || "",
+        zipCode: zipCode || "",
+        email: email || "",
+      });
+
+      setFormBirthDate({
+        month: month || "",
+        day: day || "",
+        year: year || "",
+      });
+    }
   }, [userData]);
 
   const submitForm = async (e) => {
     e.preventDefault();
     setShowLoading(true);
+
+    const { month, day, year } = formBirthDate;
 
     let birthDate = {
       month: month !== "" ? month.padStart(2, "0") : month,
@@ -46,153 +59,182 @@ const PersonalInfo = () => {
       year: year,
     };
 
-    const formData = {
-      firstName: firstName,
-      lastName: lastName,
-      zipCode: zipCode,
-      birthDate: birthDate,
-    };
-
-    await axios.post(`/api/user/${userData?.email}`, { user: formData });
-
+    await axios.post(`/api/user/${userData?.email}`, {
+      user: {
+        ...formData,
+        birthDate,
+      },
+    });
     window.location.reload();
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "month" || name === "day" || name === "year") {
+      setFormBirthDate((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
+    setButtonSave(true);
   };
 
   return (
     <Form onSubmit={submitForm}>
-      {/* {!isLoading ? (
+      {!isLoading ? (
         <Loading className="loading" />
-      ) : ( */}
-      <>
-        <div className="personal-section" ref={personalRef}>
-          <h1>Personal Info</h1>
-          {showLoading ? (
-            <button className={"btn-save"}>
-              <Loading styles={{ transform: "scale(0.8)" }} />
-            </button>
-          ) : (
-            <>
-              {buttonSave ? (
-                <input type="submit" value={"SAVE CHANGES"} className={`btn-save highlight`} />
-              ) : (
-                <input type="submit" value={"SAVE CHANGES"} disabled className={`btn-save`} />
-              )}
-            </>
-          )}
-        </div>
-        <SectionInfo
-          value={
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
-          }
-          icon={<HttpsOutlined />}
-          text={"Only you can see the information on this page.  It will not be displayed for other users to see."}
-        />
-        <FormWrap>
-          <div className="head-info" onClick={() => setClicked(!clicked)}>
-            <h3>My Basic Info</h3>
-            <KeyboardArrowDown className={clicked ? "click" : ""} />
+      ) : (
+        <>
+          <div className="personal-section" ref={personalRef}>
+            <h1>Personal Info</h1>
+            {showLoading ? (
+              <button className={"btn-save"}>
+                <Loading className="scaled-loading" />
+              </button>
+            ) : (
+              <>
+                {buttonSave ? (
+                  <input
+                    type="submit"
+                    value={"SAVE CHANGES"}
+                    className={`btn-save highlight`}
+                  />
+                ) : (
+                  <input
+                    type="submit"
+                    value={"SAVE CHANGES"}
+                    disabled
+                    className={`btn-save`}
+                  />
+                )}
+              </>
+            )}
           </div>
-          {clicked && (
-            <>
-              <div className="input-container">
-                <div className="input-wrapper">
-                  <label> Email Address*</label>
-                  <input id="email" type="email" readOnly={email} placeholder={email} className="email" />
-                </div>
-                <HalfWrap>
-                  <div className="input-wrapper half">
-                    <label> First Name</label>
+          <SectionInfo
+            value={
+              "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
+            }
+            icon={<HttpsOutlined />}
+            text={
+              "Only you can see the information on this page.  It will not be displayed for other users to see."
+            }
+          />
+          <FormWrap>
+            <div className="head-info" onClick={() => setClicked(!clicked)}>
+              <h3>My Basic Info</h3>
+              <KeyboardArrowDown className={clicked ? "click" : ""} />
+            </div>
+            {clicked && (
+              <>
+                <div className="input-container">
+                  <div className="input-wrapper">
+                    <label> Email Address*</label>
                     <input
-                      onChange={(e) => {
-                        setFirstName(e.target.value), setButtonSave(true);
-                      }}
-                      value={firstName}
-                      id="firstName"
-                      type="text"
-                      placeholder={"Taylor"}
+                      type="email"
+                      readOnly={formData.email}
+                      placeholder={formData.email}
+                      className="email"
                     />
                   </div>
-                  <div className="input-wrapper half">
-                    <label> Last Name</label>
-                    <input
-                      onChange={(e) => {
-                        setLastName(e.target.value);
-                        setButtonSave(true);
-                      }}
-                      value={lastName}
-                      id="lastName"
-                      type="text"
-                      placeholder={"Smith"}
-                    />
-                  </div>
-                </HalfWrap>
-                <HalfWrap>
-                  <div className="input-wrapper date">
-                    <label>Birth Date</label>
-                    <div>
+                  <HalfWrap>
+                    <div className="input-wrapper half">
+                      <label> First Name</label>
                       <input
-                        onChange={(e) => {
-                          setMonth(e.target.value), setButtonSave(true);
-                        }}
-                        id="month"
+                        onChange={handleInputChange}
+                        name="firstName"
+                        value={formData.firstName}
                         type="text"
-                        min={"1"}
-                        max={"12"}
-                        placeholder="MM"
-                        value={month}
-                        required={(day !== "" || year !== "") && true}
-                        maxLength={2}
-                      />
-                      <span>/</span>
-                      <input
-                        onChange={(e) => {
-                          setDay(e.target.value), setButtonSave(true);
-                        }}
-                        type="text"
-                        min={"1"}
-                        max={"31"}
-                        id="day"
-                        value={day}
-                        required={(month !== "" || year !== "") && true}
-                        placeholder="DD"
-                        maxLength={2}
-                      />
-                      <span>/</span>
-                      <input
-                        onChange={(e) => {
-                          setYear(e.target.value), setButtonSave(true);
-                        }}
-                        type="text"
-                        min={"1930"}
-                        max={"2022"}
-                        id="year"
-                        placeholder="YYYY"
-                        value={year}
-                        required={(month !== "" || day !== "") && true}
-                        maxLength={4}
+                        placeholder={"Taylor"}
                       />
                     </div>
-                  </div>
+                    <div className="input-wrapper half">
+                      <label> Last Name</label>
+                      <input
+                        onChange={handleInputChange}
+                        name="lastName"
+                        value={formData.lastName}
+                        type="text"
+                        placeholder={"Smith"}
+                      />
+                    </div>
+                  </HalfWrap>
+                  <HalfWrap>
+                    <div className="input-wrapper date">
+                      <label>Birth Date</label>
+                      <div>
+                        <input
+                          onChange={handleInputChange}
+                          name="month"
+                          value={formBirthDate.month}
+                          type="text"
+                          min={"1"}
+                          max={"12"}
+                          placeholder="MM"
+                          required={
+                            (formBirthDate.day !== "" ||
+                              formBirthDate.year !== "") &&
+                            true
+                          }
+                          maxLength={2}
+                        />
+                        <span>/</span>
+                        <input
+                          onChange={handleInputChange}
+                          value={formBirthDate.day}
+                          name="day"
+                          type="text"
+                          min={"1"}
+                          max={"31"}
+                          required={
+                            (formBirthDate.month !== "" ||
+                              formBirthDate.year !== "") &&
+                            true
+                          }
+                          placeholder="DD"
+                          maxLength={2}
+                        />
+                        <span>/</span>
+                        <input
+                          onChange={handleInputChange}
+                          name="year"
+                          value={formBirthDate.year}
+                          type="text"
+                          min={"1930"}
+                          max={"2022"}
+                          placeholder="YYYY"
+                          required={
+                            (formBirthDate.month !== "" ||
+                              formBirthDate.day !== "") &&
+                            true
+                          }
+                          maxLength={4}
+                        />
+                      </div>
+                    </div>
 
-                  <div className="input-wrapper half">
-                    <label>ZIP Code</label>
-                    <input
-                      onChange={(e) => {
-                        setZipCode(e.target.value), setButtonSave(true);
-                      }}
-                      value={zipCode}
-                      id="zipCode"
-                      type="text"
-                      placeholder="ZIP Code"
-                    />
-                  </div>
-                </HalfWrap>
-              </div>
-            </>
-          )}
-        </FormWrap>
-      </>
-      {/* )} */}
+                    <div className="input-wrapper half">
+                      <label>ZIP Code</label>
+                      <input
+                        onChange={handleInputChange}
+                        name="zipCode"
+                        value={formData.zipCode}
+                        type="text"
+                        placeholder="ZIP Code"
+                      />
+                    </div>
+                  </HalfWrap>
+                </div>
+              </>
+            )}
+          </FormWrap>
+        </>
+      )}
     </Form>
   );
 };
@@ -211,6 +253,7 @@ const Form = styled.form`
     }
 
     .btn-save {
+      position: relative;
       width: 200px;
       height: 60px;
       font-size: 12px;
@@ -221,6 +264,10 @@ const Form = styled.form`
       border: none;
       border-radius: 3px;
       letter-spacing: 1.2px;
+
+      .scaled-loading {
+        transform: scale(0.8) !important;
+      }
     }
 
     .highlight {

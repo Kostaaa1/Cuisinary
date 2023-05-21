@@ -53,6 +53,7 @@ const SearchForm = styled.form`
   h4 {
     color: var(--main-color);
     font-weight: bold;
+    font-size: 16px;
     margin-right: 10px;
   }
 

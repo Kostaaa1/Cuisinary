@@ -12,6 +12,7 @@ const openai = new OpenAIApi(config);
 
 const extractKeyword = async (word) => {
   try {
+    console.log("extract function called");
     if (word) {
       const prompt = `Extract the keyword that is related to food, out of "${word}". In the response, do not include anything but letters. The response also must be only one word! For example, if the group of words is "Cheesy Chicken Broccoli Rice Casserole & Holiday Acorn Box", the potential keyword would be "Chicken".`;
 
@@ -23,13 +24,13 @@ const extractKeyword = async (word) => {
       });
 
       let keyword = response.data.choices[0].text;
-      console.log(keyword, "openai ran");
 
       keyword = keyword
         .trim()
         .replace(/[^a-zA-Z"]/g, "")
         .toLowerCase();
 
+      console.log(keyword, "openai ran");
       return keyword;
     }
   } catch (error) {
@@ -42,12 +43,11 @@ module.exports = {
     try {
       const query = req.params.query.toLowerCase();
       const checkParams = await Searched.findOne({ name: { $in: query.split(" ") } });
+      console.log(checkParams === null);
 
-      if (checkParams) {
-        res.status(200).json(checkParams);
-      } else {
-        const recipe = await Searched.findOne({ name: keyword });
+      if (!checkParams) {
         const keyword = await extractKeyword(query);
+        const recipe = await Searched.findOne({ name: keyword });
 
         if (!recipe) {
           const response = await axios.get(
@@ -64,6 +64,8 @@ module.exports = {
         }
 
         res.status(200).json(recipe);
+      } else {
+        res.status(200).json(checkParams);
       }
     } catch (error) {
       res.status(400).send(error);
@@ -74,6 +76,7 @@ module.exports = {
       const cuisine = await Searched.find({
         name: req.params.query,
       });
+      console.log(cuisine);
       res.json(cuisine);
     } catch (error) {
       console.log(error);
@@ -96,17 +99,18 @@ module.exports = {
   getRecipe: async (req, res) => {
     try {
       const recipe = await Recipe.findOne({ id: req.params.id });
+      console.log(recipe, "check if recipe");
 
       if (!recipe) {
         const recipeRes = await axios.get(
           `https://api.spoonacular.com/recipes/${req.params.id}/information?apiKey=${process.env.SPOONACULAR_API_KEY}&includeNutrition=true`
         );
-        const recipeData = recipeRes.data;
+        // const recipeData = recipeRes.data;
 
         const createRecipe = await Recipe.create({
-          id: recipeData.id,
-          recipeTitle: recipeData.title,
-          data: recipeData,
+          id: recipeRes.data.id,
+          recipeTitle: recipeRes.data.title,
+          data: recipeRes.data,
         });
 
         res.status(201).json([createRecipe, []]);
@@ -114,11 +118,9 @@ module.exports = {
       }
 
       const reviews = await Review.find({ _id: { $in: recipe.reviews } });
-
       res.status(200).json([recipe, reviews]);
     } catch (error) {
       res.status(401).send(error);
-      console.log(error);
     }
   },
   createRecipeReview: async (req, res) => {

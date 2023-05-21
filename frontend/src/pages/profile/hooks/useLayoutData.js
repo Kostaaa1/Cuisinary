@@ -24,14 +24,6 @@ export const useLayoutData = () => {
     },
   ]);
 
-  // const layoutData = (collections) => {
-  //   if (collections) {
-  //     setCollections(collections);
-  //   } else {
-  //     setCollections([]);
-  //   }
-  // };
-
   const layoutData = useCallback(
     (collections) => {
       if (userData) {
@@ -51,7 +43,9 @@ export const useLayoutData = () => {
         data: { image: recipes.recipe?.image },
       }))
     );
-    return destructuredArray?.map((el) => mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl)));
+    return destructuredArray?.map((el) =>
+      mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
+    );
   }, [collections, mockData]);
 
   return {
