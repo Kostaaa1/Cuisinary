@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import CardDescription from "../../../common/CardDescription";
@@ -13,13 +13,6 @@ const SimilarRecipes = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { recipe, favoriteForSimilar, setFavoriteForSimilar } =
     useContext(RecipeContext);
-  const [similarData, setSimilarData] = useState([]);
-
-  useEffect(() => {
-    if (!!recipe?.title) {
-      fetchSimilarRecipes();
-    }
-  }, [!!recipe?.title]);
 
   const fetchSimilarRecipes = async () => {
     try {
@@ -29,12 +22,24 @@ const SimilarRecipes = () => {
         );
         if (res.data) setIsLoading(false);
 
-        setSimilarData(res.data);
+        return res.data;
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  const { data: similarData, refetch } = useQuery(
+    ["similar-recipes"],
+    fetchSimilarRecipes,
+    {
+      enabled: !!recipe?.title,
+    }
+  );
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <>
@@ -48,7 +53,7 @@ const SimilarRecipes = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {similarData?.data.results?.slice(0, 16).map((recipe, id) => (
+              {similarData?.data.slice(0, 16).map((recipe, id) => (
                 <CardDescription
                   params={similarData?.name}
                   key={id}

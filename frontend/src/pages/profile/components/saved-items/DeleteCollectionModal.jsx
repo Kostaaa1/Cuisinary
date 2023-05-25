@@ -25,7 +25,7 @@ const RemoveModal = ({ collectionTitle, onClick }) => {
   }, []);
 
   const deleteCollection = async () => {
-    await axios.post(`/api/user/${user.email}/${params.id}/deleteCollection`, {
+    axios.post(`/api/user/${user.email}/${params.id}/deleteCollection`, {
       id: params.id,
       email: user.email,
     });

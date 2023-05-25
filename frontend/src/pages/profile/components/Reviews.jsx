@@ -1,24 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import SectionInfo from "../../../common/SectionInfo";
+import { Star, StarBorder } from "@mui/icons-material";
+import Button from "../../../common/Button";
+import Loading from "../../../common/Loading";
+import { Link } from "react-router-dom";
 import {
   ArrowDropDown,
   Check,
   KeyboardArrowDown,
   SupervisorAccount,
 } from "@mui/icons-material";
-import { useUser } from "../../../setup/auth/useAuth";
-import { Star, StarBorder } from "@mui/icons-material";
-import Button from "../../../common/Button";
-import Loading from "../../../common/Loading";
-import { Link } from "react-router-dom";
 
-const Reviews = () => {
-  const { userData, isLoading, setIsLoading } = useUser();
+const Reviews = ({ userData }) => {
+  const loadCount = 5;
+  const sortingRef = useRef(null);
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(true);
   const [showLoadMore, setShowLoadMore] = useState(false);
-  const loadCount = 5;
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSorting, setIsSorting] = useState(false);
   const [hideDropdown, setHideDropdown] = useState(false);
@@ -28,32 +27,9 @@ const Reviews = () => {
     { text: "Most Positive", clicked: false, id: 2 },
     { text: "Least Positive", clicked: false, id: 3 },
   ]);
-  const sortingRef = useRef(null);
   const [sortingTitle, setSortingTitle] = useState(
     sortData.filter((item) => item.clicked)[0].text || ""
   );
-
-  // useEffect(() => {
-  //   if (userData) {
-  //     let arr = userData?.reviews;
-  //     if (sortingTitle === "Newest") {
-  //       arr?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  //     } else if (sortingTitle === "Oldest") {
-  //       arr?.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
-  //     } else if (sortingTitle === "Least Positive") {
-  //       arr?.sort((a, b) => a.starRating - b.starRating);
-  //     } else if ("Most Positive") {
-  //       arr?.sort((a, b) => b.starRating - a.starRating);
-  //     }
-
-  //     if (arr?.length > 5) {
-  //       setReviews(arr.slice(0, loadCount));
-  //       setShowLoadMore(true);
-  //     } else {
-  //       setReviews(arr);
-  //     }
-  //   }
-  // }, [userData, sortingTitle]);
 
   useEffect(() => {
     if (userData) {
@@ -74,6 +50,7 @@ const Reviews = () => {
         default:
           break;
       }
+
       if (arr?.length > 5) {
         setReviews(arr.slice(0, loadCount));
         setShowLoadMore(true);
@@ -82,7 +59,7 @@ const Reviews = () => {
       }
     }
   }, [userData, sortingTitle]);
-
+  
   useEffect(() => {
     if (reviews?.length === userData?.reviews?.length) {
       setShowLoadMore(false);
@@ -92,11 +69,13 @@ const Reviews = () => {
   const handleLoadMore = () => {
     setIsLoadingMore(true);
     setTimeout(() => {
-      setReviews((prevState) =>
-        prevState.concat(
+      setReviews((prevState) => {
+        const newReviews = prevState.concat(
           userData.reviews.slice(prevState.length, loadCount + prevState.length)
-        )
-      );
+        );
+        setIsLoadingMore(false);
+        return newReviews;
+      });
       setIsLoadingMore(false);
     }, Math.random() * 800);
   };
@@ -121,12 +100,14 @@ const Reviews = () => {
   };
 
   useEffect(() => {
-    function handleClick(e) {
+    const handleClick = (e) => {
       if (sortingRef.current && !sortingRef.current.contains(e.target)) {
         setHideDropdown(false);
       }
-    }
+    };
+
     document.addEventListener("click", handleClick);
+
     return () => {
       document.removeEventListener("click", handleClick);
     };
@@ -134,117 +115,99 @@ const Reviews = () => {
 
   return (
     <Container>
-      {isLoading ? (
+      <div className="header">
+        <h1>Reviews</h1>
+      </div>
+      <SectionInfo
+        value={"Reviews you have added to content."}
+        icon={<SupervisorAccount />}
+        text={"Other users can see reviews you have made"}
+      />
+      {userData?.reviews?.length !== 0 ? (
         <>
-          <div className="header">
-            <h1>Reviews</h1>
+          <div className="sorting-div">
+            <h3> {reviews.length} reviews </h3>
+            <div ref={sortingRef} className="relative-flex">
+              <span onClick={() => setHideDropdown(!hideDropdown)}>
+                SORT BY:
+                {sortData.filter((item) => item.clicked)[0].text.toUpperCase()}
+                <ArrowDropDown />
+              </span>
+              <ul className={`${hideDropdown ? "" : "hide-dropdown"} dropdown`}>
+                {sortData.map((item) => (
+                  <li key={item.id}>
+                    {item.clicked && <Check />}
+                    <p onClick={() => handleCheck(item.text)}> {item.text} </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <SectionInfo
-            value={"Reviews you have added to content."}
-            icon={<SupervisorAccount />}
-            text={"Other users can see reviews you have made"}
-          />
-          {reviews.length !== 0 ? (
-            <>
-              <div className="sorting-div">
-                <h3> {reviews?.length} reviews </h3>
-                <div ref={sortingRef} className="relative-flex">
-                  <span onClick={() => setHideDropdown(!hideDropdown)}>
-                    SORT BY:{" "}
-                    {sortData
-                      .filter((item) => item.clicked)[0]
-                      .text.toUpperCase()}
-                    <ArrowDropDown />
-                  </span>
-                  <ul
-                    className={`${
-                      hideDropdown ? "" : "hide-dropdown"
-                    } dropdown`}
-                  >
-                    {sortData.map((item) => (
-                      <li key={item.id}>
-                        {item.clicked && <Check />}
-                        <p onClick={() => handleCheck(item.text)}>
-                          {" "}
-                          {item.text}{" "}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <ReviewsSections>
-                <div
-                  className="head-info"
-                  onClick={() => setShowReviews(!showReviews)}
-                >
-                  <h3>Your Reviews</h3>
-                  <KeyboardArrowDown className={showReviews ? "" : "show"} />
-                </div>
-                {showReviews && (
-                  <div className="reviews-control">
-                    {isSorting ? (
-                      <div className="loading-wrap">
-                        <Loading />
-                      </div>
-                    ) : (
-                      <>
-                        {reviews?.map((review, id) => (
-                          <div key={id} className="reviews">
-                            <Link to={"/recipe/" + review.recipeId}>
-                              <img
-                                src={review.recipeImage}
-                                alt="review-image"
-                              />
-                            </Link>
-                            <div className="control-flex">
-                              <Link to={"/recipe/" + review.recipeId}>
-                                <h2> {review.recipeTitle} </h2>
-                              </Link>
-                              <div>
-                                {[...Array(5)].map((_, id) =>
-                                  id <= review.starRating ? (
-                                    <Star key={id} />
-                                  ) : (
-                                    <StarBorder
-                                      key={id}
-                                      className="bordered"
-                                      style={{ color: "var(--red-color)" }}
-                                    />
-                                  )
-                                )}
-                              </div>
-                              <p> {review.comment} </p>
-                            </div>
-                          </div>
-                        ))}
-                        {showLoadMore && (
-                          <div className="button-flex">
-                            {!isLoadingMore ? (
-                              <Button
-                                value={"LOAD MORE"}
-                                onClick={handleLoadMore}
-                                style={{ width: "160px", height: "50px" }}
-                              />
-                            ) : (
-                              <Loading />
+          <ReviewsSections>
+            <div
+              className="head-info"
+              onClick={() => setShowReviews(!showReviews)}
+            >
+              <h3>Your Reviews</h3>
+              <KeyboardArrowDown className={showReviews ? "" : "show"} />
+            </div>
+            {showReviews && (
+              <div className="reviews-control">
+                {isSorting ? (
+                  <div className="loading-wrap">
+                    <Loading />
+                  </div>
+                ) : (
+                  <>
+                    {reviews?.map((review, id) => (
+                      <div key={id} className="reviews">
+                        <Link to={"/recipe/" + review.recipeId}>
+                          <img src={review.recipeImage} alt="review-image" />
+                        </Link>
+                        <div className="control-flex">
+                          <Link to={"/recipe/" + review.recipeId}>
+                            <h2> {review.recipeTitle} </h2>
+                          </Link>
+                          <div>
+                            {[...Array(5)].map((_, id) =>
+                              id <= review.starRating ? (
+                                <Star key={id} />
+                              ) : (
+                                <StarBorder
+                                  key={id}
+                                  className="bordered"
+                                  style={{ color: "var(--red-color)" }}
+                                />
+                              )
                             )}
                           </div>
+                          <p> {review.comment} </p>
+                        </div>
+                      </div>
+                    ))}
+                    {showLoadMore && (
+                      <div className="button-flex">
+                        {!isLoadingMore ? (
+                          <Button
+                            value={"LOAD MORE"}
+                            onClick={handleLoadMore}
+                            style={{ width: "160px", height: "50px" }}
+                          />
+                        ) : (
+                          <Loading />
                         )}
-                      </>
+                      </div>
                     )}
-                  </div>
+                  </>
                 )}
-              </ReviewsSections>
-            </>
-          ) : (
-            <div className="wrapper">
-              <h1> You haven't created any reviews yet. </h1>
-            </div>
-          )}
+              </div>
+            )}
+          </ReviewsSections>
         </>
       ) : (
-        <Loading className="loading" />
+        <div className="wrapper">
+          <h1> You haven't created any reviews yet. </h1>
+        </div>
       )}
     </Container>
   );
@@ -256,7 +219,6 @@ const Container = styled.section`
     align-items: center;
     justify-content: center;
     padding: 32px 0;
-    /* padding-top: 32px; */
 
     h1 {
       font-size: 26px;

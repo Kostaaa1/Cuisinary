@@ -47,54 +47,54 @@ const Pages = () => {
         <Route path="/category/:recipe" element={<Category />} />
         <Route path="/recipe/:id" element={<Recipe />} />
 
-        {/* <Route element={<ProtectedRoutes />}> */}
-        <Route path="/account/addRecipe/" element={<AddRecipe />} />
-        <Route
-          path="/account/forgot-password-reset"
-          element={<PasswordForm />}
-          showHeader={false}
-        />
-        <Route
-          path="/account/forgot-password-success"
-          element={<Success />}
-          showHeader={false}
-        />
-        <Route
-          path="/account/profile/"
-          element={
-            <MyProfile
-              listContent={lists}
-              staticList={StaticList}
-              setLists={setLists}
-            />
-          }
-        />
-        <Route
-          path="/account/profile/:name/"
-          element={
-            <MyProfile
-              listContent={lists}
-              staticList={StaticList}
-              setLists={setLists}
-            />
-          }
-        />
-        <Route
-          path="/account/profile/:name/:id"
-          element={
-            <MyProfile
-              listContent={lists}
-              staticList={StaticList}
-              setLists={setLists}
-            />
-          }
-        />
-        <Route path="/profile/:profileId" element={<UserInfo />} />
-        <Route
-          path="/profile/:profileId/collection/:collectionId"
-          element={<CollectionPage />}
-        />
-        {/* </Route> */}
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/account/addRecipe/" element={<AddRecipe />} />
+          <Route
+            path="/account/forgot-password-reset"
+            element={<PasswordForm />}
+            showHeader={false}
+          />
+          <Route
+            path="/account/forgot-password-success"
+            element={<Success />}
+            showHeader={false}
+          />
+          <Route
+            path="/account/profile/"
+            element={
+              <MyProfile
+                listContent={lists}
+                staticList={StaticList}
+                setLists={setLists}
+              />
+            }
+          />
+          <Route
+            path="/account/profile/:name/"
+            element={
+              <MyProfile
+                listContent={lists}
+                staticList={StaticList}
+                setLists={setLists}
+              />
+            }
+          />
+          <Route
+            path="/account/profile/:name/:id"
+            element={
+              <MyProfile
+                listContent={lists}
+                staticList={StaticList}
+                setLists={setLists}
+              />
+            }
+          />
+          <Route path="/profile/:profileId" element={<UserInfo />} />
+          <Route
+            path="/profile/:profileId/collection/:collectionId"
+            element={<CollectionPage />}
+          />
+        </Route>
       </Routes>
     </>
   );

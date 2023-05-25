@@ -1,23 +1,20 @@
+import React, { useEffect, useContext, useState } from "react";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
-import {
-  NavLink,
-  Route,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import React, { useEffect, useContext, useState, Component, memo } from "react";
 import List from "../../pages/profile/components/List";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
-import AuthContext from "../../setup/app-context-menager/AuthContext";
 import axios from "axios";
 import ProfileGreet from "./components/ProfileGreet";
 import { useUser } from "../../setup/auth/useAuth";
 import Footer from "../Footer";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth0 } from "@auth0/auth0-react";
+import Loading from "../../common/Loading";
 
 const MyProfile = ({ listContent, staticList, setLists }) => {
   const params = useParams();
   const location = useLocation();
+  const { user } = useAuth0();
   const [loading, setLoading] = useState(false);
   const {
     arrayOfRecipeNames,
@@ -25,8 +22,18 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     collectionId,
     collectionParams,
   } = useContext(GlobalContext);
-  const { userData } = useContext(AuthContext);
-  const { refetch } = useUser();
+  const { getUserData } = useUser();
+
+  const {
+    data: userData,
+    isRefetching,
+    isLoading,
+  } = useQuery(["user-data", user?.email], getUserData, {
+    enabled: !!user,
+    refetchOnMount:
+      (location.pathname === "/account/profile/collection" && "always") ||
+      (location.pathname === "/account/profile/reviews" && "always"),
+  });
 
   useEffect(() => {
     if (
@@ -35,7 +42,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     ) {
       handleDeletionOfRecipes();
       setArrayOfRecipeNames([]);
-      refetch();
     }
   }, [location.pathname]);
 
@@ -44,7 +50,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
       titles: arrayOfRecipeNames,
       collectionId: collectionParams === "saved-items" ? "" : collectionId,
     };
-    axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
+    await axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
   };
 
   useEffect(() => {
@@ -94,8 +100,17 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
           {listContent.map((list) => {
             if (list.selected) {
               const Component = staticList[list.component];
-
-              return <Component key={list.id} data={userData} />;
+              if (!isRefetching && !isLoading) {
+                return (
+                  <Component
+                    key={list.id}
+                    userData={userData}
+                    isRefetching={isRefetching}
+                  />
+                );
+              } else {
+                return <Loading key={list.id} className="loading" />;
+              }
             }
           })}
         </div>
@@ -121,14 +136,14 @@ const Wrapper = styled.section`
 `;
 
 const Container = styled.div`
-  margin: 0 auto;
-  padding: 200px 0;
+  margin: 200px auto;
+  padding-bottom: 200px;
   display: flex;
   width: 1240px;
   max-width: 100%;
 
   .loading {
-    transform: translate(0, -10px) scale(1.2);
+    transform: translate(0, -50%) scale(1.2);
   }
 
   @media screen and (max-width: 1250px) {
@@ -145,7 +160,7 @@ const Container = styled.div`
   }
 
   .profile {
-    min-width: 260px;
+    min-width: 296px;
     height: 100%;
     margin-right: 25px;
     background-color: #fff;

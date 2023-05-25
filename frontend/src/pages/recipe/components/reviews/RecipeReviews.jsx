@@ -2,20 +2,21 @@ import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import UserReview from "./UserReview";
-import { useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import Loading from "../../../../common/Loading";
 import Comments from "./Comments";
 import BarChart from "./BarChart";
 import { RecipeContext } from "../../Recipe";
 import { useParams } from "react-router-dom";
 import StarRatings from "./StarRatings";
-import { useUser } from "../../../../setup/auth/useAuth";
+import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 
 const RecipeReviews = () => {
   const params = useParams();
   const starRef = useRef(null);
-  const { recipe, reviews, setReviews, starArray, averageRate } = useContext(RecipeContext);
-  const { userData } = useUser();
+  const { recipe, reviews, setReviews, starArray, averageRate } =
+    useContext(RecipeContext);
+  const { userData } = useContext(AuthContext);
   const [submitted, setSubmitted] = useState(false);
   const [myReview, setMyReview] = useState(null);
   const [comment, setComment] = useState("");
@@ -30,7 +31,9 @@ const RecipeReviews = () => {
   ]);
 
   useEffect(() => {
-    let myReview = reviews?.filter((review) => review.userId === userData?._id)[0];
+    let myReview = reviews?.filter(
+      (review) => review.userId === userData?._id
+    )[0];
     if (myReview) {
       setMyReview(myReview);
       setComment(myReview?.comment);
@@ -41,7 +44,9 @@ const RecipeReviews = () => {
 
   const clearInputs = () => {
     if (!myReview) {
-      setRateArr((prevState) => prevState.map((item) => item && { ...item, bool: false, class: "" }));
+      setRateArr((prevState) =>
+        prevState.map((item) => item && { ...item, bool: false, class: "" })
+      );
       setClickId(-1);
       setComment("");
     } else {
@@ -50,7 +55,11 @@ const RecipeReviews = () => {
         prevState
           .slice(0, rating + 1)
           .map((item) => item && { ...item, bool: true, class: "" })
-          .concat(rateArr.slice(rating + 1, rateArr.length).map((item) => item && { ...item, bool: false, class: "" }))
+          .concat(
+            rateArr
+              .slice(rating + 1, rateArr.length)
+              .map((item) => item && { ...item, bool: false, class: "" })
+          )
       );
       setClickId(rating);
       setComment(myReview.comment);
@@ -65,7 +74,10 @@ const RecipeReviews = () => {
   const editReview = async (data) => {
     try {
       const [editUserReview, editRecipeReview] = await Promise.all([
-        axios.post(`/api/user/${userData?.email}/editUserReview`, { ...data, recipeImage: recipe.image }),
+        axios.post(`/api/user/${userData?.email}/editUserReview`, {
+          ...data,
+          recipeImage: recipe.image,
+        }),
         axios.post(`/api/recipe/${params.id}/editRecipeReview`, {
           ...data,
           recipeId: myReview._id,
@@ -138,7 +150,11 @@ const RecipeReviews = () => {
         <>
           <div className="wrapper">
             {submitted && myReview ? (
-              <UserReview recipeImg={recipe?.image} myReview={myReview} showSubmit={showSubmit} />
+              <UserReview
+                recipeImg={recipe?.image}
+                myReview={myReview}
+                showSubmit={showSubmit}
+              />
             ) : (
               <ReviewsForm>
                 <StarRatings

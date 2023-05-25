@@ -8,10 +8,11 @@ const SavedModal = ({ setFavorite }) => {
   useEffect(() => {
     const handle = (e) => {
       if (e.key !== "Escape") return;
-      close();
+      setFavorite(false);
     };
 
     document.addEventListener("keydown", handle);
+
     return () => {
       document.removeEventListener("keydown", handle);
     };
@@ -43,7 +44,7 @@ const SavedModal = ({ setFavorite }) => {
         <div className="close">
           <Close
             onClick={() => {
-              close();
+              setFavorite(false);
             }}
           />
         </div>

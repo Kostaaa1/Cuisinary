@@ -21,16 +21,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import CollectionModal from "../../../../common/CollectionModal";
 import DeleteCollectionModal from "./DeleteCollectionModal";
 import useNoScroll from "../../../../utils/useNoScroll";
-import { useUser } from "../../../../setup/auth/useAuth";
 
-const Collections = () => {
+const SavedItems = ({ data: userData, isRefetching }) => {
   const params = useParams();
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
   const [showEditCollectionModal, setShowEditCollectionModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth0();
-  const { userData, isLoading, setIsLoading } = useUser();
   const [collectionArray, setCollectionArray] = useState([]);
   const {
     arrayOfRecipeNames,
@@ -68,6 +66,7 @@ const Collections = () => {
       let arr = res.data.collRecipes.map(
         (item) => item && { ...item, loading: false }
       );
+
       setCollectionArray(arr);
       return res.data;
     } catch (error) {
@@ -79,8 +78,8 @@ const Collections = () => {
     ["collectionData"],
     fetchCollectionData,
     {
-      refetchOnMount: "always",
       enabled: !!user,
+      refetchOnMount: "always",
     }
   );
 
@@ -102,9 +101,7 @@ const Collections = () => {
 
   return (
     <Saved>
-      {!isLoading ? (
-        <Loading className="loading" />
-      ) : (
+      {!isFetching ? (
         <>
           <div className="wrap">
             <ButtonHover
@@ -171,8 +168,7 @@ const Collections = () => {
             )}
           </div>
           <div className="line-break"></div>
-
-          {collectionData?.collRecipes.length === 0 && (
+          {collectionData?.collRecipes?.length === 0 && (
             <section>
               <h2>You haven't saved anything yet. Start browsing!</h2>
               <p>
@@ -224,6 +220,8 @@ const Collections = () => {
             />
           )}
         </>
+      ) : (
+        <Loading className="loading" />
       )}
     </Saved>
   );
@@ -343,4 +341,4 @@ const Saved = styled.div`
   }
 `;
 
-export default Collections;
+export default SavedItems;

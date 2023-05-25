@@ -80,7 +80,6 @@ module.exports = {
     try {
       const { name, email, nickname } = req.body.user;
       let user = await User.findOne({ email: req.params.email });
-      console.log(name, email);
 
       if (!user) {
         const newUser = new User({

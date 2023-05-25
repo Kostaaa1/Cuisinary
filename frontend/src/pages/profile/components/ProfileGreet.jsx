@@ -4,10 +4,9 @@ import styled from "styled-components";
 import ButtonBorder from "../../../common/ButtonBorder";
 import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import PersonAvatar from "../../../common/PersonAvatar";
-import { useUser } from "../../../setup/auth/useAuth";
 
 const ProfileGreet = ({ onLoad }) => {
-  const { userData } = useUser();
+  const { userData } = useContext(AuthContext);
   const navigate = useNavigate();
 
   return (
@@ -15,10 +14,20 @@ const ProfileGreet = ({ onLoad }) => {
       {!userData?.picture?.image ? (
         <PersonAvatar onLoad={onLoad} />
       ) : (
-        <img src={`${userData?.picture?.image}`} onLoad={onLoad} alt="profile-picture" className="profile-picture" />
+        <img
+          src={`${userData?.picture?.image}`}
+          onLoad={onLoad}
+          alt="profile-picture"
+          className="profile-picture"
+        />
       )}
       <div>
-        <h3>Hi, {userData?.firstName ? `${userData?.firstName} ${userData?.lastName}` : userData?.email}</h3>
+        <h3>
+          Hi,{" "}
+          {userData?.firstName
+            ? `${userData?.firstName} ${userData?.lastName}`
+            : userData?.email}
+        </h3>
         <ButtonBorder
           style={{ width: "140px", height: "36px" }}
           onClick={() => navigate(`/profile/${userData._id}`)}

@@ -72,7 +72,8 @@ const Recipe = () => {
   const averageRate = useMemo(() => {
     if (reviews) {
       let sum = reviews?.reduce((acc, num) => (acc += num.starRating + 1), 0);
-      let average = sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
+      let average =
+        sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
       setComments(reviews.filter((review) => review.comment !== ""));
       return average;
     }
@@ -117,26 +118,29 @@ const Recipe = () => {
   return (
     <RecipeContext.Provider value={value}>
       {recipe && isFetched ? (
-        <Wrapper>
-          <div className="container">
-            <RecipeHeader />
-            <Summary />
-            <Description />
-            <Ingredients />
-            <Directions />
-            <Nutrition />
-            <RecipeReviews />
-          </div>
-        </Wrapper>
+        <>
+          <Wrapper>
+            <div className="container">
+              <RecipeHeader />
+              <Summary />
+              <Description />
+              <Ingredients />
+              <Directions />
+              <Nutrition />
+              <RecipeReviews />
+            </div>
+          </Wrapper>
+          <SimilarRecipes />
+        </>
       ) : (
         <Loading className="loading" />
       )}
-      <SimilarRecipes />
     </RecipeContext.Provider>
   );
 };
 
 const Wrapper = styled.div`
+  position: relative;
   width: 1040px;
   max-width: 100%;
   margin: 0 auto;

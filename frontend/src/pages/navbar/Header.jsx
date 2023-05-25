@@ -3,7 +3,6 @@ import Search from "./components/Search";
 import Navbar from "./components/Navbar";
 import { FaUserCircle, FaSearch } from "react-icons/fa";
 import { useState, memo, useEffect, useContext } from "react";
-import { useUser } from "../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
 import Logo from "../../common/Logo";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
@@ -13,7 +12,7 @@ import { useAuth } from "../../setup/auth/useAuth";
 
 const Header = () => {
   const { showSearch, setShowSearch } = useContext(GlobalContext);
-  const { loginWithPopup, logout, user } = useAuth0();
+  const { loginWithRedirect, logout, user } = useAuth0();
   const [activateScrolled, setActivateScrolled] = useState(false);
   const { authenticated } = useAuth();
 
@@ -37,10 +36,6 @@ const Header = () => {
     };
   });
 
-  useEffect(() => {
-    console.log(authenticated);
-  }, [authenticated]);
-
   return (
     <HeaderContainer>
       {!activateScrolled ? (
@@ -54,14 +49,14 @@ const Header = () => {
                   <FaSearch className="search" onClick={showSearched} />
                 </li>
                 <div className="divider-line"></div>
-                {user ? (
+                {authenticated ? (
                   <>
                     <Dropdown />
                     <div className="divider-line"></div>
                   </>
                 ) : (
                   <>
-                    <li className="underline list" onClick={loginWithPopup}>
+                    <li className="underline list" onClick={loginWithRedirect}>
                       <FaUserCircle className="user" /> Log in
                     </li>
                     <div className="divider-line"></div>

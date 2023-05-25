@@ -9,18 +9,20 @@ const RemoveModal = ({ title, onClick, remove }) => {
   const params = useParams();
   const [collection, setCollection] = useState("");
 
-  const handle = (e) => {
-    if (e.key !== "Escape") return;
-    onClick();
-  };
-
   useEffect(() => {
+    params.name === "saved-items"
+      ? setCollection("All Saved Items")
+      : setCollection("Collection");
+
+    const handle = (e) => {
+      if (e.key !== "Escape") return;
+      onClick();
+    };
+
     document.addEventListener("keydown", handle);
-    if (params.name === "saved-items") {
-      setCollection("All Saved Items");
-    } else {
-      setCollection("Collection");
-    }
+    return () => {
+      document.removeEventListener("keydown", handle);
+    };
   }, []);
 
   return (

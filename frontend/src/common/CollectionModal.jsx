@@ -17,10 +17,12 @@ const CollectionModal = ({
 }) => {
   const params = useParams();
   const [collName, setCollName] = useState(
-    collectionTitle ? collectionTitle : ""
+    collectionTitle || ""
+    // collectionTitle ? collectionTitle : ""
   );
   const [collDesc, setCollDesc] = useState(
-    collectionDesc ? collectionDesc : ""
+    collectionDesc || ""
+    // collectionDesc ? collectionDesc : ""
   );
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
@@ -49,7 +51,9 @@ const CollectionModal = ({
 
       showModal();
       window.location.reload();
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -65,14 +69,14 @@ const CollectionModal = ({
   }, []);
 
   return (
-    <Modal
-      animate={{ opacity: 1 }}
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      style={{ display: showModal }}
-    >
-      <Section>
+    <Modal>
+      <Section
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        exit={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        style={{ display: showModal }}
+      >
         <div className="new-collection">
           <div className="collection-header">
             <div className="header-flex">
@@ -112,16 +116,16 @@ const CollectionModal = ({
             </div>
             <div className="checkbox">
               <div className="wrap">
-                <p>
-                  Private Collection
-                  <HttpsOutlined />
-                </p>
                 <input
+                  class="styled-checkbox check"
+                  id="styled-checkbox"
                   type="checkbox"
                   checked={collPrivate}
-                  className="check"
                   onChange={(e) => setCollPrivate(e.currentTarget.checked)}
                 />
+                <label htmlFor="styled-checkbox" className="">
+                  Private Collection <HttpsOutlined />
+                </label>
               </div>
               <span>Only you can see a private collection</span>
             </div>
@@ -140,7 +144,7 @@ const CollectionModal = ({
   );
 };
 
-const Modal = styled(motion.div)`
+const Modal = styled.div`
   position: fixed;
   overflow: none;
   content: "";
@@ -156,7 +160,7 @@ const Modal = styled(motion.div)`
   flex-wrap: wrap;
 `;
 
-const Section = styled.div`
+const Section = styled(motion.div)`
   background-color: white;
   width: 360px;
   height: 560px;
@@ -233,7 +237,9 @@ const Section = styled.div`
         margin-top: 5px;
       }
     }
+
     .checkbox {
+      user-select: none;
       display: flex;
 
       .wrap {
@@ -249,12 +255,6 @@ const Section = styled.div`
           transform: scale(1.4);
           font-size: 14px;
           margin-left: 6px;
-        }
-
-        label {
-          margin: 0;
-          display: flex;
-          font-weight: bold;
         }
       }
 

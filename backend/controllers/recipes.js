@@ -12,7 +12,7 @@ const openai = new OpenAIApi(config);
 
 const extractKeyword = async (word) => {
   try {
-    console.log("extract function called");
+    console.log(word);
     if (word) {
       const prompt = `Extract the keyword that is related to food, out of "${word}". In the response, do not include anything but letters. The response also must be only one word! For example, if the group of words is "Cheesy Chicken Broccoli Rice Casserole & Holiday Acorn Box", the potential keyword would be "Chicken".`;
 
@@ -42,10 +42,13 @@ module.exports = {
   getSimilarRecipes: async (req, res) => {
     try {
       const query = req.params.query.toLowerCase();
-      const checkParams = await Searched.findOne({ name: { $in: query.split(" ") } });
-      console.log(checkParams === null);
+      const checkParams = await Searched.findOne({
+        name: { $in: query.split(" ") },
+      });
+      console.log(checkParams);
 
       if (!checkParams) {
+        console.log("check params is not found");
         const keyword = await extractKeyword(query);
         const recipe = await Searched.findOne({ name: keyword });
 
@@ -58,13 +61,14 @@ module.exports = {
             name: keyword.trim().toLowerCase().split('"').join(""),
             data: response.data.results,
           });
-          console.log(similar);
+
           res.status(201).json(similar);
           return;
         }
 
         res.status(200).json(recipe);
       } else {
+        console.log(checkParams);
         res.status(200).json(checkParams);
       }
     } catch (error) {
@@ -99,7 +103,6 @@ module.exports = {
   getRecipe: async (req, res) => {
     try {
       const recipe = await Recipe.findOne({ id: req.params.id });
-      console.log(recipe, "check if recipe");
 
       if (!recipe) {
         const recipeRes = await axios.get(
@@ -145,7 +148,9 @@ module.exports = {
       );
 
       const recipeReviews = await Recipe.findOne({ id: req.params.id });
-      const reviews = await Review.find({ _id: { $in: recipeReviews.reviews } });
+      const reviews = await Review.find({
+        _id: { $in: recipeReviews.reviews },
+      });
 
       res.status(200).json(reviews);
     } catch (error) {
@@ -174,7 +179,9 @@ module.exports = {
       );
 
       const recipeReviews = await Recipe.findOne({ id: req.params.id });
-      const reviews = await Review.find({ _id: { $in: recipeReviews.reviews } });
+      const reviews = await Review.find({
+        _id: { $in: recipeReviews.reviews },
+      });
 
       res.status(200).json(reviews);
     } catch (error) {

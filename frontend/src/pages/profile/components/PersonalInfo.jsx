@@ -5,22 +5,25 @@ import { useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
 import SectionInfo from "../../../common/SectionInfo";
-import { useUser } from "../../../setup/auth/useAuth";
+// import { useUser } from "../../../setup/auth/useAuth";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../../../setup/auth/useAuth";
 
-const PersonalInfo = () => {
-  const { userData, isLoading } = useUser();
+const PersonalInfo = ({ data: userData }) => {
+  // useAddFixed(personalRef);
   const [clicked, setClicked] = useState(true);
   const [buttonSave, setButtonSave] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const personalRef = useRef(null);
-  // useAddFixed(personalRef);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     zipCode: "",
     email: "",
   });
+
   const [formBirthDate, setFormBirthDate] = useState({
     month: "",
     day: "",
@@ -87,154 +90,148 @@ const PersonalInfo = () => {
 
   return (
     <Form onSubmit={submitForm}>
-      {!isLoading ? (
-        <Loading className="loading" />
-      ) : (
-        <>
-          <div className="personal-section" ref={personalRef}>
-            <h1>Personal Info</h1>
-            {showLoading ? (
-              <button className={"btn-save"}>
-                <Loading className="scaled-loading" />
-              </button>
+      <div className="personal-section" ref={personalRef}>
+        <h1>Personal Info</h1>
+        {showLoading ? (
+          <button className={"btn-save"}>
+            <Loading className="scaled-loading" />
+          </button>
+        ) : (
+          <>
+            {buttonSave ? (
+              <input
+                type="submit"
+                value={"SAVE CHANGES"}
+                className={`btn-save highlight`}
+              />
             ) : (
-              <>
-                {buttonSave ? (
-                  <input
-                    type="submit"
-                    value={"SAVE CHANGES"}
-                    className={`btn-save highlight`}
-                  />
-                ) : (
-                  <input
-                    type="submit"
-                    value={"SAVE CHANGES"}
-                    disabled
-                    className={`btn-save`}
-                  />
-                )}
-              </>
+              <input
+                type="submit"
+                value={"SAVE CHANGES"}
+                disabled
+                className={`btn-save`}
+              />
             )}
-          </div>
-          <SectionInfo
-            value={
-              "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
-            }
-            icon={<HttpsOutlined />}
-            text={
-              "Only you can see the information on this page.  It will not be displayed for other users to see."
-            }
-          />
-          <FormWrap>
-            <div className="head-info" onClick={() => setClicked(!clicked)}>
-              <h3>My Basic Info</h3>
-              <KeyboardArrowDown className={clicked ? "click" : ""} />
-            </div>
-            {clicked && (
-              <>
-                <div className="input-container">
-                  <div className="input-wrapper">
-                    <label> Email Address*</label>
+          </>
+        )}
+      </div>
+      <SectionInfo
+        value={
+          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
+        }
+        icon={<HttpsOutlined />}
+        text={
+          "Only you can see the information on this page.  It will not be displayed for other users to see."
+        }
+      />
+      <FormWrap>
+        <div className="head-info" onClick={() => setClicked(!clicked)}>
+          <h3>My Basic Info</h3>
+          <KeyboardArrowDown className={clicked ? "click" : ""} />
+        </div>
+        {clicked && (
+          <>
+            <div className="input-container">
+              <div className="input-wrapper">
+                <label> Email Address*</label>
+                <input
+                  type="email"
+                  readOnly={formData.email}
+                  placeholder={formData.email}
+                  className="email"
+                />
+              </div>
+              <HalfWrap>
+                <div className="input-wrapper half">
+                  <label> First Name</label>
+                  <input
+                    onChange={handleInputChange}
+                    name="firstName"
+                    value={formData.firstName}
+                    type="text"
+                    placeholder={"Taylor"}
+                  />
+                </div>
+                <div className="input-wrapper half">
+                  <label> Last Name</label>
+                  <input
+                    onChange={handleInputChange}
+                    name="lastName"
+                    value={formData.lastName}
+                    type="text"
+                    placeholder={"Smith"}
+                  />
+                </div>
+              </HalfWrap>
+              <HalfWrap>
+                <div className="input-wrapper date">
+                  <label>Birth Date</label>
+                  <div>
                     <input
-                      type="email"
-                      readOnly={formData.email}
-                      placeholder={formData.email}
-                      className="email"
+                      onChange={handleInputChange}
+                      name="month"
+                      value={formBirthDate.month}
+                      type="text"
+                      min={"1"}
+                      max={"12"}
+                      placeholder="MM"
+                      required={
+                        (formBirthDate.day !== "" ||
+                          formBirthDate.year !== "") &&
+                        true
+                      }
+                      maxLength={2}
+                    />
+                    <span>/</span>
+                    <input
+                      onChange={handleInputChange}
+                      value={formBirthDate.day}
+                      name="day"
+                      type="text"
+                      min={"1"}
+                      max={"31"}
+                      required={
+                        (formBirthDate.month !== "" ||
+                          formBirthDate.year !== "") &&
+                        true
+                      }
+                      placeholder="DD"
+                      maxLength={2}
+                    />
+                    <span>/</span>
+                    <input
+                      onChange={handleInputChange}
+                      name="year"
+                      value={formBirthDate.year}
+                      type="text"
+                      min={"1930"}
+                      max={"2022"}
+                      placeholder="YYYY"
+                      required={
+                        (formBirthDate.month !== "" ||
+                          formBirthDate.day !== "") &&
+                        true
+                      }
+                      maxLength={4}
                     />
                   </div>
-                  <HalfWrap>
-                    <div className="input-wrapper half">
-                      <label> First Name</label>
-                      <input
-                        onChange={handleInputChange}
-                        name="firstName"
-                        value={formData.firstName}
-                        type="text"
-                        placeholder={"Taylor"}
-                      />
-                    </div>
-                    <div className="input-wrapper half">
-                      <label> Last Name</label>
-                      <input
-                        onChange={handleInputChange}
-                        name="lastName"
-                        value={formData.lastName}
-                        type="text"
-                        placeholder={"Smith"}
-                      />
-                    </div>
-                  </HalfWrap>
-                  <HalfWrap>
-                    <div className="input-wrapper date">
-                      <label>Birth Date</label>
-                      <div>
-                        <input
-                          onChange={handleInputChange}
-                          name="month"
-                          value={formBirthDate.month}
-                          type="text"
-                          min={"1"}
-                          max={"12"}
-                          placeholder="MM"
-                          required={
-                            (formBirthDate.day !== "" ||
-                              formBirthDate.year !== "") &&
-                            true
-                          }
-                          maxLength={2}
-                        />
-                        <span>/</span>
-                        <input
-                          onChange={handleInputChange}
-                          value={formBirthDate.day}
-                          name="day"
-                          type="text"
-                          min={"1"}
-                          max={"31"}
-                          required={
-                            (formBirthDate.month !== "" ||
-                              formBirthDate.year !== "") &&
-                            true
-                          }
-                          placeholder="DD"
-                          maxLength={2}
-                        />
-                        <span>/</span>
-                        <input
-                          onChange={handleInputChange}
-                          name="year"
-                          value={formBirthDate.year}
-                          type="text"
-                          min={"1930"}
-                          max={"2022"}
-                          placeholder="YYYY"
-                          required={
-                            (formBirthDate.month !== "" ||
-                              formBirthDate.day !== "") &&
-                            true
-                          }
-                          maxLength={4}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="input-wrapper half">
-                      <label>ZIP Code</label>
-                      <input
-                        onChange={handleInputChange}
-                        name="zipCode"
-                        value={formData.zipCode}
-                        type="text"
-                        placeholder="ZIP Code"
-                      />
-                    </div>
-                  </HalfWrap>
                 </div>
-              </>
-            )}
-          </FormWrap>
-        </>
-      )}
+
+                <div className="input-wrapper half">
+                  <label>ZIP Code</label>
+                  <input
+                    onChange={handleInputChange}
+                    name="zipCode"
+                    value={formData.zipCode}
+                    type="text"
+                    placeholder="ZIP Code"
+                  />
+                </div>
+              </HalfWrap>
+            </div>
+          </>
+        )}
+      </FormWrap>
     </Form>
   );
 };

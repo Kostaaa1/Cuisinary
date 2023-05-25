@@ -15,18 +15,22 @@ import { useRef } from "react";
 import useAddFixed from "../hooks/useAddFixed";
 import { useUser } from "../../../setup/auth/useAuth";
 
-const PublicInfo = () => {
-  const { userData } = useUser();
+const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState("");
   const { user } = useAuth0();
   const [buttonSave, setButtonSave] = useState(false);
-  const [tagline, setTagline] = useState(userData?.tagline);
-  const [displayName, setDisplayName] = useState("");
+  const [tagline, setTagline] = useState("");
+  const [nickname, setNickname] = useState("");
   const [showLoading, setShowLoading] = useState(false);
   const publicRef = useRef(null);
   useAddFixed(publicRef);
+
+  useEffect(() => {
+    setNickname(userData?.nickname);
+    setTagline(userData?.tagline);
+  }, [userData]);
 
   useEffect(() => {
     if (image) {
@@ -52,20 +56,17 @@ const PublicInfo = () => {
       setImage(null);
     }
   };
-  useEffect(() => {
-    if (userData) setTagline(userData.tagline);
-  }, [userData]);
 
   const submitForm = async (e) => {
     try {
       e.preventDefault();
 
       setShowLoading(true);
-      const form = { displayName, tagline };
+      const form = { nickname, tagline };
       const formData = new FormData();
-      if (form.displayName || form.tagline) {
+      if (form.nickname || form.tagline) {
         await axios.post(`/api/user/${user.email}`, {
-          user: { nickname: form.displayName, tagline: form.tagline },
+          user: { nickname: form.nickname, tagline: form.tagline },
         });
       }
       if (image) {
@@ -130,11 +131,10 @@ const PublicInfo = () => {
                     <label>Display Name</label>
                     <input
                       type="text"
-                      placeholder={userData?.nickname}
+                      value={nickname}
                       onChange={(e) => {
-                        setDisplayName(e.target.value), setButtonSave(true);
+                        setNickname(e.target.value), setButtonSave(true);
                       }}
-                      value={displayName}
                     />
                   </div>
                   <div className="input-wrapper">
@@ -166,7 +166,6 @@ const PublicInfo = () => {
                       <h3>Profile photo</h3>
                     </div>
                   </label>
-
                   <input
                     className="file"
                     id="input_file"
@@ -279,7 +278,7 @@ const DynamicForm = styled.div`
         display: flex;
         flex-direction: column;
         padding: 20px 0;
-        font-size: 22px;
+        font-size: 16px;
 
         .tagline {
           font-size: 14px;

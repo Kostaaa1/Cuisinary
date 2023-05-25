@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     }}
     scope="openid profile email"
     cacheLocation="localstorage"
-    // audience="CatPiss123"
+    audience="CatPiss123"
     // useRefreshTokens={true}
   >
     <QueryClientProvider client={queryClient}>

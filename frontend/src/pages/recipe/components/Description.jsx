@@ -6,13 +6,17 @@ import axios from "axios";
 import { useUser } from "../../../setup/auth/useAuth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AuthContext from "../../../setup/app-context-menager/AuthContext";
 
 const Description = () => {
   const { recipe, favorite, setFavorite } = useContext(RecipeContext);
-  const { userData } = useUser();
+  // const { userData } = useUser();
+  const { userData } = useContext(AuthContext);
 
   const checkIfRecipeExists = () => {
-    let checkForRecipe = userData?.collections[0]?.collRecipes.find((recipes) => recipes.recipeTitle === recipe.title);
+    let checkForRecipe = userData?.collections[0]?.collRecipes.find(
+      (recipes) => recipes.recipeTitle === recipe.title
+    );
     return checkForRecipe;
   };
 
@@ -32,11 +36,14 @@ const Description = () => {
       }
 
       setFavorite(true);
-      await toast.promise(axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }), {
-        pending: "Saving recipe...",
-        success: "Recipe saved to your collection!",
-        error: "An error occurred while saving the recipe!",
-      });
+      await toast.promise(
+        axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }),
+        {
+          pending: "Saving recipe...",
+          success: "Recipe saved to your collection!",
+          error: "An error occurred while saving the recipe!",
+        }
+      );
     } catch (error) {
       console.log(error);
       toast.error("An error occurred while saving the recipe!");
@@ -50,7 +57,9 @@ const Description = () => {
   return (
     <Container>
       <div className="buttons">
-        <button onClick={saveRecipeInCollection}>Save {favorite ? <Favorite /> : <FavoriteBorder />}</button>
+        <button onClick={saveRecipeInCollection}>
+          Save {favorite ? <Favorite /> : <FavoriteBorder />}
+        </button>
       </div>
       <img src={recipe?.image} alt="recipe-image" />
       <div className="description">

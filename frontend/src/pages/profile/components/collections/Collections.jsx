@@ -1,4 +1,7 @@
-import { HttpsOutlined } from "@mui/icons-material";
+import {
+  CollectionsBookmarkOutlined,
+  HttpsOutlined,
+} from "@mui/icons-material";
 import { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import Button from "../../../../common/Button";
@@ -10,18 +13,13 @@ import Loading from "../../../../common/Loading";
 import { useNavigate } from "react-router-dom";
 import useNoScroll from "../../../../utils/useNoScroll";
 import { useRef } from "react";
-import { useUser } from "../../../../setup/auth/useAuth";
-import useAddFixed from "../../hooks/useAddFixed";
 
-const SavedItems = () => {
+const Collections = ({ userData }) => {
   const collectionRef = useRef(null);
   const navigate = useNavigate();
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  // useAddFixed(collectionRef);
   useNoScroll(showCollectionModal);
-
-  const { userData, isLoading } = useUser();
   const mockData = [
     {
       data: {},
@@ -43,6 +41,7 @@ const SavedItems = () => {
         data: { image: recipes.recipe?.image },
       }))
     );
+
     return destructuredArray?.map((el) =>
       mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
     );
@@ -50,58 +49,50 @@ const SavedItems = () => {
 
   return (
     <>
-      <Collections>
-        {!isLoading && !imageLoaded ? (
-          <Loading className="loading" />
-        ) : (
-          <>
-            <div className="saved-items">
-              <div className="collection-section" ref={collectionRef}>
-                <h1>Saved Items & Collections</h1>
-                <Button
-                  onClick={() => setShowCollectionModal(true)}
-                  style={{ width: "210px", height: "60px" }}
-                  value={"NEW COLLECTION +"}
+      <Collection>
+        <div className="saved-items">
+          <div className="collection-section" ref={collectionRef}>
+            <h1>Saved Items & Collections</h1>
+            <Button
+              onClick={() => setShowCollectionModal(true)}
+              style={{ width: "210px", height: "60px" }}
+              value={"NEW COLLECTION +"}
+            />
+          </div>
+          <SectionInfo
+            value={"Create collections to organize your saved items"}
+            icon={<HttpsOutlined />}
+            text={
+              "Others can see your saved items and any collection you make public."
+            }
+          />
+          <div>
+            <h3 className="h3-space">
+              {userData?.collections.length} Collections
+            </h3>
+            <div className="collection-control">
+              {userData?.collections.map((collection, id) => (
+                <FavoriteCollection
+                  key={collection._id}
+                  collection={collection}
+                  layoutArr={layoutArr[id]}
+                  onLoad={() => {
+                    setImageLoaded(true);
+                  }}
+                  onClick={() => {
+                    collection.collName === "All Saved Items"
+                      ? navigate("/account/profile/saved-items")
+                      : navigate(
+                          `/account/profile/collection/${collection._id}`
+                        );
+                  }}
                 />
-              </div>
-              <SectionInfo
-                value={"Create collections to organize your saved items"}
-                icon={<HttpsOutlined />}
-                text={
-                  "Others can see your saved items and any collection you make public."
-                }
-              />
-              <div>
-                <h3 className="h3-space">
-                  {userData?.collections.length} Collections
-                </h3>
-                <div className="collection-control">
-                  {userData?.collections.map((collection, id) => (
-                    <FavoriteCollection
-                      key={collection._id}
-                      collection={collection}
-                      layoutArr={layoutArr[id]}
-                      onLoad={() => {
-                        setImageLoaded(true);
-                      }}
-                      onClick={() => {
-                        collection.collName === "All Saved Items"
-                          ? navigate("/account/profile/saved-items")
-                          : navigate(
-                              `/account/profile/collection/${collection._id}`
-                            );
-                      }}
-                    />
-                  ))}
-                  <NewCollectionCard
-                    onClick={() => setShowCollectionModal(true)}
-                  />
-                </div>
-              </div>
+              ))}
+              <NewCollectionCard onClick={() => setShowCollectionModal(true)} />
             </div>
-          </>
-        )}
-      </Collections>
+          </div>
+        </div>
+      </Collection>
       {showCollectionModal && (
         <CollectionModal
           showModal={() => setShowCollectionModal(!showCollectionModal)}
@@ -111,7 +102,7 @@ const SavedItems = () => {
   );
 };
 
-const Collections = styled.div`
+const Collection = styled.div`
   .saved-items {
     .h3-space {
       margin: 22px 0;
@@ -136,31 +127,6 @@ const Collections = styled.div`
       font-size: 38px;
     }
   }
-  /* 
-  .section-info {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-
-    h3 {
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 25px;
-      margin-bottom: 14px;
-    }
-
-    span {
-      font-weight: 200;
-      display: flex;
-      align-items: center;
-      font-size: 13px;
-
-      svg {
-        margin-right: 10px;
-      }
-    }
-  } */
 `;
 
-export default SavedItems;
+export default Collections;

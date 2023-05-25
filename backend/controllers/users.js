@@ -74,16 +74,19 @@ module.exports = {
   },
   newCollection: async (req, res) => {
     try {
+      const { collName, collDesc, private } = req.body;
+      const { email } = req.params;
+
       const user = await User.findOneAndUpdate(
-        { email: req.params.email },
+        { email: email },
         {
           $push: {
             collections: {
               $each: [
                 {
-                  collName: req.body.collName,
-                  collDesc: req.body.collDesc,
-                  private: req.body.private,
+                  collName: collName,
+                  collDesc: collDesc,
+                  private: private,
                   collRecipes: [],
                 },
               ],
@@ -93,16 +96,18 @@ module.exports = {
         }
       );
 
-      res.status(200).json(user);
+      let collection = user.collections.find((x) => x.collName === collName);
+      console.log(collection);
+      res.status(200).json(collection);
     } catch (error) {
       res.status(400).send(error.message);
     }
   },
   editCollection: async (req, res) => {
     try {
-      console.log(req.body);
       if (Object.keys(req.body).length === 0) return;
 
+      const { collName, collDesc, private } = req.body;
       const user = await User.findOneAndUpdate(
         {
           email: req.params.email,
@@ -110,14 +115,13 @@ module.exports = {
         },
         {
           $set: {
-            "collections.$.collName": req.body.collName,
-            "collections.$.collDesc": req.body.collDesc,
-            "collections.$.private": req.body.private,
+            "collections.$.collName": collName,
+            "collections.$.collDesc": collDesc,
+            "collections.$.private": private,
           },
         }
       );
 
-      console.log("Collection updated");
       res.status(200).json(user);
     } catch (error) {
       res.status(400).send(error.message);

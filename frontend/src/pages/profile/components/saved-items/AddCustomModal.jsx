@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { Close, Lock, Add } from "@mui/icons-material";
@@ -7,14 +7,18 @@ import axios from "axios";
 import { useUser } from "../../../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
+import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 
 const AddCustomModal = ({ showModal, favorite }) => {
   const [collName, setCollName] = useState("");
   const [checkedColls, setCheckedColls] = useState([]);
   const [showInput, setShowInput] = useState(false);
-  const [collectionNames, setCollectionNames] = useState([]);
   const { user } = useAuth0();
-  const { userData } = useUser();
+  const { userData } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
 
   useEffect(() => {
     const handle = (e) => {
@@ -23,7 +27,6 @@ const AddCustomModal = ({ showModal, favorite }) => {
     };
 
     document.addEventListener("keydown", handle);
-
     return () => {
       document.removeEventListener("keydown", handle);
     };
@@ -59,7 +62,6 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
   const submitForm = async (e) => {
     e.preventDefault();
-
     try {
       const collectionWithoutCurrentRecipe = userData?.collections
         .filter(({ collName }) => checkedColls.includes(collName))
@@ -71,26 +73,28 @@ const AddCustomModal = ({ showModal, favorite }) => {
         )
         .map(({ collName }) => collName);
 
-      axios.post(`/api/user/${user.email}/addToCustom`, {
-        collections: collectionWithoutCurrentRecipe,
-        recipe: favorite,
-      });
+      console.log(collectionWithoutCurrentRecipe);
 
-      showModal();
+      // axios.post(`/api/user/${user.email}/addToCustom`, {
+      //   collections: collectionWithoutCurrentRecipe,
+      //   recipe: favorite,
+      // });
+
+      // showModal();
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <Modal
-      animate={{ opacity: 1 }}
-      initial={{ opacity: 0 }}
-      exit={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      style={{ display: showModal }}
-    >
-      <Section>
+    <Modal>
+      <Section
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        exit={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        style={{ display: showModal }}
+      >
         <div className="new-collection">
           <div className="collection-header">
             <div className="header-flex">
@@ -140,13 +144,14 @@ const AddCustomModal = ({ showModal, favorite }) => {
                 {userData?.collections
                   ?.filter((coll) => coll.collName !== "All Saved Items")
                   .map((coll, id) => (
-                    <div key={id} className="input-wrap">
-                      <label>
-                        <input
-                          type="checkbox"
-                          className="check"
-                          onChange={(e) => handleCheckbox(e, coll.collName)}
-                        />
+                    <div key={id} className="checkbox-wrap">
+                      <input
+                        type="checkbox"
+                        className="styled-checkbox check"
+                        id={`styled-checkbox-${id}`}
+                        onChange={(e) => handleCheckbox(e, coll.collName)}
+                      />
+                      <label htmlFor={`styled-checkbox-${id}`}>
                         {coll.collName ? coll.collName : ""}
                       </label>
                     </div>
@@ -166,7 +171,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
   );
 };
 
-const Modal = styled(motion.div)`
+const Modal = styled.div`
   position: fixed;
   overflow: hidden;
   content: "";
@@ -182,7 +187,7 @@ const Modal = styled(motion.div)`
   flex-wrap: wrap;
 `;
 
-const Section = styled.div`
+const Section = styled(motion.div)`
   background-color: white;
   width: 350px;
   height: 600px;
@@ -295,38 +300,26 @@ const Section = styled.div`
             }
           }
 
+          .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px 0;
+
+            label {
+              font-size: 16px;
+            }
+          }
+
           .input-wrap {
             display: flex;
             align-items: center;
             overflow: auto;
 
-            label {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-              font-size: 16px;
-            }
-
             input[type="text"] {
-              /* &:active, */
               &:focus {
-                outline: 1px solid var(--input-border-color);
+                outline: none;
               }
-            }
-
-            input:not(.add) {
-              margin: 10px 0;
-              margin-right: 10px;
-            }
-
-            .check {
-              width: 20px;
-              height: 20px;
-            }
-
-            .check:checked {
-              background-color: red;
             }
           }
         }
