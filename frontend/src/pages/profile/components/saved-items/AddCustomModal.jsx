@@ -1,24 +1,47 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { useState } from "react";
-import { Close, Lock, Add } from "@mui/icons-material";
+import { Close, Add } from "@mui/icons-material";
 import { useEffect } from "react";
 import axios from "axios";
-import { useUser } from "../../../../setup/auth/useAuth";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddCustomModal = ({ showModal, favorite }) => {
   const [collName, setCollName] = useState("");
   const [checkedColls, setCheckedColls] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const { user } = useAuth0();
-  const { userData } = useContext(AuthContext);
+  // const { userCollections } = useContext(AuthContext);
+  const [collections, setCollections] = useState([]);
+  const queryClient = useQueryClient();
+  const [userCollections, setUserCollections] = useState([]);
+
+  const userData = queryClient.getQueryData(["user-data", user?.email]);
 
   useEffect(() => {
-    console.log(userData);
+    if (userData) {
+      let collections = userData.collections.filter(
+        (x) => x.collName !== "All Saved Items"
+      );
+      setUserCollections(collections);
+    }
   }, [userData]);
+
+  useEffect(() => {
+    setCollections(userCollections);
+    setCheckedColls(
+      userCollections.map((coll) =>
+        coll.collRecipes
+          .map(({ recipeTitle }) =>
+            recipeTitle === favorite.recipeTitle ? coll.collName : undefined
+          )
+          .find((coll) => coll)
+      )
+    );
+  }, [userCollections]);
 
   useEffect(() => {
     const handle = (e) => {
@@ -36,14 +59,14 @@ const AddCustomModal = ({ showModal, favorite }) => {
     try {
       e.preventDefault();
 
-      await axios.post(`/api/user/${user?.email}/newCollection`, {
+      axios.post(`/api/user/${user?.email}/newCollection`, {
         collName: collName,
       });
 
-      userData.collections = [
+      setCollections((prevState) => [
         { collName, collRecipes: [] },
-        ...userData.collections,
-      ];
+        ...prevState,
+      ]);
 
       setShowInput(false);
       setCollName("");
@@ -52,35 +75,43 @@ const AddCustomModal = ({ showModal, favorite }) => {
     }
   };
 
-  const handleCheckbox = (e, collName) => {
+  const handleCheckbox = (e, collName, id) => {
     if (e.currentTarget.checked) {
-      setCheckedColls([...checkedColls, collName]);
+      setCheckedColls((prevState) =>
+        prevState.map((x, i) => (i === id ? collName : x))
+      );
     } else {
-      setCheckedColls(checkedColls.filter((x) => x !== collName));
+      setCheckedColls((prevState) =>
+        prevState.map((x, i) => (i === id ? undefined : x))
+      );
     }
   };
 
+  useEffect(() => {
+    console.log(checkedColls);
+  }, [checkedColls]);
+
   const submitForm = async (e) => {
     e.preventDefault();
+
     try {
-      const collectionWithoutCurrentRecipe = userData?.collections
-        .filter(({ collName }) => checkedColls.includes(collName))
-        .filter(
-          ({ collRecipes }) =>
-            !collRecipes.some(
-              ({ recipeTitle }) => recipeTitle === favorite.recipeTitle
-            )
+      let checkedCollWithRecipe = userCollections
+        .filter(({ collName }, i) => collName === checkedColls[i])
+        .map((coll) =>
+          coll.collRecipes.some(
+            ({ recipeTitle }) => recipeTitle === favorite.recipeTitle
+          )
+            ? false
+            : coll.collName
         )
-        .map(({ collName }) => collName);
+        .filter((coll) => coll);
 
-      console.log(collectionWithoutCurrentRecipe);
+      await axios.post(`/api/user/${user.email}/addToCustom`, {
+        collections: checkedCollWithRecipe,
+        recipe: favorite,
+      });
 
-      // axios.post(`/api/user/${user.email}/addToCustom`, {
-      //   collections: collectionWithoutCurrentRecipe,
-      //   recipe: favorite,
-      // });
-
-      // showModal();
+      showModal();
     } catch (error) {
       console.log(error);
     }
@@ -141,21 +172,20 @@ const AddCustomModal = ({ showModal, favorite }) => {
                     <h5>NEW COLLECTION</h5>
                   </div>
                 )}
-                {userData?.collections
-                  ?.filter((coll) => coll.collName !== "All Saved Items")
-                  .map((coll, id) => (
-                    <div key={id} className="checkbox-wrap">
-                      <input
-                        type="checkbox"
-                        className="styled-checkbox check"
-                        id={`styled-checkbox-${id}`}
-                        onChange={(e) => handleCheckbox(e, coll.collName)}
-                      />
-                      <label htmlFor={`styled-checkbox-${id}`}>
-                        {coll.collName ? coll.collName : ""}
-                      </label>
-                    </div>
-                  ))}
+                {collections.map((coll, id) => (
+                  <div key={coll._id} className="checkbox-wrap">
+                    <input
+                      type="checkbox"
+                      checked={checkedColls[id]}
+                      onChange={(e) => handleCheckbox(e, coll.collName, id)}
+                      className="styled-checkbox check"
+                      id={`styled-checkbox-${id}`}
+                    />
+                    <label htmlFor={`styled-checkbox-${id}`}>
+                      {coll.collName ? coll.collName : ""}
+                    </label>
+                  </div>
+                ))}
                 {!showInput && (
                   <div className="buttons">
                     <div></div>
