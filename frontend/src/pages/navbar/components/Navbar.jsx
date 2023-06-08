@@ -92,12 +92,12 @@ const Navbar = () => {
     <Nav>
       {categoryData.map((category, index) => (
         <Wrapper key={category.name}>
-          <h5
+          <h6
             onMouseEnter={() => hanldeDropDownEnter(index)}
             onMouseLeave={() => hanldeDropDownLeave(index)}
           >
             {category.name}
-          </h5>
+          </h6>
           <CategoryDropdown
             onMouseEnter={() => hanldeDropDownEnter(index)}
             onMouseLeave={() => hanldeDropDownLeave(index)}
@@ -126,6 +126,10 @@ const Nav = styled.nav`
   display: flex;
   align-items: center;
   max-height: 20%;
+
+  @media (max-width: 1270px) {
+    padding: 0 36px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -145,19 +149,18 @@ const Wrapper = styled.div`
     }
   }
 
-  h5 {
-    line-height: 30px;
-    letter-spacing: 1.6px;
+  h6 {
+    letter-spacing: 1.4px !important;
     margin-right: 36px;
-    color: black;
-    font-size: 12px;
+    font-size: 12px !important;
+    color: var(--main-color);
     cursor: pointer;
   }
 `;
 
 const CategoryDropdown = styled.ul`
   position: absolute;
-  top: 85%;
+  top: 100%;
   left: 0;
   transform: translate(-5%);
   width: 210px;

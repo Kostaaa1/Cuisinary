@@ -48,53 +48,22 @@ const Category = () => {
   return (
     <Container>
       <h1>
-        Explore{" "}
-        {params.recipe.slice(0, 1).toUpperCase() +
-          params.recipe.slice(1, params.recipe.length)}{" "}
+        Explore
+        {` ${params.recipe.slice(0, 1).toUpperCase()}${params.recipe.slice(
+          1,
+          params.recipe.length
+        )} `}
         Recipes
       </h1>
-      {categoryRecipes?.length > 5 ? (
-        <>
-          <GridLayout>
-            {categoryRecipes
-              ?.slice(0, 3)
-              ?.map((recipe, id) =>
-                CardDescriptionProps(
-                  favorite,
-                  params.recipe,
-                  setFavorite,
-                  id,
-                  recipe
-                )
-              )}
-          </GridLayout>
-          <Grid
-            animate={{ opacity: 1 }}
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {categoryRecipes
-              ?.slice(3, categoryRecipes.length)
-              ?.map((recipe, id) =>
-                CardDescriptionProps(
-                  favorite,
-                  params.recipe,
-                  setFavorite,
-                  id,
-                  recipe
-                )
-              )}
-          </Grid>
-        </>
-      ) : (
-        <Grid
-          animate={{ opacity: 1 }}
-          initial={{ opacity: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          {categoryRecipes?.map((recipe, id) =>
+      <Grid
+        animate={{ opacity: 1 }}
+        initial={{ opacity: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {categoryRecipes
+          ?.slice(3, categoryRecipes.length)
+          ?.map((recipe, id) =>
             CardDescriptionProps(
               favorite,
               params.recipe,
@@ -103,8 +72,7 @@ const Category = () => {
               recipe
             )
           )}
-        </Grid>
-      )}
+      </Grid>
       {favorite && <SavedModal setFavorite={setFavorite} />}
     </Container>
   );
@@ -120,8 +88,8 @@ const Container = styled.div`
   height: 100%;
   background-color: white;
 
-  @media (max-width: 1270px) {
-    padding: 0 25px;
+  @media screen and (max-width: 1270px) {
+    padding: 0 36px;
   }
 
   h1 {
@@ -147,7 +115,7 @@ const GridLayout = styled.div`
 
 const Grid = styled(motion.div)`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
   grid-gap: 2rem;
 `;
 

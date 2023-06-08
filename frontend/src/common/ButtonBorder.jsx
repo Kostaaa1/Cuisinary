@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-const ButtonBorder = ({ value, style, onClick }) => {
+const ButtonBorder = ({ value, style, onClick, icon }) => {
   return (
     <Button style={style} onClick={onClick}>
-      {" "}
-      {value}{" "}
+      {icon}
+      {value}
     </Button>
   );
 };

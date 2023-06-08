@@ -14,9 +14,12 @@ import {
 import { useEffect } from "react";
 import PrepTime from "./PrepTime";
 import PublicRecipe from "./PublicRecipe";
-import LeaveModal from "./LeaveModal";
+import axios from "axios";
+import { useContext } from "react";
+import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 
 const AddRecipe = () => {
+  const { userData } = useContext(AuthContext);
   const [prepTime, setPrepTime] = useState({ value: "", time: "minutes" });
   const [cookTime, setCookTime] = useState({ value: "", time: "minutes" });
   const [isPublic, setIsPublic] = useState(true);
@@ -25,12 +28,10 @@ const AddRecipe = () => {
     ingredientReducer,
     initialIngredients
   );
-
   const [directionInputs, dispatchDirections] = useReducer(
     directionReducer,
     initialDirections
   );
-
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState("");
   const [form, setForm] = useState({
@@ -83,6 +84,17 @@ const AddRecipe = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+
+      formData.append("image", image);
+      formData.append("form", JSON.stringify({ ...form, private: isPublic }));
+
+      const res = await axios.post(
+        `/api/user/${userData?.email}/addPersonalRecipe`,
+        formData
+      );
+
+      console.log(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -202,7 +214,9 @@ const AddRecipe = () => {
           </div>
         </Form>
       </Wrapper>
-      {showLeaveModal && <LeaveModal setShowLeaveModal={setShowLeaveModal} />}
+      {showLeaveModal && (
+        <showLeaveModal setShowLeaveModal={setShowLeaveModal} />
+      )}
     </>
   );
 };

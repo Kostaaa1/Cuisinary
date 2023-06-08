@@ -20,8 +20,8 @@ const SimilarRecipes = () => {
         const res = await axios.get(
           `/api/recipe/${recipe?.title}/getSimilarRecipes`
         );
-        if (res.data) setIsLoading(false);
 
+        if (res.data) setIsLoading(false);
         return res.data;
       }
     } catch (error) {
@@ -29,21 +29,24 @@ const SimilarRecipes = () => {
     }
   };
 
-  const { data: similarData, refetch } = useQuery(
+  const { data: similarData, isSuccess } = useQuery(
     ["similar-recipes"],
     fetchSimilarRecipes,
     {
       enabled: !!recipe?.title,
+      refetchOnMount: "always",
     }
   );
 
   useEffect(() => {
-    refetch();
-  }, []);
+    if (similarData) {
+      console.log(similarData.data.results);
+    }
+  }, [similarData]);
 
   return (
     <>
-      {!isLoading && (
+      {isSuccess && (
         <>
           <Recipes>
             <h2>You'll also love</h2>
@@ -53,16 +56,31 @@ const SimilarRecipes = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {similarData?.data.slice(0, 16).map((recipe, id) => (
-                <CardDescription
-                  params={similarData?.name}
-                  key={id}
-                  recipeData={recipe}
-                  favorite={favoriteForSimilar}
-                  setFavorite={setFavoriteForSimilar}
-                />
-              ))}
-
+              {similarData.data.results.length > 0 ? (
+                <>
+                  {similarData.data.results.map((recipe, id) => (
+                    <CardDescription
+                      params={similarData?.name}
+                      key={id}
+                      recipeData={recipe}
+                      favorite={favoriteForSimilar}
+                      setFavorite={setFavoriteForSimilar}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {similarData?.data?.slice(0, 16)?.map((recipe, id) => (
+                    <CardDescription
+                      params={similarData?.name}
+                      key={id}
+                      recipeData={recipe}
+                      favorite={favoriteForSimilar}
+                      setFavorite={setFavoriteForSimilar}
+                    />
+                  ))}
+                </>
+              )}
               {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
             </Grid>
             {favoriteForSimilar && (
@@ -84,10 +102,7 @@ const Recipes = styled.div`
   margin: 0 auto;
   height: 100%;
   background-color: white;
-
-  @media (max-width: 1270px) {
-    padding: 0 25px;
-  }
+  padding: 0 36px;
 
   h2 {
     font-size: 28px;

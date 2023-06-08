@@ -73,7 +73,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
 
 const Card = styled.div`
   position: relative;
-  width: 31%;
+  width: 30%;
   display: flex;
   flex-direction: column;
   min-height: 420px;

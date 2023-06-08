@@ -20,10 +20,10 @@ const Horizontal = () => {
 
   return (
     <ScrolledHeader
-      initial={{ y: "30%", height: "90px" }}
+      initial={{ y: "30%", height: "80px" }}
       animate={{
         y: 0,
-        height: "70px",
+        height: "60px",
       }}
       transition={{ duration: 0.18 }}
     >
@@ -68,6 +68,10 @@ const ScrolledHeader = styled(motion.div)`
   max-width: 1240px;
   margin: 0 auto;
 
+  @media (max-width: 1270px) {
+    padding: 0 36px;
+  }
+
   .wrapper {
     display: flex;
     color: var(--main-color);
@@ -89,15 +93,6 @@ const ScrolledHeader = styled(motion.div)`
     align-items: center;
     cursor: pointer;
     height: 50px;
-
-    .user {
-      margin-right: 7px;
-      color: var(--red-color);
-      width: 25px;
-      height: 25px;
-      background-color: white;
-      border-radius: 50%;
-    }
 
     .search {
       color: var(--grey-color);

@@ -11,6 +11,8 @@ const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
   const [heart, setHeart] = useState(false);
   useNoScroll(favorite);
 
+  console.log(recipeData);
+
   const addRecipeToFavorites = async () => {
     try {
       let checkForRecipe = userData.collections[0]?.collRecipes.find(

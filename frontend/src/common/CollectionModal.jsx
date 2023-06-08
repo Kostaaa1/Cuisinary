@@ -16,14 +16,8 @@ const CollectionModal = ({
   isPrivate,
 }) => {
   const params = useParams();
-  const [collName, setCollName] = useState(
-    collectionTitle || ""
-    // collectionTitle ? collectionTitle : ""
-  );
-  const [collDesc, setCollDesc] = useState(
-    collectionDesc || ""
-    // collectionDesc ? collectionDesc : ""
-  );
+  const [collName, setCollName] = useState(collectionTitle || "");
+  const [collDesc, setCollDesc] = useState(collectionDesc || "");
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
 
@@ -34,13 +28,6 @@ const CollectionModal = ({
         collName,
         collDesc,
       };
-
-      // const filteredObject = Object.entries(collectionData)
-      //   .filter(([key, value]) => value)
-      //   .reduce((obj, [key, value]) => {
-      //     obj[key] = value;
-      //     return obj;
-      //   }, {});
 
       await axios.post(
         params.id

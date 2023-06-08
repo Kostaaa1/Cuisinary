@@ -28,6 +28,19 @@ const ImageFile = new mongoose.Schema(
   { _id: false, versionKey: false }
 );
 
+const PersonalRecipe = new mongoose.Schema({
+  title: { type: String, required: true },
+  summary: { type: String },
+  extendedIngredients: [{ value: String, placeholder: String, id: String }],
+  directions: [{ value: String, placeholder: String, id: String }],
+  servings: { type: String },
+  pricePerServing: { type: String },
+  readyInMinutes: { type: String },
+  preparationMinutes: { type: String },
+  picture: ImageFile,
+  private: { type: Boolean },
+});
+
 const PersonalReviews = new mongoose.Schema(
   {
     recipeTitle: { type: String },
@@ -69,6 +82,7 @@ const UserSchema = new mongoose.Schema({
   zipCode: { type: String },
   collections: [CollectionSchema],
   reviews: [PersonalReviews],
+  personalRecipes: [PersonalRecipe],
 });
 
 module.exports = mongoose.model("User", UserSchema);

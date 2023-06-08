@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Close } from "@mui/icons-material";
 import GlobalContext from "../../../setup/app-context-menager/GlobalContext";
 
-const Search = ({ showSearched }) => {
+const Search = ({ style, showSearched, showSideNav, setShowSideNav }) => {
   const [input, setInput] = useState("");
   const navigate = useNavigate();
   const { searchBarRef } = useContext(GlobalContext);
@@ -18,10 +18,12 @@ const Search = ({ showSearched }) => {
 
     setInput("");
     showSearched();
+
+    if (setShowSideNav) setShowSideNav();
   };
 
   return (
-    <SearchForm onSubmit={submitHandler} ref={searchBarRef}>
+    <SearchForm style={style} onSubmit={submitHandler} ref={searchBarRef}>
       <h4>Search</h4>
       <Wrapper className="wrapper">
         <input
@@ -33,31 +35,25 @@ const Search = ({ showSearched }) => {
         <div className="search">
           <FaSearch onClick={submitHandler} />
         </div>
-        <Close className="close" onClick={showSearched} />
+        {!showSideNav && <Close className="close" onClick={showSearched} />}
       </Wrapper>
     </SearchForm>
   );
 };
 
 const SearchForm = styled.form`
-  position: absolute;
   display: flex;
-  align-items: center;
   justify-content: space-around;
+  align-items: center;
   width: 470px;
   max-width: 100%;
-  height: 55px;
-  right: 0;
-  padding: 0 0 0 12px;
+  height: 50px;
 
   h4 {
     color: var(--main-color);
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
     margin-right: 10px;
-  }
-
-  .wrapper {
   }
 `;
 
@@ -86,8 +82,9 @@ const Wrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     height: 100%;
-    width: 70px;
+    width: 60px;
     color: white;
     cursor: pointer;
     background-color: var(--red-color);

@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 
 const AddCustomModal = ({ showModal, favorite }) => {
@@ -15,8 +14,8 @@ const AddCustomModal = ({ showModal, favorite }) => {
   const [showInput, setShowInput] = useState(false);
   const { user } = useAuth0();
   // const { userCollections } = useContext(AuthContext);
-  const [collections, setCollections] = useState([]);
   const queryClient = useQueryClient();
+  const [collections, setCollections] = useState([]);
   const [userCollections, setUserCollections] = useState([]);
 
   const userData = queryClient.getQueryData(["user-data", user?.email]);
@@ -86,10 +85,6 @@ const AddCustomModal = ({ showModal, favorite }) => {
       );
     }
   };
-
-  useEffect(() => {
-    console.log(checkedColls);
-  }, [checkedColls]);
 
   const submitForm = async (e) => {
     e.preventDefault();

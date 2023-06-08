@@ -15,7 +15,7 @@ const Description = () => {
 
   const checkIfRecipeExists = () => {
     let checkForRecipe = userData?.collections[0]?.collRecipes.find(
-      (recipes) => recipes.recipeTitle === recipe.title
+      (recipes) => recipes.recipeTitle === recipe?.title
     );
     return checkForRecipe;
   };
@@ -49,10 +49,6 @@ const Description = () => {
       toast.error("An error occurred while saving the recipe!");
     }
   };
-
-  useEffect(() => {
-    console.log(recipe.image);
-  }, [recipe]);
 
   return (
     <Container>

@@ -1,19 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
-import { useContext } from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Loading from "../../../common/Loading";
-import SectionInfo from "../../../common/SectionInfo";
-import AuthContext from "../../../setup/app-context-menager/AuthContext";
 import {
   AddAPhoto,
   KeyboardArrowDown,
   SupervisorAccount,
 } from "@mui/icons-material";
-import { useRef } from "react";
-import useAddFixed from "../hooks/useAddFixed";
-import { useUser } from "../../../setup/auth/useAuth";
+import SectionHeader from "../../../common/SectionHeader";
 
 const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);
@@ -24,25 +18,11 @@ const PublicInfo = ({ userData }) => {
   const [tagline, setTagline] = useState("");
   const [nickname, setNickname] = useState("");
   const [showLoading, setShowLoading] = useState(false);
-  const publicRef = useRef(null);
-  useAddFixed(publicRef);
 
   useEffect(() => {
     setNickname(userData?.nickname);
     setTagline(userData?.tagline);
   }, [userData]);
-
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = () => {
-        setPreview(reader.result);
-      };
-    } else {
-      setPreview(null);
-    }
-  }, [image]);
 
   const handleImage = (e) => {
     if (e.target.value !== "") {
@@ -57,6 +37,18 @@ const PublicInfo = ({ userData }) => {
     }
   };
 
+  useEffect(() => {
+    if (image) {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = () => {
+        setPreview(reader.result);
+      };
+    } else {
+      setPreview(null);
+    }
+  }, [image]);
+
   const submitForm = async (e) => {
     try {
       e.preventDefault();
@@ -69,6 +61,7 @@ const PublicInfo = ({ userData }) => {
           user: { nickname: form.nickname, tagline: form.tagline },
         });
       }
+
       if (image) {
         formData.append("file", image);
         await axios.post(`/api/user/${user?.email}/addImage`, formData);
@@ -81,42 +74,16 @@ const PublicInfo = ({ userData }) => {
   };
 
   return (
-    <Form onSubmit={submitForm}>
+    <form onSubmit={submitForm}>
       <>
-        <div className="public-section" ref={publicRef}>
-          <h1>Public Profile Settings</h1>
-
-          {showLoading ? (
-            <button className={"btn-save"}>
-              <Loading className="scaled-loading" />
-            </button>
-          ) : (
-            <>
-              {buttonSave ? (
-                <input
-                  type="submit"
-                  value={"SAVE CHANGES"}
-                  className={`btn-save highlight`}
-                />
-              ) : (
-                <input
-                  type="submit"
-                  value={"SAVE CHANGES"}
-                  disabled
-                  className={`btn-save`}
-                />
-              )}
-            </>
-          )}
-        </div>
-        <SectionInfo
-          value={
-            "The information on this page will be displayed on your public profile, which is visible to other users."
-          }
+        <SectionHeader
+          title="Public Profile Settings"
+          text="The information on this page will be displayed on your public profile, which is visible to other users."
+          span="The information on this page will be displayed publicly and will be visible to others"
           icon={<SupervisorAccount />}
-          text={
-            "The information on this page will be displayed publicly and will be visible to others"
-          }
+          showLoading={showLoading}
+          buttonSave={buttonSave}
+          buttonValue="SAVE CHANGES"
         />
         <DynamicForm>
           <div className="head-info" onClick={() => setClicked(!clicked)}>
@@ -179,7 +146,7 @@ const PublicInfo = ({ userData }) => {
           )}
         </DynamicForm>
       </>
-    </Form>
+    </form>
   );
 };
 
@@ -187,12 +154,10 @@ const DynamicForm = styled.div`
   width: 100%;
   height: 100%;
   margin: 22px 0;
-  font-size: 20px;
   border: 1px solid var(--input-border-color);
 
   h3 {
     margin: 20px 0;
-    font-size: 24px;
   }
 
   .head-info {
@@ -220,12 +185,12 @@ const DynamicForm = styled.div`
     height: 100%;
 
     .form-file {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
       input {
         display: none;
-      }
-
-      h3 {
-        font-size: 18px;
       }
 
       div {
@@ -246,9 +211,9 @@ const DynamicForm = styled.div`
           /* display: block; */
           border: 2px solid var(--red-color);
           border-radius: 50%;
-          width: 120px;
-          height: 120px;
-          padding: 30px;
+          width: 140px;
+          height: 140px;
+          padding: 34px;
           color: var(--red-color);
           margin-bottom: 10px;
           overflow: visible;
@@ -257,18 +222,12 @@ const DynamicForm = styled.div`
         img {
           display: block;
           border-radius: 50%;
-          height: 120px;
-          width: 120px;
+          height: 140px;
+          width: 140px;
           margin-bottom: 5px;
           border: 2px solid var(--red-color);
         }
       }
-    }
-
-    .form-file {
-      display: flex;
-      flex-direction: column;
-      position: relative;
     }
 
     .form-control {
@@ -315,55 +274,6 @@ const DynamicForm = styled.div`
       height: 40px;
       padding: 0 10px;
       font-size: 14px;
-    }
-  }
-`;
-
-const Form = styled.form`
-  .public-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h1 {
-      font-weight: bold;
-      letter-spacing: -0.9px;
-      font-size: 38px;
-    }
-
-    .btn-save {
-      position: relative;
-      width: 200px;
-      height: 60px;
-      font-size: 12px;
-      font-weight: bold;
-      color: white;
-      background-color: #d9d9d9;
-      display: block;
-      border: none;
-      border-radius: 3px;
-      letter-spacing: 1.2px;
-
-      .scaled-loading {
-        transform: scale(0.8) !important;
-      }
-    }
-
-    .selected {
-      background-color: var(--red-color);
-    }
-
-    .highlight {
-      background-color: var(--red-color);
-      cursor: pointer;
-
-      &:active,
-      &:focus {
-        outline: 2px solid var(--blue-color);
-        border-radius: 3px;
-        outline-offset: 1px;
-      }
     }
   }
 `;

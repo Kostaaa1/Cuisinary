@@ -4,19 +4,18 @@ import { useRef } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import Loading from "../../../common/Loading";
-import SectionInfo from "../../../common/SectionInfo";
-// import { useUser } from "../../../setup/auth/useAuth";
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "../../../setup/auth/useAuth";
+import SectionHeader from "../../../common/SectionHeader";
+import LineBreak from "../../../common/LineBreak";
 
-const PersonalInfo = ({ data: userData }) => {
-  // useAddFixed(personalRef);
+const PersonalInfo = () => {
   const [clicked, setClicked] = useState(true);
   const [buttonSave, setButtonSave] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const personalRef = useRef(null);
+  const { user } = useAuth0();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -29,6 +28,9 @@ const PersonalInfo = ({ data: userData }) => {
     day: "",
     year: "",
   });
+
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(["user-data", user?.email]);
 
   useEffect(() => {
     if (userData) {
@@ -89,56 +91,31 @@ const PersonalInfo = ({ data: userData }) => {
   };
 
   return (
-    <Form onSubmit={submitForm}>
-      <div className="personal-section" ref={personalRef}>
-        <h1>Personal Info</h1>
-        {showLoading ? (
-          <button className={"btn-save"}>
-            <Loading className="scaled-loading" />
-          </button>
-        ) : (
-          <>
-            {buttonSave ? (
-              <input
-                type="submit"
-                value={"SAVE CHANGES"}
-                className={`btn-save highlight`}
-              />
-            ) : (
-              <input
-                type="submit"
-                value={"SAVE CHANGES"}
-                disabled
-                className={`btn-save`}
-              />
-            )}
-          </>
-        )}
-      </div>
-      <SectionInfo
-        value={
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum assumenda, libero expedita at nesciunt magni enim impedit deserunt laborum soluta earum quidem repellendus, aliquid aspernatur."
-        }
+    <form onSubmit={submitForm}>
+      <SectionHeader
+        title="Personal Info"
+        text="These details will be used for all the Meredith profiles associated with your email address. By filling out this information, you will receive a more personalized experience across all Meredith websites."
+        span="Only you can see the information on this page.  It will not be displayed for other users to see."
         icon={<HttpsOutlined />}
-        text={
-          "Only you can see the information on this page.  It will not be displayed for other users to see."
-        }
+        showLoading={showLoading}
+        buttonSave={buttonSave}
+        buttonValue="SAVE CHANGES"
       />
       <FormWrap>
         <div className="head-info" onClick={() => setClicked(!clicked)}>
-          <h3>My Basic Info</h3>
+          <h2>My Basic Info</h2>
           <KeyboardArrowDown className={clicked ? "click" : ""} />
         </div>
         {clicked && (
           <>
             <div className="input-container">
               <div className="input-wrapper">
-                <label> Email Address*</label>
+                <label>Email Address*</label>
                 <input
                   type="email"
-                  readOnly={formData.email}
-                  placeholder={formData.email}
-                  className="email"
+                  readOnly={userData?.email}
+                  placeholder={userData?.email}
+                  disabled
                 />
               </div>
               <HalfWrap>
@@ -149,6 +126,7 @@ const PersonalInfo = ({ data: userData }) => {
                     name="firstName"
                     value={formData.firstName}
                     type="text"
+                    maxLength={18}
                     placeholder={"Taylor"}
                   />
                 </div>
@@ -159,6 +137,7 @@ const PersonalInfo = ({ data: userData }) => {
                     name="lastName"
                     value={formData.lastName}
                     type="text"
+                    maxLength={18}
                     placeholder={"Smith"}
                   />
                 </div>
@@ -216,7 +195,6 @@ const PersonalInfo = ({ data: userData }) => {
                     />
                   </div>
                 </div>
-
                 <div className="input-wrapper half">
                   <label>ZIP Code</label>
                   <input
@@ -232,58 +210,13 @@ const PersonalInfo = ({ data: userData }) => {
           </>
         )}
       </FormWrap>
-    </Form>
+    </form>
   );
 };
-
-const Form = styled.form`
-  .personal-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h1 {
-      font-weight: bold;
-      font-size: 38px;
-      letter-spacing: -0.9px;
-    }
-
-    .btn-save {
-      position: relative;
-      width: 200px;
-      height: 60px;
-      font-size: 12px;
-      font-weight: bold;
-      color: white;
-      background-color: #d9d9d9;
-      display: block;
-      border: none;
-      border-radius: 3px;
-      letter-spacing: 1.2px;
-
-      .scaled-loading {
-        transform: scale(0.8) !important;
-      }
-    }
-
-    .highlight {
-      background-color: var(--red-color);
-      cursor: pointer;
-
-      &:active {
-        outline: 2px solid var(--blue-color);
-        border-radius: 5px;
-        outline-offset: 1px;
-      }
-    }
-  }
-`;
 
 const HalfWrap = styled.div`
   display: flex;
   justify-content: space-between;
-  width: 100%;
 
   .half {
     width: 48%;
@@ -303,9 +236,6 @@ const HalfWrap = styled.div`
 
 const FormWrap = styled.div`
   width: 100%;
-  height: 100%;
-  margin: 22px 0;
-  font-size: 20px;
   border: 1px solid var(--input-border-color);
 
   .head-info {
@@ -315,9 +245,8 @@ const FormWrap = styled.div`
     padding: 0 2rem;
     user-select: none;
 
-    h3 {
+    h2 {
       margin: 20px 0;
-      font-size: 22px;
     }
 
     svg {
@@ -342,24 +271,18 @@ const FormWrap = styled.div`
     label {
       font-weight: bold;
       margin-bottom: 10px;
-      font-size: 14px;
     }
 
     input {
       width: 100%;
       height: 50px;
       padding: 0 10px;
-      font-size: 14px;
       font-weight: 500;
       border: 1px solid var(--input-border-color);
 
       &:focus {
         outline: none;
       }
-    }
-
-    .email {
-      border: 1px solid #b2b2b2;
     }
   }
 

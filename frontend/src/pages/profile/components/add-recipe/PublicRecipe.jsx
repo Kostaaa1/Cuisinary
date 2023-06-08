@@ -3,10 +3,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const PublicRecipe = ({ isPublic, setIsPublic }) => {
-  useEffect(() => {
-    console.log(isPublic);
-  }, [isPublic]);
-
   return (
     <Section>
       <label>Make this recipe public?</label>

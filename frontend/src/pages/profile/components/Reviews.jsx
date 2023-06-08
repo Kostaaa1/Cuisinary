@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import SectionInfo from "../../../common/SectionInfo";
 import { Star, StarBorder } from "@mui/icons-material";
 import Button from "../../../common/Button";
 import Loading from "../../../common/Loading";
@@ -11,6 +10,7 @@ import {
   KeyboardArrowDown,
   SupervisorAccount,
 } from "@mui/icons-material";
+import SectionHeader from "../../../common/SectionHeader";
 
 const Reviews = ({ userData }) => {
   const loadCount = 5;
@@ -59,7 +59,7 @@ const Reviews = ({ userData }) => {
       }
     }
   }, [userData, sortingTitle]);
-  
+
   useEffect(() => {
     if (reviews?.length === userData?.reviews?.length) {
       setShowLoadMore(false);
@@ -115,13 +115,11 @@ const Reviews = ({ userData }) => {
 
   return (
     <Container>
-      <div className="header">
-        <h1>Reviews</h1>
-      </div>
-      <SectionInfo
-        value={"Reviews you have added to content."}
+      <SectionHeader
+        title="Reviews"
+        text="Reviews you have added to content."
         icon={<SupervisorAccount />}
-        text={"Other users can see reviews you have made"}
+        span="Other users can see reviews you have made"
       />
       {userData?.reviews?.length !== 0 ? (
         <>
@@ -221,7 +219,7 @@ const Container = styled.section`
     padding: 32px 0;
 
     h1 {
-      font-size: 26px;
+      font-size: 26px !important;
       color: var(--grey-color);
     }
   }

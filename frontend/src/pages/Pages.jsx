@@ -1,6 +1,6 @@
 import Home from "./home/Home";
 import Recipe from "./recipe/Recipe";
-import AddRecipe from "./AddRecipe";
+import AddRecipe from "./profile/components/add-recipe/AddRecipe";
 import Searched from "./searched/Searched";
 import MyProfile from "./profile/MyProfile";
 import Category from "./category/Category";
@@ -13,6 +13,7 @@ import { profileLists, StaticList } from "../utils/constants/constants-pages";
 import UserInfo from "./profile/components/user/UserInfo";
 import CollectionPage from "./profile/components/user/CollectionPage";
 import Header from "./navbar/Header";
+import styled from "styled-components";
 
 const Pages = () => {
   const location = useLocation();
@@ -48,7 +49,7 @@ const Pages = () => {
         <Route path="/recipe/:id" element={<Recipe />} />
 
         <Route element={<ProtectedRoutes />}>
-          <Route path="/account/addRecipe/" element={<AddRecipe />} />
+          <Route path="/account/add-recipe" element={<AddRecipe />} />
           <Route
             path="/account/forgot-password-reset"
             element={<PasswordForm />}

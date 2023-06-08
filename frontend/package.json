@@ -10,6 +10,9 @@
     },
     "dependencies": {
         "@auth0/auth0-react": "^2.1.0",
+        "@dnd-kit/core": "^6.0.8",
+        "@dnd-kit/sortable": "^7.0.2",
+        "@dnd-kit/utilities": "^3.2.1",
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
         "@iconscout/unicons": "^4.0.8",

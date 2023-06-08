@@ -1,21 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const useAddFixed = (ref) => {
+const useAddFixed = (ref, params) => {
+  const urlArr = ["reviews", "recipes", "change-password"];
+  if (urlArr.includes(params.name)) return;
+
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40 && !ref.current) {
+      const height = window.innerWidth > 1120 ? 150 : 80;
+      if (window.scrollY > height && ref.current) {
         ref.current.classList.add("fixed-header");
-      } else if (window.screenY < 40 && ref.current) {
+      } else if (window.scrollY < height && ref.current) {
         ref.current.classList.remove("fixed-header");
       }
     };
 
     window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
-  });
+  }, [ref]);
 };
 
 export default useAddFixed;

@@ -42,7 +42,9 @@ export const GlobalContextProvider = ({ children }) => {
     searchBarRef2,
   };
 
-  return <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>;
+  return (
+    <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
+  );
 };
 
 export default GlobalContext;

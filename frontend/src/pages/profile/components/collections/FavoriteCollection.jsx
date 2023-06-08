@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { DragIndicator, VideocamOff } from "@mui/icons-material";
+import { DragIndicator } from "@mui/icons-material";
 
 const FavoriteCollection = ({ collection, onLoad, layoutArr, onClick }) => {
   return (
@@ -18,7 +17,7 @@ const FavoriteCollection = ({ collection, onLoad, layoutArr, onClick }) => {
         </div>
         <div className="collection-description">
           <p>{collection.private ? "PRIVATE" : "PUBLIC"}</p>
-          <h3>{collection.collName}</h3>
+          <h4>{collection.collName}</h4>
           <span>
             <DragIndicator /> Collection // {collection?.collRecipes.length}
           </span>
@@ -37,7 +36,7 @@ const CustomLink = styled(NavLink)`
 const Collection = styled.div`
   display: flex;
   flex-direction: column;
-  width: 270px;
+  width: 260px;
   box-shadow: var(--card-shadow-border);
   overflow: none;
   max-height: 400px;
@@ -46,7 +45,8 @@ const Collection = styled.div`
     display: flex;
     flex-direction: column;
     word-break: break-all;
-    justify-content: space-around;
+    align-items: flex-start;
+    justify-content: center;
     flex-wrap: wrap;
     padding: 20px;
     height: 140px;
@@ -67,7 +67,6 @@ const Collection = styled.div`
       font-weight: 600;
       letter-spacing: 1.4px;
       font-size: 12px;
-      cursor: pointer;
 
       &:hover {
         text-decoration: underline;
@@ -77,8 +76,8 @@ const Collection = styled.div`
       }
     }
 
-    h3 {
-      cursor: pointer;
+    h4 {
+      margin: 12px 0;
 
       &:hover {
         text-decoration: underline;

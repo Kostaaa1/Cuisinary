@@ -6,12 +6,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 export const AuthContext = createContext("");
 
 export const AuthContextProvider = ({ children }) => {
-  const [arrayId, setArrayId] = useState([]);
   const { user } = useAuth0();
   const { getUserData } = useUser();
-  // const [contextUser, setContextUser] = useState({});
+  const [userCollections, setUserCollections] = useState([]);
+  const [arrayId, setArrayId] = useState([]);
+  // const [contextUser, setContextUser] = useState({});s
 
-  const { data: userData } = useQuery(
+  const { data: userData, refetch } = useQuery(
     ["context-user", user?.email],
     getUserData,
     {
@@ -20,14 +21,19 @@ export const AuthContextProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log(userData, "Context Data");
+    if (userData) {
+      setUserCollections(
+        userData.collections.filter((x) => x.collName !== "All Saved Items")
+      );
+    }
   }, [userData]);
 
   const value = {
     arrayId,
-    userData,
-    // collections,
     setArrayId,
+    userData,
+    userCollections,
+    refetch,
     // userData,
   };
 

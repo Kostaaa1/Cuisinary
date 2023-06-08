@@ -21,15 +21,15 @@ const ProfileGreet = ({ onLoad }) => {
           className="profile-picture"
         />
       )}
-      <div>
-        <h3>
+      <div className="user-info-wrap">
+        <h4>
           Hi,{" "}
           {userData?.firstName
             ? `${userData?.firstName} ${userData?.lastName}`
             : userData?.email}
-        </h3>
+        </h4>
         <ButtonBorder
-          style={{ width: "140px", height: "36px" }}
+          style={{ width: "140px", height: "30px" }}
           onClick={() => navigate(`/profile/${userData._id}`)}
           value={"View Public Profile"}
         />
@@ -40,14 +40,14 @@ const ProfileGreet = ({ onLoad }) => {
 
 const Greet = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   height: 100%;
   padding: 10px;
 
-  h3 {
-    font-size: 18px;
+  h4 {
     word-break: break-all;
+    margin-bottom: -4px;
   }
 
   img {

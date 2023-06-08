@@ -16,7 +16,7 @@ const Card = styled.div`
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  width: 270px;
+  width: 260px;
   font-size: 14px;
   box-shadow: var(--card-shadow-border);
   overflow: hidden;

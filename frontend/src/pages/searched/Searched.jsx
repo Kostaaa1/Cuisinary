@@ -1,5 +1,5 @@
-import { useState, useEffect, useContext, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import CardDescription from "../../common/CardDescription";
@@ -22,7 +22,7 @@ const SearchedRecipes = () => {
       if (data.length === 0) {
         const res = await fetch(
           `https://api.spoonacular.com/recipes/complexSearch?apiKey=${
-            import.meta.env.VITE_API_KEY
+            import.meta.env.VITE_SPOONACULAR_API_KEY
           }&number=60&query=${params.search}`
         );
 
@@ -36,7 +36,6 @@ const SearchedRecipes = () => {
         return data.results;
       }
 
-      console.log(data);
       return data[0]?.data ?? [];
     } catch (error) {
       console.log(error);
@@ -47,6 +46,8 @@ const SearchedRecipes = () => {
     ["searched", params.search],
     fetchSearched
   );
+
+  console.log(data);
 
   return (
     <Container>
@@ -63,16 +64,25 @@ const SearchedRecipes = () => {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {isSuccess &&
-          data.map((recipe, id) => (
-            <CardDescription
-              favorite={favorite}
-              params={params.search}
-              setFavorite={setFavorite}
-              key={id}
-              recipeData={recipe}
-            />
-          ))}
+        {data?.length > 0
+          ? data?.map((recipe, id) => (
+              <CardDescription
+                favorite={favorite}
+                params={params.search}
+                setFavorite={setFavorite}
+                key={id}
+                recipeData={recipe}
+              />
+            ))
+          : data?.results.map((recipe, id) => (
+              <CardDescription
+                favorite={favorite}
+                params={params.search}
+                setFavorite={setFavorite}
+                key={id}
+                recipeData={recipe}
+              />
+            ))}
       </Grid>
       {favorite && <SavedModal setFavorite={setFavorite} />}
     </Container>
@@ -87,15 +97,16 @@ const Container = styled.div`
   margin: 170px auto;
   color: var(--main-color);
 
+  /* @media screen and (max-width: 1270px) {
+    padding: 0 36px;
+  } */
+
   h3 {
     color: var(--grey-color);
+
     span {
       text-decoration: underline;
     }
-  }
-
-  @media (max-width: 1270px) {
-    padding: 0 25px;
   }
 
   h2 {

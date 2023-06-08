@@ -19,7 +19,6 @@ const fileSizeFormatter = (bytes, decimal) => {
 // CRUD OPERATIONS
 module.exports = {
   updateUser: async (req, res) => {
-    console.log(req.body);
     try {
       const updateData = {};
       Object.entries(req.body.user).forEach(([key, value]) => {
@@ -137,7 +136,7 @@ module.exports = {
         update.$push[`collections.$.collRecipes`] = recipe;
       });
 
-      const user = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { email: req.params.email },
         {
           $push: {
@@ -178,6 +177,7 @@ module.exports = {
   },
   createUserReview: async (req, res) => {
     try {
+      console.log(req.body);
       const { recipeTitle, recipeId, recipeImage, comment, starRating } =
         req.body;
       const { email } = req.params;
@@ -188,11 +188,11 @@ module.exports = {
         {
           $push: {
             reviews: {
-              recipeTitle: recipeTitle,
-              recipeImage: recipeImage,
-              recipeId: recipeId,
-              comment: comment,
-              starRating: starRating,
+              recipeTitle,
+              recipeImage,
+              recipeId,
+              comment,
+              starRating,
             },
           },
         }
@@ -211,15 +211,15 @@ module.exports = {
 
       const user = await User.findOneAndUpdate(
         {
-          email: req.params.email,
+          email,
         },
         {
           $set: {
             reviews: {
-              recipeTitle: recipeTitle,
-              recipeImage: recipeImage,
-              comment: comment,
-              starRating: starRating,
+              recipeTitle,
+              recipeImage,
+              comment,
+              starRating,
             },
           },
         },
@@ -229,6 +229,57 @@ module.exports = {
       return user;
     } catch (err) {
       res.status(400).send(err);
+    }
+  },
+  addPersonalRecipe: async (req, res) => {
+    try {
+      const {
+        title,
+        summary,
+        extendedIngredients,
+        directions,
+        servings,
+        pricePerServing,
+        readyInMinutes,
+        preparationMinutes,
+        private,
+      } = JSON.parse(req.body.form);
+      const { path, originalname, mimetype, size } = req.file;
+      const { email } = req.params;
+
+      const result = await cloudinary.uploader.upload(path);
+
+      const user = await User.findOneAndUpdate(
+        { email },
+        {
+          $push: {
+            personalRecipes: {
+              title,
+              summary,
+              extendedIngredients,
+              directions,
+              servings,
+              pricePerServing,
+              readyInMinutes,
+              preparationMinutes,
+              private,
+              picture: {
+                fileName: originalname,
+                fileType: mimetype,
+                fileSize: fileSizeFormatter(size, 2),
+                image: result.secure_url,
+                cloudinaryId: result.public_id,
+              },
+            },
+          },
+        },
+        { new: true }
+      );
+
+      console.log(user);
+      res.status(201).json("Created New Recipe");
+    } catch (error) {
+      res.status(400).send(error);
     }
   },
 };

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import UserReview from "./UserReview";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import Loading from "../../../../common/Loading";
 import Comments from "./Comments";
 import BarChart from "./BarChart";
@@ -78,6 +78,7 @@ const RecipeReviews = () => {
           ...data,
           recipeImage: recipe.image,
         }),
+
         axios.post(`/api/recipe/${params.id}/editRecipeReview`, {
           ...data,
           recipeId: myReview._id,

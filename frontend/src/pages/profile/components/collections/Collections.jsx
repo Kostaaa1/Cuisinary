@@ -1,18 +1,13 @@
-import {
-  CollectionsBookmarkOutlined,
-  HttpsOutlined,
-} from "@mui/icons-material";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { HttpsOutlined } from "@mui/icons-material";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
-import Button from "../../../../common/Button";
-import SectionInfo from "../../../../common/SectionInfo";
 import FavoriteCollection from "./FavoriteCollection";
 import CollectionModal from "../../../../common/CollectionModal";
 import NewCollectionCard from "./NewCollectionCard";
-import Loading from "../../../../common/Loading";
 import { useNavigate } from "react-router-dom";
 import useNoScroll from "../../../../utils/useNoScroll";
 import { useRef } from "react";
+import SectionHeader from "../../../../common/SectionHeader";
 
 const Collections = ({ userData }) => {
   const collectionRef = useRef(null);
@@ -51,25 +46,19 @@ const Collections = ({ userData }) => {
     <>
       <Collection>
         <div className="saved-items">
-          <div className="collection-section" ref={collectionRef}>
-            <h1>Saved Items & Collections</h1>
-            <Button
-              onClick={() => setShowCollectionModal(true)}
-              style={{ width: "210px", height: "60px" }}
-              value={"NEW COLLECTION +"}
-            />
-          </div>
-          <SectionInfo
-            value={"Create collections to organize your saved items"}
+          <SectionHeader
+            title="Saved Items & Collections"
+            text="Create collections to organize your saved items"
+            span="Others can see your saved items and any collection you make public."
             icon={<HttpsOutlined />}
-            text={
-              "Others can see your saved items and any collection you make public."
-            }
+            buttonValue="NEW COLLECTION +"
+            buttonSave={true}
+            onClick={() => setShowCollectionModal(true)}
           />
           <div>
-            <h3 className="h3-space">
+            <h4 className="h3-space">
               {userData?.collections.length} Collections
-            </h3>
+            </h4>
             <div className="collection-control">
               {userData?.collections.map((collection, id) => (
                 <FavoriteCollection
@@ -113,18 +102,6 @@ const Collection = styled.div`
       flex-wrap: wrap;
       gap: 20px;
       row-gap: 22px;
-    }
-  }
-
-  .collection-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-
-    h1 {
-      font-weight: bold;
-      font-size: 38px;
     }
   }
 `;

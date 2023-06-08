@@ -11,9 +11,8 @@ import CollectionCard from "./CollectionCard";
 import TransparentCard from "./TransparentCard";
 import Button from "../../../../common/Button";
 import ButtonHover from "../../../../common/ButtonHover";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GlobalContext from "../../../../setup/app-context-menager/GlobalContext";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../../../common/Loading";
@@ -22,7 +21,7 @@ import CollectionModal from "../../../../common/CollectionModal";
 import DeleteCollectionModal from "./DeleteCollectionModal";
 import useNoScroll from "../../../../utils/useNoScroll";
 
-const SavedItems = ({ data: userData, isRefetching }) => {
+const SavedItems = ({ userData, isRefetching }) => {
   const params = useParams();
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
@@ -132,7 +131,7 @@ const SavedItems = ({ data: userData, isRefetching }) => {
               <>
                 <h1>{collectionData?.collName}</h1>
                 <div className="height-div">
-                  <h3>All your favorite content in one place!</h3>
+                  <h4>All your favorite content in one place!</h4>
                   <p>
                     <span>
                       <SupervisorAccount />
@@ -286,7 +285,8 @@ const Saved = styled.div`
       align-items: center;
       height: 100%;
 
-      h3 {
+      h4 {
+        font-weight: 400;
         margin: 12px 0;
       }
 
@@ -323,7 +323,6 @@ const Saved = styled.div`
   .length {
     font-weight: 500;
     margin: 20px 0;
-    padding: 5px 10px;
   }
 
   .line-break {

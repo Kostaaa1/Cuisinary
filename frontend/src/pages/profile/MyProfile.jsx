@@ -132,23 +132,31 @@ const CustomLink = styled(NavLink)`
 const Wrapper = styled.section`
   position: relative;
   background-color: #f2f2f2;
-  min-height: 70vh;
+  min-height: 80vh;
+
+  .line-break {
+    margin: 32px 0;
+  }
 `;
 
 const Container = styled.div`
-  margin: 200px auto;
-  padding-bottom: 200px;
   display: flex;
   width: 1240px;
   max-width: 100%;
+  margin: 200px auto;
+  padding-bottom: 200px;
 
-  .loading {
-    transform: translate(0, -50%) scale(1.2);
+  @media screen and (max-width: 1120px) {
+    margin: 120px auto 0 auto;
+    padding: 0 36px;
   }
 
-  @media screen and (max-width: 1250px) {
-    padding-left: 20px;
-    padding-right: 20px;
+  @media (max-width: 1270px) {
+    padding: 0 36px;
+  }
+
+  .loading {
+    transform: translate(0, -40%) scale(1.2);
   }
 
   .components {
@@ -156,14 +164,14 @@ const Container = styled.div`
     background-color: #fff;
     width: 100%;
     word-break: break-all;
-    padding: 13px 26px 0 13px;
+    padding: 24px 10px;
   }
 
   .profile {
     min-width: 296px;
     height: 100%;
-    margin-right: 25px;
     background-color: #fff;
+    margin-right: 18px;
 
     .h4-div {
       display: flex;

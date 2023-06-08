@@ -27,7 +27,10 @@ const UserInfo = () => {
   const url = window.location.href.slice(21);
   const navigationLinks = [
     { url: "/", content: "Home" },
-    { url: "/account/profile/collection", content: "Saved Items & Collections" },
+    {
+      url: "/account/profile/collection",
+      content: "Saved Items & Collections",
+    },
     { url: `/profile/${userData?._id}`, content: userData?.nickname },
   ];
   useSmoothScroll();
@@ -41,10 +44,14 @@ const UserInfo = () => {
     return data;
   };
 
-  const { data: inspectUserData = {}, isFetching } = useQuery(["user-info"], fetchUserData, {
-    enabled: !!userData,
-    refetchOnMount: "always",
-  });
+  const { data: inspectUserData = {}, isFetching } = useQuery(
+    ["user-info"],
+    fetchUserData,
+    {
+      enabled: !!userData,
+      refetchOnMount: "always",
+    }
+  );
 
   useEffect(() => {
     return () => {
@@ -60,9 +67,15 @@ const UserInfo = () => {
         <>
           <ProfileWrap>
             {inspectUserData?.picture?.image && (
-              <img src={inspectUserData.picture.image} onLoad={() => setIsImageLoaded(true)} alt="avatar" />
+              <img
+                src={inspectUserData.picture.image}
+                onLoad={() => setIsImageLoaded(true)}
+                alt="avatar"
+              />
             )}
-            {!inspectUserData.picture?.image && <Person className="profile-svg" />}
+            {!inspectUserData.picture?.image && (
+              <Person className="profile-svg" />
+            )}
             <div className="profile-info">
               <NavigationWrap links={navigationLinks} />
               <h1>{inspectUserData?.nickname}</h1>
@@ -72,13 +85,25 @@ const UserInfo = () => {
           <ProfileContent>
             <div className="saved">
               <div className="saved-wrapper">
-                <h5 onClick={() => handleClick(0)} ref={h3Refs[0]} className={activeIndex === 0 ? "selected" : ""}>
+                <h5
+                  onClick={() => handleClick(0)}
+                  ref={h3Refs[0]}
+                  className={activeIndex === 0 ? "selected" : ""}
+                >
                   SAVED ITEMS & COLLECTIONS
                 </h5>
-                <h5 onClick={() => handleClick(1)} ref={h3Refs[1]} className={activeIndex === 1 ? "selected" : ""}>
+                <h5
+                  onClick={() => handleClick(1)}
+                  ref={h3Refs[1]}
+                  className={activeIndex === 1 ? "selected" : ""}
+                >
                   PERSONAL RECIPES
                 </h5>
-                <h5 onClick={() => handleClick(2)} ref={h3Refs[2]} className={activeIndex === 2 ? "selected" : ""}>
+                <h5
+                  onClick={() => handleClick(2)}
+                  ref={h3Refs[2]}
+                  className={activeIndex === 2 ? "selected" : ""}
+                >
                   REVIEWS
                 </h5>
               </div>
@@ -154,7 +179,7 @@ const ProfileWrap = styled.div`
 
     & > h1 {
       font-size: 2.2rem;
-      margin-top: 16px;
+      margin: 12px 0;
     }
 
     @media (max-width: 910px) {

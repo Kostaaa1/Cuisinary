@@ -1,11 +1,9 @@
-import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import ButtonHover from "../../../../common/ButtonHover";
-import { ArrowBack, ArrowForwardIos } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import NavigationWrap from "../../../../common/NavigationWrap";
-import { useLayoutData } from "../../hooks/useLayoutData";
 import Loading from "../../../../common/Loading";
 import useSmoothScroll from "../../../../utils/useSmoothScroll";
 import { useUser } from "../../../../setup/auth/useAuth";
@@ -14,7 +12,6 @@ import LineBreak from "../../../../common/LineBreak";
 
 const CollectionPage = () => {
   const navigate = useNavigate();
-  const { collections } = useLayoutData();
   const params = useParams();
   const [collectionData, setCollectionData] = useState([]);
   const { userData } = useUser();
@@ -23,29 +20,45 @@ const CollectionPage = () => {
   const fetchUserData = async () => {
     const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
     const data = await res.json();
-
     return data;
   };
 
-  const { data: inspectUserData = {}, isFetching } = useQuery(["user-info"], fetchUserData, {
-    enabled: !!userData,
-    refetchOnMount: "always",
-  });
+  const { data: inspectUserData = {} } = useQuery(
+    ["user-info"],
+    fetchUserData,
+    {
+      enabled: !!params.profileId,
+      refetchOnMount: "always",
+    }
+  );
 
   const navigationLinks = [
     { url: "/", content: "Home" },
-    { url: "/account/profile/collection", content: "Saved Items & Collections" },
-    { url: `/profile/${inspectUserData?._id}`, content: `${inspectUserData?.nickname}` },
+    {
+      url: "/account/profile/collection",
+      content: "Saved Items & Collections",
+    },
+    {
+      url: `/profile/${inspectUserData?._id}`,
+      content: `${inspectUserData?.nickname}`,
+    },
   ];
 
   useEffect(() => {
     if (params.collectionId === "all-saved-items" && !!inspectUserData) {
       setCollectionData(inspectUserData.collections?.[0]);
     } else {
-      setCollectionData(inspectUserData.collections?.filter((col) => col._id === params.collectionId)[0]);
+      setCollectionData(
+        inspectUserData.collections?.filter(
+          (col) => col._id === params.collectionId
+        )[0]
+      );
     }
   }, [inspectUserData]);
 
+  useEffect(() => {
+    console.log(collectionData);
+  }, [collectionData]);
   return (
     <Page>
       {collectionData && inspectUserData ? (
@@ -55,11 +68,13 @@ const CollectionPage = () => {
             icon={<ArrowBack />}
             onClick={() => navigate(`/profile/${inspectUserData?._id}`)}
           />
-          <NavigationWrap links={navigationLinks} style={{ margin: "40px 0 10px 0" }} />
+          <NavigationWrap
+            links={navigationLinks}
+            style={{ margin: "40px 0 10px 0" }}
+          />
           <div className="flex-wrap">
             <h1> {collectionData?.collName}</h1>
             <p>
-              {" "}
               {collectionData.collDesc
                 ? collectionData.collDesc
                 : `All ${inspectUserData?.nickname}'s favorites in one place`}{" "}
@@ -74,9 +89,8 @@ const CollectionPage = () => {
             {collectionData.collRecipes?.map((data, id) => (
               <Card key={id} className="card">
                 <Link to={"/recipe/" + data.recipe.id}>
-                  <img src={data?.recipe.image} alt="" />
+                  <img src={data?.recipe.image} />
                   <div className="card-desc">
-                    {/* <h5> {params?.toUpperCase()} </h5> */}
                     <h3>{data?.recipeTitle}</h3>
                   </div>
                 </Link>
@@ -130,7 +144,6 @@ const Page = styled.div`
   }
 
   @media (max-width: 910px) {
-    /* display: flex; */
     width: 640px;
     display: flex;
     justify-content: center;

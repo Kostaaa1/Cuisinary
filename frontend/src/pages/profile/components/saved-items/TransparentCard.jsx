@@ -59,7 +59,7 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
 
 const Card = styled.div`
   position: relative;
-  width: 31%;
+  width: 30%;
   display: flex;
   flex-direction: column;
   min-height: 420px;
@@ -68,6 +68,7 @@ const Card = styled.div`
   @media (max-width: 1030px) {
     width: 270px;
   }
+
   .transparent {
     position: absolute;
     background-color: rgba(245, 245, 245, 0.73);

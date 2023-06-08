@@ -2,14 +2,12 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import axios from "axios";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useUser = () => {
   const { user, getAccessTokenSilently } = useAuth0();
 
   const getUserData = async () => {
     if (user) {
-      console.log("ran");
       try {
         const mockUser = {
           nickname: user?.nickname,

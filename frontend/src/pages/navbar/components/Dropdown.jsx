@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { FaUserCircle, FaSearch } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { ArrowDropDown, AccountCircle } from "@mui/icons-material";
+import { ArrowDropDown } from "@mui/icons-material";
 import { useAuth0 } from "@auth0/auth0-react";
 // import image from "../../../assets/images/image2.jpg";
 
@@ -12,7 +12,10 @@ const Dropdown = () => {
 
   return (
     <>
-      <li className=" list" onMouseEnter={() => setShowDropdown(true)} onMouseLeave={() => setShowDropdown(false)}>
+      <li
+        onMouseEnter={() => setShowDropdown(true)}
+        onMouseLeave={() => setShowDropdown(false)}
+      >
         <FaUserCircle className="user" /> My Account
         <ArrowDropDown className="arrow" />
         {showDropdown && (
@@ -25,7 +28,9 @@ const Dropdown = () => {
               </NavLink>
               <NavLink to={"/account/profile/collection"}>
                 <div className="li-control">
-                  <li onClick={() => setShowDropdown(false)}>Saved Items & Collections</li>
+                  <li onClick={() => setShowDropdown(false)}>
+                    Saved Items & Collections
+                  </li>
                 </div>
               </NavLink>
               <NavLink to={"/account/addRecipe"}>

@@ -4,7 +4,6 @@ const User = require("../models/User");
 
 const addRecipeToSavedCollection = async (email, data) => {
   try {
-    console.log(data, "this is data");
     const filter = {
       email,
       "collections.collName": "All Saved Items",
@@ -33,11 +32,6 @@ module.exports = {
       let newRecipeData;
 
       if (!existingRecipe) {
-        // const {
-        //   data: { title, id, imageType, image, summary },
-        // } = await axios.get(
-        //   `https://api.spoonacular.com/recipes/${req.body.id}/information?apiKey=${process.env.SPOONACULAR_API_KEY}&includeNutrition=true`
-        // );
         const recipe = await axios.get(
           `https://api.spoonacular.com/recipes/${req.body.id}/information?apiKey=${process.env.SPOONACULAR_API_KEY}&includeNutrition=true`
         );

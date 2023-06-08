@@ -100,6 +100,8 @@ const Recipe = () => {
     }
   }, [averageRate]);
 
+  console.log(recipe);
+
   const value = {
     recipe,
     averageRate,
@@ -117,9 +119,9 @@ const Recipe = () => {
 
   return (
     <RecipeContext.Provider value={value}>
-      {recipe && isFetched ? (
-        <>
-          <Wrapper>
+      <>
+        <Wrapper>
+          {recipe && isFetched ? (
             <div className="container">
               <RecipeHeader />
               <Summary />
@@ -129,12 +131,12 @@ const Recipe = () => {
               <Nutrition />
               <RecipeReviews />
             </div>
-          </Wrapper>
-          <SimilarRecipes />
-        </>
-      ) : (
-        <Loading className="loading" />
-      )}
+          ) : (
+            <Loading />
+          )}
+        </Wrapper>
+        <SimilarRecipes />
+      </>
     </RecipeContext.Provider>
   );
 };
@@ -146,6 +148,11 @@ const Wrapper = styled.div`
   margin: 0 auto;
   height: 100%;
   margin: 250px auto 0 auto;
+
+  @media screen and (max-width: 1120px) {
+    margin: 180px auto 0 auto;
+    padding: 0 18px;
+  }
 
   .line-break {
     margin: 26px 0;
