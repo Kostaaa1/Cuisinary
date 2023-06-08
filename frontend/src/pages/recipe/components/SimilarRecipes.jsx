@@ -38,11 +38,6 @@ const SimilarRecipes = () => {
     }
   );
 
-  useEffect(() => {
-    if (similarData) {
-      console.log(similarData.data.results);
-    }
-  }, [similarData]);
 
   return (
     <>
@@ -56,7 +51,7 @@ const SimilarRecipes = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {similarData.data.results.length > 0 ? (
+              {similarData?.data?.results?.length > 0 ? (
                 <>
                   {similarData.data.results.map((recipe, id) => (
                     <CardDescription

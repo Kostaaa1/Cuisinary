@@ -100,7 +100,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
           {listContent.map((list) => {
             if (list.selected) {
               const Component = staticList[list.component];
-              if (!isRefetching && !isLoading) {
+              if (isRefetching && isLoading) {
+                // if (!isRefetching && !isLoading) {
                 return (
                   <Component
                     key={list.id}
@@ -109,7 +110,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                   />
                 );
               } else {
-                return <Loading key={list.id} className="loading" />;
+                return <Loading key={list.id} className="loading" style={{width: '4.2em', height: '4.2em', border: '0.5em solid white'}} />;
               }
             }
           })}
@@ -143,20 +144,19 @@ const Container = styled.div`
   display: flex;
   width: 1240px;
   max-width: 100%;
-  margin: 200px auto;
-  padding-bottom: 200px;
+  margin: 0 auto;
+  padding: 200px 0 60px 0;
 
-  @media screen and (max-width: 1120px) {
-    margin: 120px auto 0 auto;
-    padding: 0 36px;
+  @media (max-width: 1120px) {
+    margin-top: -70px;
   }
 
   @media (max-width: 1270px) {
-    padding: 0 36px;
+    padding: 200px 36px 60px 36px;
   }
 
   .loading {
-    transform: translate(0, -40%) scale(1.2);
+    transform: translate(0, -36%);
   }
 
   .components {
@@ -164,14 +164,14 @@ const Container = styled.div`
     background-color: #fff;
     width: 100%;
     word-break: break-all;
-    padding: 24px 10px;
+    padding: 24px;
   }
 
   .profile {
-    min-width: 296px;
+    min-width: 260px;
     height: 100%;
     background-color: #fff;
-    margin-right: 18px;
+    margin-right: 14px;
 
     .h4-div {
       display: flex;

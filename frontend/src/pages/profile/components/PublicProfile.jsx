@@ -74,7 +74,7 @@ const PublicInfo = ({ userData }) => {
   };
 
   return (
-    <form onSubmit={submitForm}>
+    <Form onSubmit={submitForm}>
       <>
         <SectionHeader
           title="Public Profile Settings"
@@ -146,10 +146,14 @@ const PublicInfo = ({ userData }) => {
           )}
         </DynamicForm>
       </>
-    </form>
+    </Form>
   );
 };
 
+
+const Form = styled.form`
+ /* padding: 24px; */
+`
 const DynamicForm = styled.div`
   width: 100%;
   height: 100%;

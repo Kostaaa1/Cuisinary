@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const path = require("path");
 const jwtCheck = require("./jwtCheck");
 
+
 // config
 dotenv.config({ path: "./config/.env" });
 connectDB();
