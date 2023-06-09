@@ -6,7 +6,7 @@ const useAddFixed = (ref, params) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const height = window.innerWidth > 1120 ? 150 : 80;
+      const height = window.innerWidth > 1120 ? 174 : 104;
       if (window.scrollY > height && ref.current) {
         ref.current.classList.add("fixed-header");
       } else if (window.scrollY < height && ref.current) {
