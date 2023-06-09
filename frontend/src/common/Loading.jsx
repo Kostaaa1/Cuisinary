@@ -3,7 +3,9 @@ import styled from "styled-components";
 const Loading = (props) => {
   return (
     <Wrapper className={props.className}>
-      <LoadingCircle></LoadingCircle>
+      <LoadingCircle
+        style={props.scaled && { width: "4.6em", height: "4.6em" }}
+      ></LoadingCircle>
     </Wrapper>
   );
 };
@@ -25,10 +27,10 @@ const LoadingCircle = styled.div`
   pointer-events: none;
   width: 3.2em;
   height: 3.2em;
-  border: 0.3em solid white;
+  border: 0.4em solid white;
   border-top-color: var(--red-color);
   border-radius: 50%;
-  animation: spin 1.2s linear infinite;
+  animation: spin 1s linear infinite;
 
   @keyframes spin {
     100% {

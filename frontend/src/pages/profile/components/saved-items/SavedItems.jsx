@@ -14,14 +14,13 @@ import ButtonHover from "../../../../common/ButtonHover";
 import { useNavigate, useParams } from "react-router-dom";
 import GlobalContext from "../../../../setup/app-context-menager/GlobalContext";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-import Loading from "../../../../common/Loading";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import CollectionModal from "../../../../common/CollectionModal";
 import DeleteCollectionModal from "./DeleteCollectionModal";
 import useNoScroll from "../../../../utils/useNoScroll";
 
-const SavedItems = ({ userData, isRefetching }) => {
+const SavedItems = () => {
   const params = useParams();
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
     useState(false);
@@ -29,6 +28,7 @@ const SavedItems = ({ userData, isRefetching }) => {
   const navigate = useNavigate();
   const { user } = useAuth0();
   const [collectionArray, setCollectionArray] = useState([]);
+  const [collectionData, setCollectionData] = useState([]);
   const {
     arrayOfRecipeNames,
     setArrayOfRecipeNames,
@@ -36,6 +36,24 @@ const SavedItems = ({ userData, isRefetching }) => {
     setCollectionParams,
   } = useContext(GlobalContext);
   useNoScroll(showDeleteCollectionModal, showEditCollectionModal);
+
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(["user-data", user?.email]);
+
+  useEffect(() => {
+    const collection = userData?.collections.find((coll) =>
+      params.id ? coll._id === params.id : coll
+    );
+
+    if (collection) {
+      const collectionArr = collection.collRecipes.map(
+        (item) => item && { ...item, loading: false }
+      );
+
+      setCollectionArray(collectionArr);
+      setCollectionData(collection);
+    }
+  }, [userData]);
 
   const addRecipeName = (recipeTitle) => {
     const arr = [...arrayOfRecipeNames, recipeTitle];
@@ -49,38 +67,11 @@ const SavedItems = ({ userData, isRefetching }) => {
 
   useEffect(() => {
     setCollectionParams(params.name);
+
     if (params.id) {
       setCollectionId(params.id);
     }
   }, [params]);
-
-  const fetchCollectionData = async () => {
-    try {
-      const res = await axios.get(
-        params.id
-          ? `/api/auth/${user?.email}/${params.id}/getCustomCollection`
-          : `/api/auth/${user?.email}/getSavedCollection`
-      );
-
-      let arr = res.data.collRecipes.map(
-        (item) => item && { ...item, loading: false }
-      );
-
-      setCollectionArray(arr);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const { data: collectionData, isFetching } = useQuery(
-    ["collectionData"],
-    fetchCollectionData,
-    {
-      enabled: !!user,
-      refetchOnMount: "always",
-    }
-  );
 
   const addLoading = (index) => {
     setCollectionArray((prevState) =>
@@ -100,128 +91,125 @@ const SavedItems = ({ userData, isRefetching }) => {
 
   return (
     <Saved>
-      {!isFetching ? (
-        <>
-          <div className="wrap">
-            <ButtonHover
-              value={"BACK TO ALL"}
-              icon={<ArrowBack />}
-              onClick={() => {
-                navigate("/account/profile/collection");
-              }}
-            />
-            {params.name === "collection" && params.id && (
-              <div className="wrap-flex">
-                <ButtonHover
-                  value={"DELETE"}
-                  icon={<Delete />}
-                  onClick={() => setShowDeleteCollectionModal(true)}
-                />
-                <ButtonHover
-                  value={"EDIT"}
-                  icon={<Edit />}
-                  onClick={() => setShowEditCollectionModal(true)}
-                />
+      <>
+        <div className="wrap">
+          <ButtonHover
+            value={"BACK TO ALL"}
+            icon={<ArrowBack />}
+            onClick={() => {
+              navigate("/account/profile/collection");
+            }}
+          />
+          {params.name === "collection" && params.id && (
+            <div className="wrap-flex">
+              <ButtonHover
+                value={"DELETE"}
+                icon={<Delete />}
+                onClick={() => setShowDeleteCollectionModal(true)}
+              />
+              <ButtonHover
+                value={"EDIT"}
+                icon={<Edit />}
+                onClick={() => setShowEditCollectionModal(true)}
+              />
+            </div>
+          )}
+        </div>
+        <div className="line-break"></div>
+        <div className="section-info">
+          {collectionData?.collName === "All Saved Items" ? (
+            <>
+              <h1>{collectionData?.collName}</h1>
+              <div className="height-div">
+                <h4>All your favorite content in one place!</h4>
+                <p>
+                  <span>
+                    <SupervisorAccount />
+                    Other users see what you save
+                  </span>
+                </p>
               </div>
-            )}
-          </div>
-          <div className="line-break"></div>
-          <div className="section-info">
-            {collectionData?.collName === "All Saved Items" ? (
-              <>
-                <h1>{collectionData?.collName}</h1>
-                <div className="height-div">
-                  <h4>All your favorite content in one place!</h4>
-                  <p>
-                    <span>
-                      <SupervisorAccount />
-                      Other users see what you save
-                    </span>
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <h1>{collectionData?.collName}</h1>
-                <div className="height-div">
-                  {collectionData?.collDesc && (
-                    <h3>{collectionData?.collDesc}</h3>
-                  )}
-                  <p>
+            </>
+          ) : (
+            <>
+              <h1>{collectionData?.collName}</h1>
+              <div className="height-div">
+                {collectionData?.collDesc && (
+                  <h3>{collectionData?.collDesc}</h3>
+                )}
+                <p>
+                  <span>
                     {collectionData?.private ? (
-                      <span>
+                      <>
                         <HttpsOutlined />
                         Private Collection by&nbsp;
-                        <span className="nickname"> {userData?.nickname} </span>
-                      </span>
+                      </>
                     ) : (
-                      <span>
+                      <>
                         <SupervisorAccount />
                         Public Collection by&nbsp;
-                        <span className="nickname"> {userData?.nickname} </span>
-                      </span>
+                      </>
                     )}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="line-break"></div>
-          {collectionData?.collRecipes?.length === 0 && (
-            <section>
-              <h2>You haven't saved anything yet. Start browsing!</h2>
-              <p>
-                You can save items to your profile by clicking the heart icon in
-                the share bar.
-              </p>
-              <Button
-                value={"BACK HOME"}
-                onClick={() => navigate("/account/profile/collection")}
-                style={{ width: "150px", height: "50px" }}
+                    <span className="nickname"> {userData?.nickname} </span>
+                  </span>
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="line-break"></div>
+        {collectionData?.collRecipes?.length === 0 && (
+          <section>
+            <h2>You haven't saved anything yet. Start browsing!</h2>
+            <p>
+              You can save items to your profile by clicking the heart icon in
+              the share bar.
+            </p>
+            <Button
+              value={"BACK HOME"}
+              onClick={() => navigate("/account/profile/collection")}
+              style={{ width: "150px", height: "50px" }}
+            />
+          </section>
+        )}
+        {collectionArray.length > 0 && (
+          <h3 className="length">{collectionArray.length} items</h3>
+        )}
+        <div className="collection-control">
+          {collectionArray.map((favorite, id) =>
+            arrayOfRecipeNames.includes(favorite?.recipeTitle) &&
+            !favorite.loading ? (
+              <TransparentCard
+                key={id}
+                favorite={favorite}
+                removeRecipeName={removeRecipeName}
+                addLoading={() => addLoading(id)}
               />
-            </section>
+            ) : (
+              <CollectionCard
+                key={id}
+                addLoading={() => addLoading(id)}
+                favorite={favorite}
+                addRecipeName={addRecipeName}
+              />
+            )
           )}
-          {collectionArray.length > 0 && (
-            <h3 className="length">{collectionArray.length} items</h3>
-          )}
-          <div className="collection-control">
-            {collectionArray.map((favorite, id) =>
-              arrayOfRecipeNames.includes(favorite?.recipeTitle) &&
-              !favorite.loading ? (
-                <TransparentCard
-                  key={id}
-                  favorite={favorite}
-                  removeRecipeName={removeRecipeName}
-                  addLoading={() => addLoading(id)}
-                />
-              ) : (
-                <CollectionCard
-                  key={id}
-                  addLoading={() => addLoading(id)}
-                  favorite={favorite}
-                  addRecipeName={addRecipeName}
-                />
-              )
-            )}
-          </div>
-          {showDeleteCollectionModal && (
-            <DeleteCollectionModal
-              onClick={() => setShowDeleteCollectionModal(false)}
-              collectionTitle={collectionData.collName}
-            />
-          )}
-          {showEditCollectionModal && (
-            <CollectionModal
-              showModal={() => setShowEditCollectionModal(false)}
-              collectionTitle={collectionData?.collName}
-              collectionDesc={collectionData?.collDesc}
-              isPrivate={collectionData?.private}
-            />
-          )}
-        </>
-      ) : (
-        <Loading className="loading" />
-      )}
+        </div>
+        {showDeleteCollectionModal && (
+          <DeleteCollectionModal
+            onClick={() => setShowDeleteCollectionModal(false)}
+            collectionTitle={collectionData.collName}
+          />
+        )}
+        {showEditCollectionModal && (
+          <CollectionModal
+            showModal={() => setShowEditCollectionModal(false)}
+            collectionTitle={collectionData?.collName}
+            collectionDesc={collectionData?.collDesc}
+            isPrivate={collectionData?.private}
+          />
+        )}
+      </>
     </Saved>
   );
 };
@@ -275,15 +263,15 @@ const Saved = styled.div`
 
     h1 {
       font-size: 36px;
-      margin-bottom: 22px;
+      margin-bottom: 12px;
     }
 
     .height-div {
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: space-around;
       align-items: center;
-      height: 100%;
+      height: 70px;
 
       h4 {
         font-weight: 400;

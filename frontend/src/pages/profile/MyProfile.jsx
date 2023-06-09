@@ -31,7 +31,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   } = useQuery(["user-data", user?.email], getUserData, {
     enabled: !!user,
     refetchOnMount:
-      (location.pathname === "/account/profile/collection" && "always") ||
+      (location.pathname.split("/").includes("collection") && "always") ||
+      (location.pathname.split("/").includes("saved-items") && "always") ||
       (location.pathname === "/account/profile/reviews" && "always"),
   });
 
@@ -62,9 +63,10 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
         selected: true,
       };
 
-      if (
-        !listContent.map((list) => list.route === comp.route).includes(true)
-      ) {
+      const isRoutePresent = listContent.some(
+        (list) => list.route === comp.route
+      );
+      if (!isRoutePresent) {
         setLists([...listContent, comp]);
       }
     }
@@ -109,7 +111,9 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                   />
                 );
               } else {
-                return <Loading key={list.id} className="loading" />;
+                return (
+                  <Loading key={list.id} className="loading" scaled={true} />
+                );
               }
             }
           })}
@@ -137,26 +141,24 @@ const Wrapper = styled.section`
   .line-break {
     margin: 32px 0;
   }
+  .loading {
+    transform: translate(0, -38%);
+  }
 `;
 
 const Container = styled.div`
   display: flex;
   width: 1240px;
   max-width: 100%;
-  margin: 200px auto;
-  padding-bottom: 200px;
+  margin: 0 auto;
+  padding: 200px 0 60px 0;
 
-  @media screen and (max-width: 1120px) {
-    margin: 120px auto 0 auto;
-    padding: 0 36px;
+  @media (max-width: 1120px) {
+    margin-top: -70px;
   }
 
   @media (max-width: 1270px) {
-    padding: 0 36px;
-  }
-
-  .loading {
-    transform: translate(0, -40%) scale(1.2);
+    padding: 200px 36px 60px 36px;
   }
 
   .components {
@@ -164,14 +166,14 @@ const Container = styled.div`
     background-color: #fff;
     width: 100%;
     word-break: break-all;
-    padding: 24px 10px;
+    padding: 24px;
   }
 
   .profile {
-    min-width: 296px;
+    min-width: 260px;
     height: 100%;
     background-color: #fff;
-    margin-right: 18px;
+    margin-right: 14px;
 
     .h4-div {
       display: flex;

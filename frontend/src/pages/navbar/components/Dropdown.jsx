@@ -91,7 +91,7 @@ const NavLink = styled(Link)`
     }
 
     &:hover {
-      background: #f3f3f3;
+      background: var(--light-grey-hover-color);
     }
   }
 `;

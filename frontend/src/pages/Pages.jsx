@@ -13,7 +13,6 @@ import { profileLists, StaticList } from "../utils/constants/constants-pages";
 import UserInfo from "./profile/components/user/UserInfo";
 import CollectionPage from "./profile/components/user/CollectionPage";
 import Header from "./navbar/Header";
-import styled from "styled-components";
 
 const Pages = () => {
   const location = useLocation();

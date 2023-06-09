@@ -3,7 +3,7 @@ import styled from "styled-components";
 const Return = ({ value, onClick, icon }) => {
   return (
     <Back onClick={onClick}>
-      {icon} <h5>{value}</h5>
+      {icon} <h6>{value}</h6>
     </Back>
   );
 };
@@ -23,9 +23,8 @@ const Back = styled.div`
     margin-right: 4px;
   }
 
-  h5 {
-    font-size: 14px;
-    letter-spacing: 1.1px;
+  h6 {
+    letter-spacing: 1.1px !important;
     color: var(--main-color);
   }
 

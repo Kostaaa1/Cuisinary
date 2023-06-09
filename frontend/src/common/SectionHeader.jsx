@@ -69,7 +69,7 @@ const SectionHeader = ({
 
 const Section = styled.section`
   position: relative;
-  height: 200px;
+  height: 160px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -78,8 +78,7 @@ const Section = styled.section`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* height: 120px; */
-    padding-bottom: 26px;
+    height: 90px;
 
     h1 {
       font-size: 34px !important;
@@ -124,9 +123,9 @@ const Section = styled.section`
 const Content = styled.div`
   position: absolute;
   left: 0;
-  bottom: 0;
-  height: 100px;
+  bottom: 0px;
   width: 100%;
+  height: 60px;
   display: flex;
   align-items: flex-start;
   flex-direction: column;
