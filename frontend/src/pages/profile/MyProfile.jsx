@@ -102,7 +102,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
           {listContent.map((list) => {
             if (list.selected) {
               const Component = staticList[list.component];
-              if (!isRefetching && !isLoading) {
+              if (isRefetching && isLoading) {
+                // if (!isRefetching && !isLoading) {
                 return (
                   <Component
                     key={list.id}
@@ -159,6 +160,10 @@ const Container = styled.div`
 
   @media (max-width: 1270px) {
     padding: 200px 36px 60px 36px;
+  }
+
+  .loading {
+    transform: translate(0, -36%);
   }
 
   .components {

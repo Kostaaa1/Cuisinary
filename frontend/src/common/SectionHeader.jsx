@@ -94,7 +94,7 @@ const Section = styled.section`
       width: 200px;
       height: 56px;
       font-size: 12px;
-      font-weight: bold;
+      font-weight: 900;
       color: white;
       background-color: #d9d9d9;
       display: block;
@@ -123,7 +123,8 @@ const Section = styled.section`
 const Content = styled.div`
   position: absolute;
   left: 0;
-  bottom: 0px;
+  bottom: 0;
+  height: 80px;
   width: 100%;
   height: 60px;
   display: flex;

@@ -131,7 +131,7 @@ input[type="number"] {
   }
 
   @media screen and (max-width: 1242px) {
-    width: calc(100% - 346px);
+    width: calc(100% - 394px);
   }
 }
 

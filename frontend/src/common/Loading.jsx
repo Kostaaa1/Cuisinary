@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 const Loading = (props) => {
+  console.log(props);
   return (
     <Wrapper className={props.className}>
       <LoadingCircle

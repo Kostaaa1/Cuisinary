@@ -139,6 +139,11 @@ const Wrapper = styled.div`
   flex-direction: column;
 
   &:hover {
+    /* text-decoration: underline;
+    text-decoration-color: var(--red-color);
+    text-underline-offset: 5px;
+    text-decoration-thickness: 10%; */
+
     .ul-dropdown {
       display: flex;
     }
@@ -172,7 +177,7 @@ const CategoryDropdown = styled.ul`
     }
 
     &:hover {
-      background: var(--light-grey-hover-color);
+      background-color: var(--light-grey-hover-color);
     }
   }
 `;
