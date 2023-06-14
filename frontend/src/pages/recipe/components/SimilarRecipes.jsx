@@ -1,47 +1,36 @@
-import { QueryClient, useQuery } from "@tanstack/react-query";
-import React, { useContext, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import CardDescription from "../../../common/CardDescription";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import { RecipeContext } from "../Recipe";
 import { motion } from "framer-motion";
-import Loading from "../../../common/Loading";
 import SavedModal from "../../../common/SavedModal";
 
 const SimilarRecipes = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const { recipe, favoriteForSimilar, setFavoriteForSimilar } =
     useContext(RecipeContext);
 
   const fetchSimilarRecipes = async () => {
     try {
-      if (!!recipe?.title) {
-        const res = await axios.get(
-          `/api/recipe/${recipe?.title}/getSimilarRecipes`
-        );
-
-        if (res.data) setIsLoading(false);
-        return res.data;
-      }
+      const res = await axios.get(
+        `/api/recipe/${recipe?.title}/getSimilarRecipes`
+      );
+      return res.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: similarData, isSuccess } = useQuery(
-    ["similar-recipes"],
+  const { data: similarData, status } = useQuery(
+    ["similar-recipe"],
     fetchSimilarRecipes,
-    {
-      enabled: !!recipe?.title,
-      refetchOnMount: "always",
-    }
+    { enabled: Object.entries(recipe).length > 0, refetchOnMount: "always" }
   );
-
 
   return (
     <>
-      {isSuccess && (
+      {status === "success" && (
         <>
           <Recipes>
             <h2>You'll also love</h2>
@@ -76,7 +65,6 @@ const SimilarRecipes = () => {
                   ))}
                 </>
               )}
-              {isLoading && <h2 style={{ color: "white" }}>Loading...</h2>}
             </Grid>
             {favoriteForSimilar && (
               <SavedModal setFavorite={setFavoriteForSimilar} />

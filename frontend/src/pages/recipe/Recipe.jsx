@@ -13,6 +13,8 @@ import Description from "./components/Description";
 import RecipeHeader from "./components/RecipeHeader";
 import Summary from "./components/Summary";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const RecipeContext = createContext("");
 
@@ -20,12 +22,15 @@ const Recipe = () => {
   const [recipe, setRecipe] = useState({});
   const params = useParams();
   const [reviews, setReviews] = useState([]);
-  const { userData } = useContext(RecipeContext);
+  const { user } = useAuth0();
   const [isFetched, setIsFetched] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [favoriteForSimilar, setFavoriteForSimilar] = useState(false);
   const [comments, setComments] = useState([]);
   useSmoothScroll();
+
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(["user-data", user?.email]);
 
   useEffect(() => {
     getRecipe();
@@ -42,6 +47,7 @@ const Recipe = () => {
       const checkCollections = userData?.collections.some((collection) =>
         collection.collRecipes.some((col) => col.recipeTitle === recipe.title)
       );
+
       setFavorite(checkCollections);
     } catch (error) {
       console.log(error);
@@ -99,8 +105,6 @@ const Recipe = () => {
         );
     }
   }, [averageRate]);
-
-  console.log(recipe);
 
   const value = {
     recipe,

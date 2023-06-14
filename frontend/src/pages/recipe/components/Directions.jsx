@@ -12,9 +12,17 @@ const Directions = () => {
   return (
     <Steps>
       <h1>Directions</h1>
-      <div className="text-container" dangerouslySetInnerHTML={{ __html: recipe?.instructions }}></div>
+      <div
+        className="text-container"
+        dangerouslySetInnerHTML={{ __html: recipe?.instructions }}
+      ></div>
       <div className="buttons">
-        <Link className="btn-highlight" to="review-id" smooth={true} duration={500}>
+        <Link
+          className="btn-highlight"
+          to="review-id"
+          smooth={true}
+          duration={500}
+        >
           I MADE IT
           <span>
             <ImSpoonKnife />
