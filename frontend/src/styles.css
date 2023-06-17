@@ -113,31 +113,46 @@ input[type="number"] {
   appearance: textfield;
 }
 
+a {
+  text-decoration: none;
+  color: var(--main-color);
+}
+
 .fixed-header {
-  position: fixed;
+  /* position: fixed;
   top: 50px;
   align-items: center;
   background-color: #fff;
-  z-index: 10;
   box-shadow: 0 4px 2px -2px rgba(0 0 0 / 10%);
-  /* padding-top: 16px; */
-  /* width: 916px; */
-  width: 966px;
   margin: 0 -24px;
   padding: 0 24px;
+  width: 932px;
+  z-index: 10; */
 
-  @media screen and (max-width: 1270px) {
-    width: 846px;
+  display: flex;
+  position: fixed;
+  justify-content: center;
+  width: 100%;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  bottom: 0;
+  z-index: 200;
+  outline: 1px solid black;
+  top: 60px;
+  margin-left: -24px;
+  padding: 16px 24px;
+  width: 932px;
+
+  @media (max-width: 1270px) {
+    width: 864px;
   }
 
-  @media screen and (max-width: 1242px) {
-    width: calc(100% - 346px);
+  @media (max-width: 1240px) {
+    width: calc(100% - 290px - 6.9%);
   }
-}
 
-@media screen and (max-width: 1270px) {
-  .fixed {
-    width: calc(100% - 350px);
+  @media (max-width: 1120px) {
+    width: calc(100% - 72px) !important;
   }
 }
 
