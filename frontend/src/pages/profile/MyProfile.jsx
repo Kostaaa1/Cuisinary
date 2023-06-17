@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import List from "../../pages/profile/components/List";
 import GlobalContext from "../../setup/app-context-menager/GlobalContext";
@@ -10,19 +10,41 @@ import Footer from "../Footer";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "../../common/Loading";
+import { useWindowSize } from "../../utils/useWindowSize";
+import { ArrowBack } from "@mui/icons-material";
+import ButtonHover from "../../common/ButtonHover";
+import useSmoothScroll from "../../utils/useSmoothScroll";
 
 const MyProfile = ({ listContent, staticList, setLists }) => {
   const params = useParams();
   const location = useLocation();
   const { user } = useAuth0();
   const [loading, setLoading] = useState(false);
+  const { getUserData } = useUser();
+  const windowSize = useWindowSize();
+  const [showResponsiveList, setShowResponsiveList] = useState(false);
+  const navigate = useNavigate();
+  useSmoothScroll();
+
   const {
     arrayOfRecipeNames,
     setArrayOfRecipeNames,
     collectionId,
     collectionParams,
   } = useContext(GlobalContext);
-  const { getUserData } = useUser();
+
+  // forcing refetches based on the URL. Trying to reduce the repeating of the code, i do not know if this is a good practice. It works tho.
+  let refetchOnMount = "always";
+  const path = location.pathname;
+  const prefixPath = "/account/profile";
+
+  if (
+    path === prefixPath + "/" ||
+    path === prefixPath + "/public-profile" ||
+    path === prefixPath + "/change-password"
+  ) {
+    refetchOnMount = false;
+  }
 
   const {
     data: userData,
@@ -30,10 +52,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     isLoading,
   } = useQuery(["user-data", user?.email], getUserData, {
     enabled: !!user,
-    refetchOnMount:
-      (location.pathname.split("/").includes("collection") && "always") ||
-      (location.pathname.split("/").includes("saved-items") && "always") ||
-      (location.pathname === "/account/profile/reviews" && "always"),
+    refetchOnMount,
   });
 
   useEffect(() => {
@@ -55,6 +74,12 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   };
 
   useEffect(() => {
+    if (showResponsiveList && windowSize[0] > 1120) {
+      setShowResponsiveList(false);
+    }
+  }, [windowSize]);
+
+  useEffect(() => {
     if (params.id) {
       const comp = {
         id: listContent.length,
@@ -66,6 +91,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
       const isRoutePresent = listContent.some(
         (list) => list.route === comp.route
       );
+
       if (!isRoutePresent) {
         setLists([...listContent, comp]);
       }
@@ -74,8 +100,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
 
   return (
     <Wrapper>
-      <Container>
-        <div className="profile">
+      {showResponsiveList ? (
+        <div className="profile-responsive-list">
           {!userData && !loading ? (
             <div className="h4-div">
               <h4>Loading...</h4>
@@ -88,38 +114,97 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
               {listContent
                 .filter((list) => list.text && list)
                 .map((list, id) => (
-                  <CustomLink to={"/account/profile" + list.route} key={id}>
+                  <div
+                    className="navigation-list"
+                    onClick={() => {
+                      setShowResponsiveList(false),
+                        navigate("/account/profile" + list.route);
+                    }}
+                    key={id}
+                  >
                     <List
                       className={list.selected ? "selected" : ""}
                       list={list}
                     />
-                  </CustomLink>
+                  </div>
                 ))}
             </ul>
           </div>
         </div>
-        <div className="components">
-          {listContent.map((list) => {
-            if (list.selected) {
-              const Component = staticList[list.component];
-              if (isRefetching && isLoading) {
-                // if (!isRefetching && !isLoading) {
-                return (
-                  <Component
-                    key={list.id}
-                    userData={userData}
-                    isRefetching={isRefetching}
-                  />
-                );
-              } else {
-                return (
-                  <Loading key={list.id} className="loading" scaled={true} />
-                );
-              }
-            }
-          })}
-        </div>
-      </Container>
+      ) : (
+        <Container>
+          {windowSize[0] < 1120 ? (
+            <div
+              onClick={() => setShowResponsiveList(true)}
+              className="profile-responsive"
+            >
+              <ButtonHover value={"MY PROFILE"} icon={<ArrowBack />} />
+            </div>
+          ) : (
+            <div className="profile">
+              {!userData && !loading ? (
+                <div className="h4-div">
+                  <h4>Loading...</h4>
+                </div>
+              ) : (
+                <ProfileGreet onLoad={() => setLoading(true)} />
+              )}
+              <div className="profile-info">
+                <ul>
+                  {listContent
+                    .filter((list) => list.text && list)
+                    .map((list, id) => (
+                      <CustomLink to={"/account/profile" + list.route} key={id}>
+                        <List
+                          className={list.selected ? "selected" : ""}
+                          list={list}
+                        />
+                      </CustomLink>
+                    ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          {!showResponsiveList && (
+            <div className="components">
+              {listContent.map((list) => {
+                const url = `/${Object.entries(params)
+                  .map((x) => x[1])
+                  .join("/")}`;
+
+                const isSelected = list.selected && list.route === url;
+
+                const isDefaultRoute =
+                  Object.keys(params).length === 0 && list.route === "/";
+
+                if (isSelected || isDefaultRoute) {
+                  const Component = staticList[list.component];
+
+                  if (!isRefetching && !isLoading) {
+                    return (
+                      <Component
+                        key={list.id}
+                        userData={userData}
+                        isRefetching={isRefetching}
+                      />
+                    );
+                  } else {
+                    return (
+                      <Loading
+                        key={list.id}
+                        className="loading"
+                        scaled={true}
+                      />
+                    );
+                  }
+                }
+
+                return null;
+              })}
+            </div>
+          )}
+        </Container>
+      )}
       <Footer />
     </Wrapper>
   );
@@ -136,14 +221,46 @@ const CustomLink = styled(NavLink)`
 
 const Wrapper = styled.section`
   position: relative;
-  background-color: #f2f2f2;
-  min-height: 80vh;
+  /* min-height: 80vh; */
+
+  .list-item {
+    text-decoration: none;
+    color: var(--main-color);
+
+    &:last-child {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+  }
 
   .line-break {
     margin: 32px 0;
   }
-  .loading {
-    transform: translate(0, -38%);
+
+  .selected {
+    border-left: 3px solid var(--red-color);
+    font-weight: bold;
+    color: var(--red-color);
+  }
+
+  .profile-responsive-list {
+    height: 100%;
+    background-color: #fff;
+    max-width: 100%;
+    margin: 0 auto;
+    margin-right: 14px;
+    padding: 80px 0 60px 0;
+    width: 100%;
+
+    .h4-div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 0;
+
+      h4 {
+        font-size: 16px;
+      }
+    }
   }
 `;
 
@@ -154,24 +271,33 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 200px 0 60px 0;
 
+  @media screen and (max-width: 1270px) {
+    padding: 200px 36px 60px 36px;
+  }
+
   @media (max-width: 1120px) {
     margin-top: -70px;
   }
 
-  @media (max-width: 1270px) {
-    padding: 200px 36px 60px 36px;
-  }
+  .profile-responsive {
+    position: absolute;
+    left: 0;
+    top: 134px;
+    padding: 0 60px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    z-index: 2;
+    outline: 2px solid var(--main-color);
+    cursor: pointer;
 
-  .loading {
-    transform: translate(0, -36%);
-  }
-
-  .components {
-    position: relative;
-    background-color: #fff;
-    width: 100%;
-    word-break: break-all;
-    padding: 24px;
+    &:active {
+      outline: 2px solid var(--blue-color);
+      border-radius: 3px;
+      outline-offset: 1px;
+    }
   }
 
   .profile {
@@ -196,17 +322,32 @@ const Container = styled.div`
     background-color: #fff;
     padding-top: 12px;
 
+    .navigation-list {
+      &:last-child {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      }
+    }
+
     ul {
       display: flex;
       justify-content: center;
       flex-direction: column;
       width: 100%;
     }
+  }
 
-    .selected {
-      border-left: 3px solid var(--red-color);
-      font-weight: bold;
-      color: var(--red-color);
+  .components {
+    position: relative;
+    background-color: #fff;
+    width: 100%;
+    word-break: break-all;
+    padding: 8px 24px;
+    min-height: 200px;
+
+    outline: 1px solid red;
+
+    .loading {
+      transform: translate(0, -30%);
     }
   }
 `;
