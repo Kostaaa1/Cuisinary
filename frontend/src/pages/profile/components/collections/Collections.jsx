@@ -10,7 +10,6 @@ import { useRef } from "react";
 import SectionHeader from "../../../../common/SectionHeader";
 
 const Collections = ({ userData }) => {
-  const collectionRef = useRef(null);
   const navigate = useNavigate();
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);

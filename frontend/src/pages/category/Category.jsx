@@ -1,13 +1,13 @@
-import { useEffect, memo, useContext } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import CardDescription from "../../common/CardDescription";
-import styled from "styled-components";
-import { useState } from "react";
-import axios from "axios";
-import SavedModal from "../../common/SavedModal";
-import useSmoothScroll from "../../utils/useSmoothScroll";
-import { motion } from "framer-motion";
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import CardDescription from '../../common/CardDescription';
+import styled from 'styled-components';
+import { useState } from 'react';
+import axios from 'axios';
+import SavedModal from '../../common/SavedModal';
+import useSmoothScroll from '../../utils/useSmoothScroll';
+import { motion } from 'framer-motion';
+import Loading from '../../common/Loading';
 
 const Category = () => {
   const params = useParams();
@@ -22,8 +22,8 @@ const Category = () => {
     return category;
   };
 
-  const { data: categoryRecipes } = useQuery(
-    ["category", params.recipe],
+  const { data: categoryRecipes, status } = useQuery(
+    ['category', params.recipe],
     fetchCategorized
   );
 
@@ -55,24 +55,28 @@ const Category = () => {
         )} `}
         Recipes
       </h1>
-      <Grid
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {categoryRecipes
-          ?.slice(3, categoryRecipes.length)
-          ?.map((recipe, id) =>
-            CardDescriptionProps(
-              favorite,
-              params.recipe,
-              setFavorite,
-              id,
-              recipe
-            )
-          )}
-      </Grid>
+      {status === 'success' ? (
+        <Grid
+          animate={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {categoryRecipes
+            ?.slice(3, categoryRecipes.length)
+            ?.map((recipe, id) =>
+              CardDescriptionProps(
+                favorite,
+                params.recipe,
+                setFavorite,
+                id,
+                recipe
+              )
+            )}
+        </Grid>
+      ) : (
+        <Loading className="loading" />
+      )}
       {favorite && <SavedModal setFavorite={setFavorite} />}
     </Container>
   );
@@ -84,12 +88,19 @@ const Container = styled.div`
   flex-direction: column;
   width: 100%;
   max-width: 1240px;
-  margin: 200px auto;
-  height: 100%;
   background-color: white;
+  padding: 200px 0;
+  margin: 0 auto;
+  /* margin: 200px auto; */
+
+  .loading {
+    transform: translateY(10%);
+  }
 
   @media screen and (max-width: 1270px) {
-    padding: 0 36px;
+    padding-left: 36px;
+    padding-right: 36px;
+    padding-top: 160px;
   }
 
   h1 {
@@ -115,7 +126,7 @@ const GridLayout = styled.div`
 
 const Grid = styled(motion.div)`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   grid-gap: 2rem;
 `;
 

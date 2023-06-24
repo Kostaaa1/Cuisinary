@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { BarChart, Bar } from "recharts";
-import styled from "styled-components";
-import { Star, StarBorder, StarHalf } from "@mui/icons-material";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
-import { RecipeContext } from "../../Recipe";
-import LineBreak from "../../../../common/LineBreak";
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { BarChart, Bar } from 'recharts';
+import styled from 'styled-components';
+import { Star, StarBorder, StarHalf } from '@mui/icons-material';
+import AuthContext from '../../../../setup/app-context-menager/AuthContext';
+import { RecipeContext } from '../../Recipe';
+import LineBreak from '../../../../common/LineBreak';
 
 const BarChartComponent = () => {
   const { reviews, averageRate, starArray } = useContext(RecipeContext);
@@ -25,27 +25,27 @@ const BarChartComponent = () => {
   const data = useMemo(() => {
     return [
       {
-        name: "Star 1",
+        name: 'Star 1',
         pv: fiveLength,
         amt: reviews?.length - fiveLength,
       },
       {
-        name: "Star 2",
+        name: 'Star 2',
         pv: fourLength,
         amt: reviews?.length - fourLength,
       },
       {
-        name: "Star 3",
+        name: 'Star 3',
         pv: threeLength,
         amt: reviews?.length - threeLength,
       },
       {
-        name: "Star 4",
+        name: 'Star 4',
         pv: twoLength,
         amt: reviews?.length - twoLength,
       },
       {
-        name: "Star 5",
+        name: 'Star 5',
         pv: oneLength,
         amt: reviews?.length - oneLength,
       },
@@ -95,7 +95,12 @@ const BarChartComponent = () => {
           }}
         >
           <Bar barSize={13} dataKey="pv" stackId="a" fill="var(--gold-color)" />
-          <Bar barSize={13} dataKey="amt" stackId="a" fill="var(--grey-hover-color)" />
+          <Bar
+            barSize={13}
+            dataKey="amt"
+            stackId="a"
+            fill="var(--grey-hover-color)"
+          />
         </BarChartCustom>
         <div className="control">
           <div className="control-wrap">
@@ -125,36 +130,35 @@ const Average = styled.div`
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: column;
   max-width: 100%;
 
   p {
-    color: var(--main-color);
+    color: var(--grey-color);
     font-size: 14px;
+    font-weight: 500;
   }
 
   .average-rate {
-    margin-bottom: 8px;
     display: flex;
     align-items: center;
-    width: 182px;
+    width: 180px;
     max-width: 100%;
     justify-content: space-between;
+    font-size: 20px;
+    text-align: center;
+    height: max-content;
 
-    .rate-control {
-      margin-bottom: -5px;
+    svg {
+      color: var(--red-color);
+      vertical-align: middle;
+      font-size: 20px;
     }
 
     span {
       color: var(--main-color);
-      font-size: 14px;
       font-weight: 500;
-    }
-
-    svg {
-      color: var(--red-color);
-      font-size: 18px;
     }
   }
 `;

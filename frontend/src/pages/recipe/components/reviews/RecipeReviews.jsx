@@ -1,15 +1,16 @@
-import axios from "axios";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import UserReview from "./UserReview";
-import { useMutation } from "@tanstack/react-query";
-import Loading from "../../../../common/Loading";
-import Comments from "./Comments";
-import BarChart from "./BarChart";
-import { RecipeContext } from "../../Recipe";
-import { useParams } from "react-router-dom";
-import StarRatings from "./StarRatings";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+import axios from 'axios';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import UserReview from './UserReview';
+import { useMutation } from '@tanstack/react-query';
+import Loading from '../../../../common/Loading';
+import Comments from './Comments';
+import BarChart from './BarChart';
+import { RecipeContext } from '../../Recipe';
+import { useParams } from 'react-router-dom';
+import StarRatings from './StarRatings';
+import AuthContext from '../../../../setup/app-context-menager/AuthContext';
+import LineBreak from '../../../../common/LineBreak';
 
 const RecipeReviews = () => {
   const params = useParams();
@@ -19,15 +20,15 @@ const RecipeReviews = () => {
   const { userData } = useContext(AuthContext);
   const [submitted, setSubmitted] = useState(false);
   const [myReview, setMyReview] = useState(null);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const [clickId, setClickId] = useState(-1);
   const [lastId, setLastId] = useState(-1);
   const [rateArr, setRateArr] = useState([
-    { text: "Couldn't eat it", bool: false, class: "" },
-    { text: "Didn't like it", bool: false, class: "" },
-    { text: "It was OK", bool: false, class: "" },
-    { text: "Like It", bool: false, class: "" },
-    { text: "Loved It", bool: false, class: "" },
+    { text: "Couldn't eat it", bool: false, class: '' },
+    { text: "Didn't like it", bool: false, class: '' },
+    { text: 'It was OK', bool: false, class: '' },
+    { text: 'Like It', bool: false, class: '' },
+    { text: 'Loved It', bool: false, class: '' },
   ]);
 
   useEffect(() => {
@@ -45,20 +46,20 @@ const RecipeReviews = () => {
   const clearInputs = () => {
     if (!myReview) {
       setRateArr((prevState) =>
-        prevState.map((item) => item && { ...item, bool: false, class: "" })
+        prevState.map((item) => item && { ...item, bool: false, class: '' })
       );
       setClickId(-1);
-      setComment("");
+      setComment('');
     } else {
       let rating = myReview.starRating;
       setRateArr((prevState) =>
         prevState
           .slice(0, rating + 1)
-          .map((item) => item && { ...item, bool: true, class: "" })
+          .map((item) => item && { ...item, bool: true, class: '' })
           .concat(
             rateArr
               .slice(rating + 1, rateArr.length)
-              .map((item) => item && { ...item, bool: false, class: "" })
+              .map((item) => item && { ...item, bool: false, class: '' })
           )
       );
       setClickId(rating);
@@ -143,10 +144,10 @@ const RecipeReviews = () => {
   return (
     <Reviews>
       <Header>
-        <h1>Reviews ({reviews?.length || "0"})</h1>
+        <h1>Reviews ({reviews?.length || '0'})</h1>
       </Header>
       {isEditting || isCreating ? (
-        <Loading styles={{ marginTop: "-10%" }} />
+        <Loading styles={{ marginTop: '-10%' }} />
       ) : (
         <>
           <div className="wrapper">
@@ -176,7 +177,7 @@ const RecipeReviews = () => {
                     </h4>
                   </label>
                   <textarea
-                    placeholder="What did  you think about this recipe? Did you make any changes or notes?"
+                    placeholder="What did you think about this recipe? Did you make any changes or notes?"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                   ></textarea>
@@ -185,7 +186,7 @@ const RecipeReviews = () => {
                     <input
                       type="submit"
                       value="SUBMIT"
-                      className={`btn-submit ${clickId > -1 ? "active" : ""}`}
+                      className={`btn-submit ${clickId > -1 ? 'active' : ''}`}
                       disabled={clickId > -1 ? false : true}
                     />
                   </div>

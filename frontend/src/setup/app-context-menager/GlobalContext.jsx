@@ -1,15 +1,24 @@
-import React, { createContext, useEffect, useState, useRef } from "react";
+import React, { createContext, useEffect, useState, useRef } from 'react';
+import { useWindowSize } from '../../utils/useWindowSize';
 
 export const GlobalContext = createContext(null);
 
 export const GlobalContextProvider = ({ children }) => {
   const [arrayOfRecipeNames, setArrayOfRecipeNames] = useState([]);
-  const [collectionId, setCollectionId] = useState("");
-  const [collectionParams, setCollectionParams] = useState("");
+  const [collectionId, setCollectionId] = useState('');
+  const [collectionParams, setCollectionParams] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [showSearch2, setShowSearch2] = useState(false);
+
+  // used for navbar
   const searchBarRef = useRef(null);
+  // used in searched component (page that shows searched recipes)
   const searchBarRef2 = useRef(null);
+
+  const closeSearch = () => {
+    if (showSearch) setShowSearch(false);
+    if (showSearch2) setShowSearch2(false);
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -21,9 +30,10 @@ export const GlobalContextProvider = ({ children }) => {
         setShowSearch2(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
+
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [searchBarRef, searchBarRef2]);
 
@@ -40,6 +50,7 @@ export const GlobalContextProvider = ({ children }) => {
     showSearch2,
     setShowSearch2,
     searchBarRef2,
+    closeSearch,
   };
 
   return (

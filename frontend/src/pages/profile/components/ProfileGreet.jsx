@@ -1,39 +1,46 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import ButtonBorder from "../../../common/ButtonBorder";
-import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import PersonAvatar from "../../../common/PersonAvatar";
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import ButtonBorder from '../../../common/ButtonBorder';
+import AuthContext from '../../../setup/app-context-menager/AuthContext';
+import PersonAvatar from '../../../common/PersonAvatar';
 
-const ProfileGreet = ({ onLoad }) => {
+const ProfileGreet = () => {
   const { userData } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   return (
     <Greet>
-      {!userData?.picture?.image ? (
-        <PersonAvatar onLoad={onLoad} />
+      {!userData && !loading ? (
+        <h4 className="h4-div">Loading...</h4>
       ) : (
-        <img
-          src={`${userData?.picture?.image}`}
-          onLoad={onLoad}
-          alt="profile-picture"
-          className="profile-picture"
-        />
+        <>
+          {!userData?.picture?.image ? (
+            <PersonAvatar />
+          ) : (
+            <img
+              src={`${userData?.picture?.image}`}
+              onLoad={() => setLoading(true)}
+              alt="profile-picture"
+              className="profile-picture"
+            />
+          )}
+          <div className="user-info-wrap">
+            <h4>
+              Hi,
+              {userData?.firstName
+                ? `${userData?.firstName} ${userData?.lastName}`
+                : userData?.email}
+            </h4>
+            <ButtonBorder
+              style={{ width: '140px', height: '30px' }}
+              onClick={() => navigate(`/profile/${userData._id}`)}
+              value={'View Public Profile'}
+            />
+          </div>
+        </>
       )}
-      <div className="user-info-wrap">
-        <h4>
-          Hi,{" "}
-          {userData?.firstName
-            ? `${userData?.firstName} ${userData?.lastName}`
-            : userData?.email}
-        </h4>
-        <ButtonBorder
-          style={{ width: "140px", height: "30px" }}
-          onClick={() => navigate(`/profile/${userData._id}`)}
-          value={"View Public Profile"}
-        />
-      </div>
     </Greet>
   );
 };
@@ -45,9 +52,21 @@ const Greet = styled.div`
   height: 100%;
   padding: 10px;
 
+  .h4-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 0;
+    margin: 0 auto;
+
+    h4 {
+      font-size: 16px;
+    }
+  }
+
   h4 {
     word-break: break-all;
-    margin-bottom: -4px;
+    margin-bottom: 8px;
   }
 
   img {

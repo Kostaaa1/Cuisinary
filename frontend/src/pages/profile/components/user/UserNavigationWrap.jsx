@@ -32,14 +32,15 @@ const Nav = styled.div`
     color: var(--main-color);
     font-size: 0.9rem;
     margin: -2px 8px;
+    vertical-align: middle;
   }
 `;
 
 const CustomLink = styled(Link)`
   text-decoration: none;
   color: black;
-  font-weight: 600;
-  font-size: 0.8rem;
+  font-weight: bold;
+  font-size: 14px;
   cursor: pointer;
 
   &:hover {

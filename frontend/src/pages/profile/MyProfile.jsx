@@ -1,25 +1,23 @@
-import React, { useEffect, useContext, useState } from "react";
-import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
-import List from "../../pages/profile/components/List";
-import GlobalContext from "../../setup/app-context-menager/GlobalContext";
-import axios from "axios";
-import ProfileGreet from "./components/ProfileGreet";
-import { useUser } from "../../setup/auth/useAuth";
-import Footer from "../Footer";
-import { useQuery } from "@tanstack/react-query";
-import { useAuth0 } from "@auth0/auth0-react";
-import Loading from "../../common/Loading";
-import { useWindowSize } from "../../utils/useWindowSize";
-import { ArrowBack } from "@mui/icons-material";
-import ButtonHover from "../../common/ButtonHover";
-import useSmoothScroll from "../../utils/useSmoothScroll";
+import React, { useEffect, useContext, useState } from 'react';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import List from '../../pages/profile/components/List';
+import GlobalContext from '../../setup/app-context-menager/GlobalContext';
+import axios from 'axios';
+import ProfileGreet from './components/ProfileGreet';
+import { useUser } from '../../setup/auth/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
+import Loading from '../../common/Loading';
+import { useWindowSize } from '../../utils/useWindowSize';
+import { ArrowBack } from '@mui/icons-material';
+import ButtonHover from '../../common/ButtonHover';
+import useSmoothScroll from '../../utils/useSmoothScroll';
 
 const MyProfile = ({ listContent, staticList, setLists }) => {
   const params = useParams();
   const location = useLocation();
   const { user } = useAuth0();
-  const [loading, setLoading] = useState(false);
   const { getUserData } = useUser();
   const windowSize = useWindowSize();
   const [showResponsiveList, setShowResponsiveList] = useState(false);
@@ -34,14 +32,14 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   } = useContext(GlobalContext);
 
   // forcing refetches based on the URL. Trying to reduce the repeating of the code, i do not know if this is a good practice. It works tho.
-  let refetchOnMount = "always";
+  let refetchOnMount = 'always';
   const path = location.pathname;
-  const prefixPath = "/account/profile";
+  const prefixPath = '/account/profile';
 
   if (
-    path === prefixPath + "/" ||
-    path === prefixPath + "/public-profile" ||
-    path === prefixPath + "/change-password"
+    path === prefixPath + '/' ||
+    path === prefixPath + '/public-profile' ||
+    path === prefixPath + '/change-password'
   ) {
     refetchOnMount = false;
   }
@@ -50,15 +48,17 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     data: userData,
     isRefetching,
     isLoading,
-  } = useQuery(["user-data", user?.email], getUserData, {
+  } = useQuery(['user-data', user?.email], getUserData, {
     enabled: !!user,
     refetchOnMount,
+    // refetchOnMount:
+    //   location.pathname !== '/account/profile/change-password' && 'always',
   });
 
   useEffect(() => {
     if (
       arrayOfRecipeNames.length !== 0 &&
-      location.pathname !== "/account/profile/saved-items"
+      location.pathname !== '/account/profile/saved-items'
     ) {
       handleDeletionOfRecipes();
       setArrayOfRecipeNames([]);
@@ -68,7 +68,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const handleDeletionOfRecipes = async () => {
     const recipeNames = {
       titles: arrayOfRecipeNames,
-      collectionId: collectionParams === "saved-items" ? "" : collectionId,
+      collectionId: collectionParams === 'saved-items' ? '' : collectionId,
     };
     await axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
   };
@@ -83,7 +83,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     if (params.id) {
       const comp = {
         id: listContent.length,
-        component: "SavedItems",
+        component: 'SavedItems',
         route: `/collection/${params.id}`,
         selected: true,
       };
@@ -102,13 +102,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     <Wrapper>
       {showResponsiveList ? (
         <div className="profile-responsive-list">
-          {!userData && !loading ? (
-            <div className="h4-div">
-              <h4>Loading...</h4>
-            </div>
-          ) : (
-            <ProfileGreet onLoad={() => setLoading(true)} />
-          )}
+          <ProfileGreet />
           <div className="profile-info">
             <ul>
               {listContent
@@ -118,12 +112,12 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                     className="navigation-list"
                     onClick={() => {
                       setShowResponsiveList(false),
-                        navigate("/account/profile" + list.route);
+                        navigate('/account/profile' + list.route);
                     }}
                     key={id}
                   >
                     <List
-                      className={list.selected ? "selected" : ""}
+                      className={list.selected ? 'selected' : ''}
                       list={list}
                     />
                   </div>
@@ -133,30 +127,24 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
         </div>
       ) : (
         <Container>
-          {windowSize[0] < 1120 ? (
+          {windowSize[0] <= 1120 ? (
             <div
               onClick={() => setShowResponsiveList(true)}
-              className="profile-responsive"
+              className="myprofile-responsive-button"
             >
-              <ButtonHover value={"MY PROFILE"} icon={<ArrowBack />} />
+              <ButtonHover value={'MY PROFILE'} icon={<ArrowBack />} />
             </div>
           ) : (
             <div className="profile">
-              {!userData && !loading ? (
-                <div className="h4-div">
-                  <h4>Loading...</h4>
-                </div>
-              ) : (
-                <ProfileGreet onLoad={() => setLoading(true)} />
-              )}
+              <ProfileGreet />
               <div className="profile-info">
                 <ul>
                   {listContent
                     .filter((list) => list.text && list)
                     .map((list, id) => (
-                      <CustomLink to={"/account/profile" + list.route} key={id}>
+                      <CustomLink to={'/account/profile' + list.route} key={id}>
                         <List
-                          className={list.selected ? "selected" : ""}
+                          className={list.selected ? 'selected' : ''}
                           list={list}
                         />
                       </CustomLink>
@@ -170,12 +158,12 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
               {listContent.map((list) => {
                 const url = `/${Object.entries(params)
                   .map((x) => x[1])
-                  .join("/")}`;
+                  .join('/')}`;
 
                 const isSelected = list.selected && list.route === url;
 
                 const isDefaultRoute =
-                  Object.keys(params).length === 0 && list.route === "/";
+                  Object.keys(params).length === 0 && list.route === '/';
 
                 if (isSelected || isDefaultRoute) {
                   const Component = staticList[list.component];
@@ -205,7 +193,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
           )}
         </Container>
       )}
-      <Footer />
     </Wrapper>
   );
 };
@@ -221,7 +208,6 @@ const CustomLink = styled(NavLink)`
 
 const Wrapper = styled.section`
   position: relative;
-  /* min-height: 80vh; */
 
   .list-item {
     text-decoration: none;
@@ -251,11 +237,17 @@ const Wrapper = styled.section`
     padding: 80px 0 60px 0;
     width: 100%;
 
+    @media screen and (max-width: 1120px) {
+      padding-left: 36px;
+      padding-right: 36px;
+    }
+
     .h4-div {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 22px 0;
+      outline: 1px solid black;
 
       h4 {
         font-size: 16px;
@@ -266,23 +258,27 @@ const Wrapper = styled.section`
 
 const Container = styled.div`
   display: flex;
+  width: 100%;
   width: 1240px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 200px 0 60px 0;
+  padding: 200px 0 0 0;
 
   @media screen and (max-width: 1270px) {
-    padding: 200px 36px 60px 36px;
+    padding-left: 36px;
+    padding-right: 36px;
   }
 
   @media (max-width: 1120px) {
-    margin-top: -70px;
+    /* margin-top: -70px; */
+    padding-top: 140px;
   }
 
-  .profile-responsive {
+  .myprofile-responsive-button {
+    background-color: #fff;
     position: absolute;
     left: 0;
-    top: 134px;
+    top: 64px;
     padding: 0 60px;
     height: 56px;
     display: flex;
@@ -303,23 +299,11 @@ const Container = styled.div`
   .profile {
     min-width: 260px;
     height: 100%;
-    background-color: #fff;
     margin-right: 14px;
-
-    .h4-div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 22px 0;
-
-      h4 {
-        font-size: 16px;
-      }
-    }
+    background-color: #fff;
   }
 
   .profile-info {
-    background-color: #fff;
     padding-top: 12px;
 
     .navigation-list {
@@ -343,8 +327,7 @@ const Container = styled.div`
     word-break: break-all;
     padding: 8px 24px;
     min-height: 200px;
-
-    outline: 1px solid red;
+    margin-bottom: 100px;
 
     .loading {
       transform: translate(0, -30%);

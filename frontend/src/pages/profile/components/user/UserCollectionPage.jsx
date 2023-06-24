@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import ButtonHover from "../../../../common/ButtonHover";
 import { ArrowBack } from "@mui/icons-material";
-import NavigationWrap from "../../../../common/NavigationWrap";
+import NavigationWrap from "./UserNavigationWrap";
 import Loading from "../../../../common/Loading";
 import useSmoothScroll from "../../../../utils/useSmoothScroll";
 import { useUser } from "../../../../setup/auth/useAuth";
@@ -14,7 +14,6 @@ const CollectionPage = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [collectionData, setCollectionData] = useState([]);
-  const { userData } = useUser();
   useSmoothScroll();
 
   const fetchUserData = async () => {
@@ -23,8 +22,8 @@ const CollectionPage = () => {
     return data;
   };
 
-  const { data: inspectUserData = {} } = useQuery(
-    ["user-info"],
+  const { data: currentUser = {} } = useQuery(
+    ["current-userData"],
     fetchUserData,
     {
       enabled: !!params.profileId,
@@ -39,34 +38,34 @@ const CollectionPage = () => {
       content: "Saved Items & Collections",
     },
     {
-      url: `/profile/${inspectUserData?._id}`,
-      content: `${inspectUserData?.nickname}`,
+      url: `/profile/${currentUser?._id}`,
+      content: `${currentUser?.nickname}`,
     },
   ];
 
   useEffect(() => {
-    if (params.collectionId === "all-saved-items" && !!inspectUserData) {
-      setCollectionData(inspectUserData.collections?.[0]);
+    if (params.collectionId === "all-saved-items" && !!currentUser) {
+      setCollectionData(currentUser.collections?.[0]);
     } else {
       setCollectionData(
-        inspectUserData.collections?.filter(
+        currentUser.collections?.filter(
           (col) => col._id === params.collectionId
         )[0]
       );
     }
-  }, [inspectUserData]);
+  }, [currentUser]);
 
   useEffect(() => {
     console.log(collectionData);
   }, [collectionData]);
   return (
     <Page>
-      {collectionData && inspectUserData ? (
+      {collectionData && currentUser ? (
         <>
           <ButtonHover
             value={"BACK TO PROFILE"}
             icon={<ArrowBack />}
-            onClick={() => navigate(`/profile/${inspectUserData?._id}`)}
+            onClick={() => navigate(`/profile/${currentUser?._id}`)}
           />
           <NavigationWrap
             links={navigationLinks}
@@ -77,10 +76,10 @@ const CollectionPage = () => {
             <p>
               {collectionData.collDesc
                 ? collectionData.collDesc
-                : `All ${inspectUserData?.nickname}'s favorites in one place`}{" "}
+                : `All ${currentUser?.nickname}'s favorites in one place`}{" "}
             </p>
-            <CustomLink to={`/profile/${inspectUserData?._id}`}>
-              Collection by <span> {inspectUserData?.nickname} </span>
+            <CustomLink to={`/profile/${currentUser?._id}`}>
+              Collection by <span> {currentUser?.nickname} </span>
             </CustomLink>
           </div>
           <p>{collectionData.collRecipes?.length} items</p>
@@ -139,7 +138,7 @@ const Page = styled.div`
   max-width: 100%;
   width: 1240px;
 
-  @media (max-width: 1240px) {
+  @media (max-width: 1270px) {
     padding: 0 22px;
   }
 
@@ -174,6 +173,10 @@ const Page = styled.div`
   .flex-wrap > p {
     font-weight: 500;
     margin: 20px 0;
+  }
+
+  .flex-wrap > h1 {
+    font-size: 38px !important;
   }
 
   .collection-card {

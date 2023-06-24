@@ -1,22 +1,22 @@
-import { Star, StarHalf, StarBorder } from "@mui/icons-material";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-import styled from "styled-components";
-import Ingredients from "./components/Ingredients";
-import Nutrition from "./components/Nutrition";
-import Directions from "./components/Directions";
-import RecipeReviews from "./components/reviews/RecipeReviews";
-import useSmoothScroll from "../../utils/useSmoothScroll";
-import Loading from "../../common/Loading";
-import SimilarRecipes from "./components/SimilarRecipes";
-import Description from "./components/Description";
-import RecipeHeader from "./components/RecipeHeader";
-import Summary from "./components/Summary";
-import axios from "axios";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Star, StarHalf, StarBorder } from '@mui/icons-material';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import Ingredients from './components/Ingredients';
+import Nutrition from './components/Nutrition';
+import Directions from './components/Directions';
+import RecipeReviews from './components/reviews/RecipeReviews';
+import Loading from '../../common/Loading';
+import SimilarRecipes from './components/SimilarRecipes';
+import Description from './components/Description';
+import RecipeHeader from './components/RecipeHeader';
+import Summary from './components/Summary';
+import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
+import useSmoothScroll from '../../utils/useSmoothScroll';
 
-export const RecipeContext = createContext("");
+export const RecipeContext = createContext('');
 
 const Recipe = () => {
   const [recipe, setRecipe] = useState({});
@@ -30,7 +30,7 @@ const Recipe = () => {
   useSmoothScroll();
 
   const queryClient = useQueryClient();
-  const userData = queryClient.getQueryData(["user-data", user?.email]);
+  const userData = queryClient.getQueryData(['user-data', user?.email]);
 
   useEffect(() => {
     getRecipe();
@@ -63,7 +63,7 @@ const Recipe = () => {
       let index = 0;
 
       for (let i = 0; i < str.length; i++) {
-        if (str[i] === ".") {
+        if (str[i] === '.') {
           dotCount++;
           if (dotCount === 4) {
             index = i;
@@ -80,7 +80,7 @@ const Recipe = () => {
       let sum = reviews?.reduce((acc, num) => (acc += num.starRating + 1), 0);
       let average =
         sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
-      setComments(reviews.filter((review) => review.comment !== ""));
+      setComments(reviews.filter((review) => review.comment !== ''));
       return average;
     }
   }, [reviews]);
@@ -89,11 +89,11 @@ const Recipe = () => {
     if (averageRate > 0) {
       let arr = averageRate
         .toString()
-        .split(".")
+        .split('.')
         .map((num) => Number(num));
 
       return Array(5)
-        .fill("")
+        .fill('')
         .map((_, i) =>
           i <= arr[0] - 1 ? (
             <Star key={i} />
@@ -123,9 +123,9 @@ const Recipe = () => {
 
   return (
     <RecipeContext.Provider value={value}>
-      <>
-        <Wrapper>
-          {recipe && isFetched ? (
+      {recipe && isFetched ? (
+        <>
+          <Wrapper>
             <div className="container">
               <RecipeHeader />
               <Summary />
@@ -135,23 +135,31 @@ const Recipe = () => {
               <Nutrition />
               <RecipeReviews />
             </div>
-          ) : (
-            <Loading />
-          )}
-        </Wrapper>
-        <SimilarRecipes />
-      </>
+          </Wrapper>
+          <SimilarRecipes />
+        </>
+      ) : (
+        <Loading />
+      )}
     </RecipeContext.Provider>
   );
 };
 
 const Wrapper = styled.div`
-  position: relative;
+  /* position: relative;
   width: 1040px;
   max-width: 100%;
   margin: 0 auto;
   height: 100%;
-  margin: 250px auto 0 auto;
+  margin: 200px auto 0 auto; */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1040px;
+  background-color: white;
+  padding: 250px 0 0 0;
+  margin: 0 auto;
 
   @media screen and (max-width: 1120px) {
     margin: 180px auto 0 auto;
@@ -159,7 +167,7 @@ const Wrapper = styled.div`
   }
 
   .line-break {
-    margin: 26px 0;
+    margin: 28px 0;
   }
 
   h1 {

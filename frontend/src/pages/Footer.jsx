@@ -1,16 +1,24 @@
-import React from "react";
-import styled from "styled-components";
-import { Instagram, Twitter, Pinterest, Facebook } from "@mui/icons-material";
-import Logo from "../common/Logo";
+import React from 'react';
+import styled from 'styled-components';
+import { Instagram, Twitter, Pinterest, Facebook } from '@mui/icons-material';
+import Logo from '../common/Logo';
 const Footer = () => {
-  const categories = ["DINNERS", "MEALS", "INGREDIENTS", "CUISINES", "OCCASIONS"];
+  const categories = [
+    'DINNERS',
+    'MEALS',
+    'INGREDIENTS',
+    'CUISINES',
+    'OCCASIONS',
+  ];
   const socials = [Instagram, Twitter, Pinterest, Facebook];
 
   return (
     <Foot>
       <section>
-        <div>
-          <Logo style={{ transform: "scale(1.5)", color: "var(--red-color)" }} />
+        <div className="logo">
+          <Logo
+            style={{ transform: 'scale(1.5)', color: 'var(--red-color)' }}
+          />
         </div>
         <div>
           <h2>Categories</h2>
@@ -37,11 +45,11 @@ const Footer = () => {
 };
 
 const Foot = styled.footer`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: #f2f2f2;
+  position: static;
+  height: 300px;
+  min-height: 300px;
   width: 100vw;
+  background-color: #fff;
   border-top: 1px solid rgb(0 0 0 / 22%);
 
   h2 {
@@ -50,47 +58,50 @@ const Foot = styled.footer`
   }
 
   section {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%);
-    margin: 0 auto;
+    display: flex;
+    height: 100%;
+    padding: 14px 0;
     width: 1240px;
+    margin: 0 auto;
     max-width: 100%;
 
-    height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 50px 0;
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     div:not(.category) {
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* justify-content: space-around; */
       width: 33.33%;
-      height: 100%;
 
       .socials {
-        height: 50%;
         display: flex;
         width: 100%;
-        align-content: start;
+        height: 50%;
         flex-direction: column;
-        border-bottom: 1px solid rgb(0 0 0 /22%);
+        justify-content: flex-start;
+        /* border-bottom: 1px solid rgb(0 0 0 /22%); */
 
         .wrap {
           display: flex;
           justify-content: center;
           align-items: flex-start;
           flex-direction: row;
-          /* height: max-content; */
         }
 
         svg {
+          font-size: 26px;
           margin: 0 8px;
           cursor: pointer;
+
+          &:hover {
+            visibility: visible;
+            opacity: 0.8;
+            transition: opacity 0.3s, visibility 0.3s;
+          }
         }
       }
 
@@ -105,9 +116,9 @@ const Foot = styled.footer`
 
       h5 {
         line-height: 30px;
-        letter-spacing: 1px;
         color: var(--main-color);
         cursor: pointer;
+        letter-spacing: 1.2px !important;
 
         &:hover {
           text-decoration: underline;
@@ -117,13 +128,9 @@ const Foot = styled.footer`
         }
       }
 
-      &:first-child:not(.socials) {
-        border-right: 1px solid rgb(0 0 0 /22%);
-        justify-content: center;
-      }
-
       &:nth-child(2):not(.socials):not(.wrap) {
         border-right: 1px solid rgb(0 0 0 / 22%);
+        border-left: 1px solid rgb(0 0 0 / 22%);
       }
     }
   }

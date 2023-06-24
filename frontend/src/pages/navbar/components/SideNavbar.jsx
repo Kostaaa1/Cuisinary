@@ -1,88 +1,45 @@
-import React, { useState } from "react";
-import Search from "./Search";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { ArrowBack } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
-import { useAuth } from "../../../setup/auth/useAuth";
+import React, { useContext } from 'react';
+import Search from './Search';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { ArrowBack } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { FaUserCircle } from 'react-icons/fa';
+import { useAuth } from '../../../setup/auth/useAuth';
+import { userLinkList } from '../navbar-constants';
+import { categoryData } from '../navbar-constants';
+import AuthContext from '../../../setup/app-context-menager/AuthContext';
+import { useAuth0 } from '@auth0/auth0-react';
+import UserIconComponent from '../../../common/UserStateComponent';
+import LineBreak from '../../../common/LineBreak';
 
-const SideNavbar = ({ showSideNav, showSearched, setShowSideNav }) => {
+const SideNavbar = ({
+  clickedCategory,
+  setClickedCategory,
+  showSideNav,
+  showSearched,
+  setShowSideNav,
+}) => {
   const navigate = useNavigate();
-  const categoryNavigation = (query) => {
-    navigate("/category/" + query);
+  const { logoutUser } = useContext(AuthContext);
+  const { authenticated } = useAuth();
+  const { loginWithPopup } = useAuth0();
+
+  const categoryNavigation = query => {
+    if (!query) {
+      logoutUser();
+      return;
+    }
+
+    const toUrl =
+      clickedCategory.name === 'My Profile' ? 'account' : 'category';
+    navigate(`/${toUrl}/${query}`);
+    setClickedCategory('');
     setShowSideNav(false);
   };
-  const { authenticated } = useAuth();
-  const [clickedCategory, setClickedCategory] = useState("");
-  const categoryData = [
-    {
-      name: "DINNERS",
-      categories: [
-        { list: "Quick & Easy", query: "quick" },
-        { list: "Main Dishes", query: "main" },
-        { list: "Soups", query: "soup" },
-        { list: "Stews", query: "stew" },
-        { list: "30-Minute Meals", query: "minute" },
-      ],
-    },
-    {
-      name: "MEALS",
-      categories: [
-        { list: "Breakfast", query: "breakfast" },
-        { list: "Lunch", query: "lunch" },
-        { list: "Healthy", query: "healthy" },
-        { list: "Salads", query: "salad" },
-        { list: "Bread", query: "bread" },
-        { list: "Desserts", query: "dessert" },
-      ],
-    },
-    {
-      name: "INGREDIENTS",
-      categories: [
-        { list: "Chicken", query: "chicken" },
-        { list: "Beef", query: "beef" },
-        { list: "Pork", query: "pork" },
-        { list: "Pasta", query: "pasta" },
-        { list: "Fruits", query: "fruits" },
-        { list: "Vegetables", query: "vegetables" },
-      ],
-    },
-    {
-      name: "CUISINES",
-      categories: [
-        { list: "Mexican", query: "mexican" },
-        { list: "Italian", query: "italian" },
-        { list: "Chinese", query: "chinese" },
-        { list: "Indian", query: "indian" },
-        { list: "German", query: "german" },
-        { list: "Greek", query: "greek" },
-        { list: "Filipino", query: "filipino" },
-        { list: "Japanese", query: "japenese" },
-      ],
-    },
-    {
-      name: "OCCASIONS",
-      categories: [
-        { list: "Christmas", query: "christmas" },
-        { list: "Thanksgiving", query: "thanksgiving" },
-        { list: "Easter", query: "easter" },
-      ],
-    },
-    // {
-    //   name: "My Account",
-    //   categories: [
-    //     { list: "My Profile", query: "christmas" },
-    //     { list: "Saved Items & Collections", query: "thanksgiving" },
-    //     { list: "Add a Recipe", query: "easter" },
-    //     { list: "Log Out", query: "easter" },
-    //     { list: "Log Out", query: "easter" },
-    //   ],
-    // },
-  ];
 
   return (
     <>
-      {clickedCategory === "" ? (
+      {clickedCategory === '' ? (
         <div className="sidenav-wrapper">
           <div className="category-wrap">
             <Search
@@ -90,9 +47,9 @@ const SideNavbar = ({ showSideNav, showSearched, setShowSideNav }) => {
               showSearched={showSearched}
               setShowSideNav={setShowSideNav}
               style={{
-                alignItems: "start",
-                flexDirection: "column",
-                height: "80px",
+                alignItems: 'start',
+                flexDirection: 'column',
+                height: '80px',
               }}
             />
             <ul>
@@ -104,17 +61,24 @@ const SideNavbar = ({ showSideNav, showSearched, setShowSideNav }) => {
               ))}
             </ul>
           </div>
-          <div className="sidenav-user">
-            <span className="user">
-              <FaUserCircle />
-              {authenticated ? "My Profile" : "Log in"}
-            </span>
-          </div>
+          <ul>
+            <li
+              onClick={() =>
+                setClickedCategory({
+                  name: 'My Profile',
+                  categories: userLinkList,
+                })
+              }
+            >
+              <UserIconComponent />
+              <ArrowForwardIosIcon />
+            </li>
+          </ul>
         </div>
       ) : (
         <div className="category-wrap">
           <span>
-            <ArrowBack onClick={() => setClickedCategory("")} />
+            <ArrowBack onClick={() => setClickedCategory('')} />
             <h2>
               {clickedCategory.name[0] +
                 clickedCategory.name
@@ -123,13 +87,15 @@ const SideNavbar = ({ showSideNav, showSearched, setShowSideNav }) => {
             </h2>
           </span>
           <ul>
-            {clickedCategory.categories.map((category) => (
-              <li
-                key={category.list}
-                onClick={() => categoryNavigation(category.query)}
-              >
-                {category.list}
-              </li>
+            {clickedCategory.categories.map((category, id) => (
+              <>
+                <li
+                  key={category.list}
+                  onClick={() => categoryNavigation(category.query)}
+                >
+                  {category.list}
+                </li>
+              </>
             ))}
           </ul>
         </div>

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Button = ({ value, onClick, style }) => {
   return (
@@ -13,10 +13,12 @@ const Btn = styled.button`
   color: #fff;
   cursor: pointer;
   display: block;
+  align-items: center;
+  justify-content: center;
   border: none;
   font-size: 14px;
   border-radius: 3px;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.2px;
   background-color: var(--red-color);
   outline: 2px solid var(--red-color);
 

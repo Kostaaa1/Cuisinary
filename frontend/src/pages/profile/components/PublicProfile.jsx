@@ -1,22 +1,22 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import {
   AddAPhoto,
   KeyboardArrowDown,
   SupervisorAccount,
-} from "@mui/icons-material";
-import SectionHeader from "../../../common/SectionHeader";
+} from '@mui/icons-material';
+import SectionHeader from '../../../common/SectionHeader';
 
 const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);
-  const [preview, setPreview] = useState("");
-  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState('');
+  const [image, setImage] = useState('');
   const { user } = useAuth0();
   const [buttonSave, setButtonSave] = useState(false);
-  const [tagline, setTagline] = useState("");
-  const [nickname, setNickname] = useState("");
+  const [tagline, setTagline] = useState('');
+  const [nickname, setNickname] = useState('');
   const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const PublicInfo = ({ userData }) => {
   }, [userData]);
 
   const handleImage = (e) => {
-    if (e.target.value !== "") {
+    if (e.target.value !== '') {
       setButtonSave(true);
     }
 
@@ -63,7 +63,7 @@ const PublicInfo = ({ userData }) => {
       }
 
       if (image) {
-        formData.append("file", image);
+        formData.append('file', image);
         await axios.post(`/api/user/${user?.email}/addImage`, formData);
       }
 
@@ -88,7 +88,7 @@ const PublicInfo = ({ userData }) => {
         <DynamicForm>
           <div className="head-info" onClick={() => setClicked(!clicked)}>
             <h3>About Me</h3>
-            <KeyboardArrowDown className={clicked ? "click" : ""} />
+            <KeyboardArrowDown className={clicked ? 'click' : ''} />
           </div>
           {clicked && (
             <>
@@ -150,10 +150,9 @@ const PublicInfo = ({ userData }) => {
   );
 };
 
-
 const Form = styled.form`
- /* padding: 24px; */
-`
+  /* padding: 24px; */
+`;
 const DynamicForm = styled.div`
   width: 100%;
   height: 100%;

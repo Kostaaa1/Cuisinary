@@ -1,9 +1,9 @@
-import { useCallback, useMemo } from "react";
-import { useContext, useEffect } from "react";
-import { useState } from "react";
-import AuthContext from "../../../setup/app-context-menager/AuthContext";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "../../../setup/auth/useAuth";
+import { useCallback, useMemo } from 'react';
+import { useContext, useEffect } from 'react';
+import { useState } from 'react';
+import AuthContext from '../../../setup/app-context-menager/AuthContext';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useUser } from '../../../setup/auth/useAuth';
 
 export const useLayoutData = () => {
   const { userData } = useContext(AuthContext);
@@ -24,18 +24,13 @@ export const useLayoutData = () => {
     },
   ]);
 
-  const layoutData = useCallback(
-    (collections) => {
-      if (userData) {
-        if (collections) {
-          setCollections(collections);
-        } else {
-          setCollections([]);
-        }
-      }
-    },
-    [user, userData]
-  );
+  const layoutData = (collections) => {
+    if (!collections) return;
+
+    if (userData) {
+      collections ? setCollections(collections) : setCollections([]);
+    }
+  };
 
   const layoutArr = useMemo(() => {
     let destructuredArray = collections?.map((coll) =>

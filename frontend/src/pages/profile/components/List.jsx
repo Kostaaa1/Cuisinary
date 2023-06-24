@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components";
-import { FaHeart, FaUtensilSpoon } from "react-icons/fa";
-import { MdReviews } from "react-icons/md";
+import React from 'react';
+import styled from 'styled-components';
+import { FaHeart, FaUtensilSpoon } from 'react-icons/fa';
+import { MdReviews } from 'react-icons/md';
 
 const List = ({ list }) => {
   const IconList = {
@@ -13,7 +13,7 @@ const List = ({ list }) => {
 
   return (
     <div>
-      <Li className={list.selected ? "selected" : ""}>
+      <Li className={list.selected ? 'selected' : ''}>
         {list.icon && <Svg />}
         {list.text}
       </Li>
@@ -29,7 +29,7 @@ const Li = styled.li`
   margin-right: 12px;
   list-style: none;
   padding: 0.9rem 0.4rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.18);
+  border-top: 1px solid rgba(0, 0, 0, 0.16);
   padding-left: 12px;
   font-weight: 400;
   font-size: 15px;

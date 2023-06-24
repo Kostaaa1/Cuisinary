@@ -1,41 +1,53 @@
-import React, { useContext, useState } from "react";
-import styled from "styled-components";
-import GlobalContext from "../../../setup/app-context-menager/GlobalContext";
-import { Close, SearchOutlined } from "@mui/icons-material";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useContext, useState } from 'react';
+import styled from 'styled-components';
+import GlobalContext from '../../../setup/app-context-menager/GlobalContext';
+import { Close, SearchOutlined } from '@mui/icons-material';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const SearchForm = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [searchValue, setSearhValue] = useState(params.search ? params.search : "");
-  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(GlobalContext);
+  const [searchValue, setSearhValue] = useState(
+    params.search ? params.search : ''
+  );
+  const { searchBarRef2, showSearch2, setShowSearch2 } =
+    useContext(GlobalContext);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
     if (!searchValue) return;
-    navigate("/searched/" + searchValue.toLowerCase());
+    navigate('/searched/' + searchValue.toLowerCase());
 
-    setSearhValue("");
+    setSearhValue('');
     setShowSearch2(false);
   };
 
   return (
     <Form onSubmit={submitHandler}>
-      <label>Search Results For</label>
+      <h5>
+        Search Results For <span> {params.search} </span>
+      </h5>
       {showSearch2 ? (
-        <div className={`input-wrap ${showSearch2 ? "active" : ""}`} ref={searchBarRef2}>
+        <div
+          className={`input-wrap ${showSearch2 ? 'active' : ''}`}
+          ref={searchBarRef2}
+        >
           <SearchOutlined onClick={submitHandler} />
-          <input type="text" value={searchValue} onChange={(e) => setSearhValue(e.target.value)} />
+          <input
+            type="text"
+            value={searchValue}
+            onChange={(e) => setSearhValue(e.target.value)}
+          />
           <input type="submit" value="GO" />
         </div>
       ) : (
         <div className="input-wrap">
-          {searchValue !== "" ? (
+          {searchValue !== '' ? (
             <Close
               onClick={() => {
                 setShowSearch2(true);
-                setSearhValue("");
+                setSearhValue('');
               }}
             />
           ) : (
@@ -59,17 +71,24 @@ const Form = styled.form`
   width: 550px;
   height: 100px;
   max-width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 12px;
 
-  label {
+  h5 {
     font-weight: bold;
     margin-bottom: 12px;
+    font-size: 18px !important;
+
+    span {
+      color: var(--red-color);
+      font-size: inherit;
+      text-decoration: underline;
+    }
   }
 
   .input-wrap {
     position: relative;
 
-    input[type="text"] {
+    input[type='text'] {
       font-size: 16px;
       width: 100%;
       height: 50px;
@@ -94,7 +113,7 @@ const Form = styled.form`
       }
     }
 
-    input[type="submit"] {
+    input[type='submit'] {
       position: absolute;
       right: 0;
       letter-spacing: 1.1px;

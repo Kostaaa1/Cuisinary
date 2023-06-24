@@ -10,10 +10,10 @@ const ButtonBorder = ({ value, style, onClick, icon }) => {
   );
 };
 
-const Button = styled.div`
+const Button = styled.button`
   color: var(--main-color);
   text-decoration: none;
-  outline: 1px solid var(--red-color);
+  outline: 2px solid var(--red-color);
   font-weight: 800;
   border-radius: 3px;
   display: flex;
@@ -21,8 +21,14 @@ const Button = styled.div`
   text-align: center;
   align-items: center;
   font-size: 12px;
-  margin-top: 14px;
   cursor: pointer;
+  border: none;
+  user-select: none;
+
+  svg {
+    margin-right: 4px;
+    color: var(--red-color);
+  }
 
   &:active {
     outline: 2px solid var(--blue-color);
@@ -33,6 +39,10 @@ const Button = styled.div`
   &:hover {
     background-color: var(--red-color);
     color: white;
+
+    svg {
+      color: white;
+    }
   }
 `;
 

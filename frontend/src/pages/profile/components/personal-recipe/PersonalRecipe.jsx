@@ -1,23 +1,52 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useContext } from "react";
-import { useParams } from "react-router-dom";
-import styled from "styled-components";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
-import Loading from "../../../../common/Loading";
-import { AccessTime, Check, RiceBowl } from "@mui/icons-material";
-import LineBreak from "../../../../common/LineBreak";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import Loading from '../../../../common/Loading';
+import ButtonBorder from '../../../../common/ButtonBorder';
+import LineBreak from '../../../../common/LineBreak';
+import DeleteModal from '../../../../common/DeleteModal';
+import { useAuth0 } from '@auth0/auth0-react';
+import FullImageModal from '../../../../common/FullImageModal';
+import {
+  AccessTime,
+  Check,
+  Delete,
+  Fullscreen,
+  MoreHoriz,
+  RiceBowl,
+} from '@mui/icons-material';
+import useNoScroll from '../../../../utils/useNoScroll';
+import useSmoothScroll from '../../../../utils/useSmoothScroll';
+import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 
 const PersonalRecipe = () => {
+  const { user } = useAuth0();
   const params = useParams();
-  const { userData } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showIconFullsize, setShowIconFullsize] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  useNoScroll(showImageModal);
+  useSmoothScroll();
+
+  const { userData, contextUserLoading } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const cleanup = () => {
+      queryClient.clear();
+    };
+
+    queryClient.invalidateQueries(['context-user', user?.email]);
+    return cleanup;
+  }, [queryClient, user?.email]);
 
   const fetchPersonalRecipe = async () => {
     try {
-      console.log("called");
-
       const res = await axios.get(
-        `/api/user/${userData?.email}/${params.id}/getPersonalRecipe`
+        `/api/user/${params?.userId}/${params.id}/getPersonalRecipe`
       );
 
       return res.data;
@@ -26,91 +55,182 @@ const PersonalRecipe = () => {
     }
   };
 
-  const { data: recipeData, isLoading } = useQuery(
-    ["personal-recipes"],
+  const { data: recipeData } = useQuery(
+    ['personal-recipes'],
     fetchPersonalRecipe,
-    { enabled: !!userData, refetchOnMount: "always" }
+    { enabled: !!params, refetchOnMount: 'always' }
   );
+
+  const deletePersonalRecipe = async () => {
+    try {
+      await axios.delete(
+        `/api/user/${userData?.email}/${recipeData._id}/deletePersonalRecipe`
+      );
+    } catch {
+      console.log(error.message);
+    } finally {
+      navigate('/account/profile/recipes');
+    }
+  };
 
   return (
     <>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <Recipe>
-          <h1>{recipeData.title}</h1>
-          <p> {recipeData.summary} </p>
-          <div className="head-wrap">
-            <img src={recipeData?.picture.image} alt="" />
-            <div className="recipe-info">
-              <AccessTime />
-              <div className="info-wrap">
-                <h5>Prep:</h5>
-                <span>{recipeData.preparationMinutes}</span>
+      <Recipe>
+        {userData && !recipeData ? (
+          <Loading />
+        ) : (
+          <>
+            <div className="head-content-wrap">
+              <h1>{recipeData?.title}</h1>
+              <p> {recipeData?.summary} </p>
+              <span className="created-by">
+                {recipeData?.private ? 'Private' : 'Public'} recipe by: &nbsp;
+                <Link to={`/profile/${userData?.createdByUserId}`}>
+                  {recipeData?.createdBy}
+                </Link>
+              </span>
+            </div>
+            {params.userId === userData?._id && (
+              <div className="buttons-wrap">
+                <ButtonBorder
+                  value={'DELETE'}
+                  icon={<Delete />}
+                  style={{ width: '80px', height: '40px' }}
+                  onClick={() => setShowDeleteModal(true)}
+                />
+                <ButtonBorder
+                  value={'EDIT'}
+                  icon={<MoreHoriz />}
+                  style={{ width: '80px', height: '40px' }}
+                />
               </div>
-              <div className="info-wrap">
-                <h5>Cook:</h5>
-                <span>{recipeData.readyInMinutes}</span>
+            )}
+            <div className="head-wrap">
+              <div
+                className="image-div"
+                onMouseEnter={() => setShowIconFullsize(true)}
+                onMouseLeave={() => setShowIconFullsize(false)}
+              >
+                {showIconFullsize && (
+                  <Fullscreen
+                    onClick={() => setShowImageModal(true)}
+                    className="fullscreen-icon"
+                  />
+                )}
+                <img src={recipeData?.picture.image} alt="" />
               </div>
-              <div className="info-wrap">
-                <h5>Servings:</h5>
-                <span>{recipeData.servings}</span>
+              <div className="recipe-info">
+                <AccessTime />
+                <div className="info-wrap">
+                  <h5>Prep:</h5>
+                  <span>{recipeData?.preparationMinutes}</span>
+                </div>
+                <div className="info-wrap">
+                  <h5>Cook:</h5>
+                  <span>{recipeData?.readyInMinutes}</span>
+                </div>
+                <div className="info-wrap">
+                  <h5>Servings:</h5>
+                  <span>{recipeData?.servings}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <section>
-            <div className="line-break">
-              <LineBreak />
-              <RiceBowl />
-            </div>
-            <div className="ul-wrap ingredients">
-              <h2>Ingredients</h2>
-              <ul>
-                {recipeData.extendedIngredients.map((ingredient) => (
-                  <li key={ingredient.id}> {ingredient.value} </li>
-                ))}
-              </ul>
-            </div>
-            <div className="line-break">
-              <LineBreak />
-              <RiceBowl />
-            </div>
-            <div className="ul-wrap">
-              <h2>Directions</h2>
-              <ul>
-                {recipeData.directions.map((ingredient, id) => (
-                  <div className="li-wrap">
-                    <span className="steps">
-                      <Check />
-                      <h6>Step {id + 1} </h6>
-                    </span>
+            <section>
+              <div className="line-break">
+                <LineBreak />
+                <RiceBowl />
+              </div>
+              <div className="ul-wrap ingredients">
+                <h2>Ingredients</h2>
+                <ul>
+                  {recipeData?.extendedIngredients.map((ingredient) => (
                     <li key={ingredient.id}> {ingredient.value} </li>
-                  </div>
-                ))}
-              </ul>
-            </div>
-            <div className="line-break">
-              <LineBreak />
-              <RiceBowl />
-            </div>
-          </section>
-          <div className="popular-recipes"></div>
-        </Recipe>
+                  ))}
+                </ul>
+              </div>
+              <div className="line-break">
+                <LineBreak />
+                <RiceBowl />
+              </div>
+              <div className="ul-wrap">
+                <h2>Directions</h2>
+                <ul>
+                  {recipeData?.directions.map((ingredient, id) => (
+                    <div className="li-wrap" key={ingredient.id}>
+                      <span className="steps">
+                        <Check />
+                        <h6>Step {id + 1} </h6>
+                      </span>
+                      <li key={ingredient.id}> {ingredient.value} </li>
+                    </div>
+                  ))}
+                </ul>
+              </div>
+              <div className="line-break">
+                <LineBreak />
+                <RiceBowl />
+              </div>
+            </section>
+            <div className="popular-recipes"></div>
+          </>
+        )}
+      </Recipe>
+      {showDeleteModal && (
+        <DeleteModal
+          text={'Delete Recipe'}
+          message={'Are you sure you want to delete your'}
+          name={recipeData.title}
+          type="recipe"
+          closeModal={() => setShowDeleteModal(false)}
+          onClick={deletePersonalRecipe}
+        />
+      )}
+      {showImageModal && (
+        <FullImageModal
+          showImageModal={showImageModal}
+          closeModal={() => setShowImageModal(false)}
+          imageUrl={recipeData.picture.image}
+        />
       )}
     </>
   );
 };
 
-const Recipe = styled.div`
+const Recipe = styled.main`
   position: relative;
   width: 1240px;
   max-width: 100%;
   margin: 0 auto;
+  min-height: 60vh;
   height: 100%;
   padding: 250px 0;
 
   @media screen and (max-width: 1270px) {
-    padding: 250px 36px;
+    padding: 180px 36px 0 36px;
+  }
+
+  .created-by {
+    display: flex;
+
+    a {
+      font-weight: bold;
+      text-decoration: underline;
+      text-underline-offset: 5px;
+
+      &:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--red-color);
+        text-decoration-thickness: 10%;
+      }
+    }
+  }
+
+  .buttons-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 180px;
+    margin: 16px 0;
   }
 
   .line-break {
@@ -143,7 +263,7 @@ const Recipe = styled.div`
         color: #fff;
         border-radius: 50%;
         padding: 4px;
-        background: var(--grey-color);
+        background: var(--input-border-color);
       }
     }
 
@@ -173,27 +293,54 @@ const Recipe = styled.div`
     }
   }
 
-  p {
-    margin: 18px 0;
-  }
-
   h1 {
-    font-size: 42px !important;
+    font-size: 44px !important;
     font-weight: 800;
   }
 
   section {
     width: 600px;
+    max-width: 100%;
+  }
+
+  .head-content-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 150px;
   }
 
   .head-wrap {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    max-width: 100%;
 
-    img {
-      width: 600px;
+    .image-div {
+      position: relative;
       margin-bottom: 12px;
+      max-width: 100%;
+      width: 550px;
+      cursor: pointer;
+
+      .fullscreen-icon {
+        position: absolute;
+        outline: 1px solid black;
+        z-index: 5;
+        height: 42px;
+        width: 42px;
+        border: 1px solid black;
+        color: white;
+        bottom: 0;
+        transform: translate(10%, -10%);
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+
+      img {
+        object-position: center;
+        width: 100%;
+        max-height: 620px;
+      }
     }
 
     .recipe-info {
@@ -203,11 +350,12 @@ const Recipe = styled.div`
       box-shadow: var(--card-shadow-border);
       padding: 20px;
       padding-right: 52px;
+      max-width: 100%;
 
-      @media screen and (max-width: 880px) {
-        padding: 0;
-        width: 100%;
-        /* padding: 0; */
+      @media screen and (max-width: 890px) {
+        padding: 20px;
+        width: 600px;
+        margin: 20px 0;
       }
 
       .info-wrap {

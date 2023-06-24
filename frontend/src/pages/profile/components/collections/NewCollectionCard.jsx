@@ -20,7 +20,6 @@ const Card = styled.div`
   font-size: 14px;
   box-shadow: var(--card-shadow-border);
   overflow: hidden;
-  height: 400px;
 
   h3 {
     margin: -50px auto;

@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import { Star, StarBorder } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import PersonAvatar from "../../../../common/PersonAvatar";
-import LineBreak from "../../../../common/LineBreak";
-import { RecipeContext } from "../../Recipe";
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { Star, StarBorder } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import PersonAvatar from '../../../../common/PersonAvatar';
+import LineBreak from '../../../../common/LineBreak';
+import { RecipeContext } from '../../Recipe';
 
 const Comments = () => {
   const navigate = useNavigate();
@@ -15,26 +15,30 @@ const Comments = () => {
       {comments?.map((comment, i) => (
         <div key={i} className="head-wrap">
           <div className="head-flex">
-            {comment.userImage === "" ? (
-              <PersonAvatar style={{ borderRadius: "50%" }} />
+            {comment.userImage === '' ? (
+              <PersonAvatar style={{ borderRadius: '50%' }} />
             ) : (
               <img src={comment.userImage} alt="" />
             )}
-            <h4 onClick={() => navigate(`/profile/${comment.userId}`)}> {comment.nickname} </h4>
+            <h5 onClick={() => navigate(`/profile/${comment.userId}`)}>
+              {comment.nickname}
+            </h5>
           </div>
           <div className="review-rates">
             {[...Array(5)].map((_, i) =>
               i <= comment.starRating ? (
                 <Star key={i} className="red-star" />
               ) : (
-                <StarBorder key={i} style={{ color: "var(--red-color)" }} />
+                <StarBorder key={i} style={{ color: 'var(--red-color)' }} />
               )
             )}
             <span>
               {comment?.createdAt
-                ?.split("/")
-                .map((date) => (date.length === 1 && date.length !== 4 ? "0" + date : date))
-                .join("/")}
+                ?.split('/')
+                .map((date) =>
+                  date.length === 1 && date.length !== 4 ? '0' + date : date
+                )
+                .join('/')}
             </span>
           </div>
           <p> {comment.comment} </p>
@@ -78,8 +82,7 @@ const CommentsContainer = styled.div`
       font-weight: 400;
     }
 
-    h4 {
-      font-size: 14px;
+    h5 {
       cursor: pointer;
       text-decoration: underline;
       text-decoration-color: var(--red-color);

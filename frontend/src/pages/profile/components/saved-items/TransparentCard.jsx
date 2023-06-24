@@ -1,36 +1,14 @@
-import { Add, Remove } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import { useState } from "react";
-import { useEffect } from "react";
 import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
-import Loading from "../../../../common/Loading";
-import { debounce, throttle } from "lodash";
 
 const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
-  const [loading, setLoading] = useState(false);
-
-  const remove = () => {
-    removeRecipeName(favorite.recipeTitle);
-  };
-
   return (
     <Card>
       <>
-        {/* {favorite.loading && (
-          <>
-            <div className="transparent"></div>
-            <Loading
-              styles={{
-                position: "absolute",
-                content: "",
-                bottom: "13%",
-                right: "0",
-              }}
-            />
-          </>
-        )} */}
         <img src={favorite.recipe?.image} alt="" />
-        <div className="card__desc">
+        <div className="card-content">
           <h4>{favorite?.recipeTitle}</h4>
           <ButtonBorder
             style={{ width: "160px", height: "36px" }}
@@ -41,17 +19,15 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
             }
           />
         </div>
-        {!loading && (
-          <div className="transparent">
-            <button
-              onClick={() => {
-                remove(), addLoading();
-              }}
-            >
-              Undo
-            </button>
-          </div>
-        )}
+        <div className="transparent">
+          <button
+            onClick={() => {
+              removeRecipeName(favorite.recipeTitle), addLoading();
+            }}
+          >
+            Undo
+          </button>
+        </div>
       </>
     </Card>
   );
@@ -62,10 +38,10 @@ const Card = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  min-height: 420px;
+  min-height: 380px;
   box-shadow: var(--card-shadow-border);
 
-  @media (max-width: 1030px) {
+  @media (max-width: 1270px) {
     width: 270px;
   }
 
@@ -106,9 +82,8 @@ const Card = styled.div`
     height: 70%;
   }
 
-  .card__desc {
+  .card-content {
     padding: 1rem;
-    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -116,9 +91,10 @@ const Card = styled.div`
 
     h4 {
       text-align: start;
-      font-size: 18px;
       color: var(--grey-color);
       cursor: pointer;
+      font-size: 18px;
+      padding-bottom: 42px;
     }
 
     p {

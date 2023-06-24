@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 const LineBreak = ({ className }) => {
   return <Break className={className}></Break>;
@@ -7,7 +7,7 @@ const LineBreak = ({ className }) => {
 
 const Break = styled.div`
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.11);
+  border: 1px solid rgba(0, 0, 0, 0.16);
 `;
 
 export default LineBreak;

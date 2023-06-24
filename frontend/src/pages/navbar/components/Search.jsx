@@ -1,25 +1,23 @@
-import { useContext, useState } from "react";
-import styled from "styled-components";
-import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { Close } from "@mui/icons-material";
-import GlobalContext from "../../../setup/app-context-menager/GlobalContext";
+import { useContext, useState } from 'react';
+import styled from 'styled-components';
+import { FaSearch } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { Close } from '@mui/icons-material';
+import GlobalContext from '../../../setup/app-context-menager/GlobalContext';
 
-const Search = ({ style, showSearched, showSideNav, setShowSideNav }) => {
-  const [input, setInput] = useState("");
+const Search = ({ style, setShowSideNav, showSideNav, showSearched }) => {
+  const [input, setInput] = useState('');
   const navigate = useNavigate();
   const { searchBarRef } = useContext(GlobalContext);
 
-  const submitHandler = (e) => {
+  const submitHandler = e => {
     e.preventDefault();
 
     if (!input) return;
-    navigate("/searched/" + input.toLowerCase());
+    navigate('/searched/' + input.toLowerCase());
+    setInput('');
 
-    setInput("");
-    showSearched();
-
-    if (setShowSideNav) setShowSideNav();
+    if (showSideNav) setShowSideNav(false);
   };
 
   return (
@@ -27,7 +25,7 @@ const Search = ({ style, showSearched, showSideNav, setShowSideNav }) => {
       <h4>Search</h4>
       <Wrapper className="wrapper">
         <input
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           type="text"
           value={input}
           placeholder="What are you looking for?"

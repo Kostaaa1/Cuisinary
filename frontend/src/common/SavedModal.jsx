@@ -3,8 +3,11 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { useRef } from "react";
 
 const SavedModal = ({ setFavorite }) => {
+  const modalRef = useRef(null);
+
   useEffect(() => {
     const handle = (e) => {
       if (e.key !== "Escape") return;
@@ -19,15 +22,7 @@ const SavedModal = ({ setFavorite }) => {
   }, []);
 
   const click = (e) => {
-    const { className, tagName } = e.target;
-    if (
-      className === "saved" ||
-      className === "" ||
-      tagName === "svg" ||
-      tagName === "path"
-    ) {
-      null;
-    } else {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
       setFavorite(false);
     }
   };
@@ -40,7 +35,7 @@ const SavedModal = ({ setFavorite }) => {
       exit={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Section>
+      <Section ref={modalRef}>
         <div className="close">
           <Close
             onClick={() => {
@@ -49,7 +44,7 @@ const SavedModal = ({ setFavorite }) => {
           />
         </div>
         <div className="saved">
-          <Check className="" />
+          <Check />
           <h1>Saved!</h1>
           <p>
             View <Link to={"/account/profile/collection"}>All Saved Items</Link>
@@ -99,6 +94,7 @@ const Section = styled.div`
       font-size: 2.2rem;
     }
   }
+
   .saved {
     width: 350px;
     height: 620px;

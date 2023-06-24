@@ -1,18 +1,17 @@
-import styled from "styled-components";
-import Search from "./components/Search";
-import Navbar from "./components/Navbar";
-import { FaUserCircle, FaSearch } from "react-icons/fa";
-import { useState, memo, useContext } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
-import Logo from "../../common/Logo";
-import RecipeNames from "../../setup/app-context-menager/GlobalContext";
-import Dropdown from "./components/Dropdown";
+import styled from 'styled-components';
+import Search from './components/Search';
+import Navbar from './components/Navbar';
+import { FaUserCircle, FaSearch } from 'react-icons/fa';
+import { useState, memo, useContext } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { motion } from 'framer-motion';
+import Logo from '../../common/Logo';
+import RecipeNames from '../../setup/app-context-menager/GlobalContext';
+import Dropdown from './components/Dropdown';
 
 const Horizontal = () => {
   const { showSearch, setShowSearch } = useContext(RecipeNames);
-  const [showDropdown, setShowDropdown] = useState();
-  const { loginWithPopup, logout, user } = useAuth0();
+  const { loginWithPopup, user } = useAuth0();
 
   const showSearched = () => {
     setShowSearch(!showSearch);
@@ -20,15 +19,17 @@ const Horizontal = () => {
 
   return (
     <ScrolledHeader
-      initial={{ y: "30%", height: "80px" }}
+      initial={{ y: '20%', height: '80px' }}
       animate={{
         y: 0,
-        height: "60px",
+        height: '60px',
       }}
       transition={{ duration: 0.18 }}
     >
       <HeaderControl>
-        <Logo to={"/"} />
+        <div className="flex-1">
+          <Logo to={'/'} />
+        </div>
         {showSearch && <Search showSearched={showSearched} />}
         {!showSearch && <Navbar />}
 
@@ -78,6 +79,8 @@ const ScrolledHeader = styled(motion.div)`
     font-size: 0.9rem;
     font-weight: 500;
     align-items: center;
+    flex: 1;
+    justify-content: flex-end;
 
     .user-wrap {
       display: flex;
@@ -86,22 +89,10 @@ const ScrolledHeader = styled(motion.div)`
     }
   }
 
-  ul li {
-    position: relative;
-    list-style: none;
+  .flex-1 {
+    flex: 1;
     display: flex;
-    align-items: center;
-    cursor: pointer;
-    height: 50px;
-
-    .search {
-      color: var(--grey-color);
-      transform: scale(1.3);
-    }
-  }
-
-  .list {
-    height: 24px;
+    justify-content: flex-start;
   }
 
   .divider-line {

@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
-import axios from "axios";
+import { useMemo } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 
 export const useUser = () => {
   const { user, getAccessTokenSilently } = useAuth0();
@@ -26,6 +25,7 @@ export const useUser = () => {
         );
 
         const userData = res.data;
+        console.log('getUserData called');
 
         return userData;
       } catch (error) {
@@ -38,19 +38,15 @@ export const useUser = () => {
 };
 
 export const useAuth = () => {
-  const [setRefetchedUser] = useState(false);
-
-  const authenticated = useMemo(() => {
-    const item = localStorage.getItem(
-      "@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@"
+  const getAuthData = () =>
+    localStorage.getItem(
+      '@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@'
     );
 
+  const authenticated = useMemo(() => {
+    const item = getAuthData();
     return !!item;
-  }, [
-    localStorage.getItem(
-      "@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@"
-    ),
-  ]);
+  }, [getAuthData]);
 
-  return { authenticated, setRefetchedUser };
+  return { authenticated };
 };

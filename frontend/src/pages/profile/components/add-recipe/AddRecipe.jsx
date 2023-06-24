@@ -1,28 +1,32 @@
-import styled from "styled-components";
-import LineBreak from "../../../../common/LineBreak";
-import { AddAPhoto } from "@mui/icons-material";
-import Ingredients from "./Ingredients";
-import Directions from "./Directions";
-import { useState } from "react";
-import { useReducer } from "react";
+import styled from 'styled-components';
+import LineBreak from '../../../../common/LineBreak';
+import { AddAPhoto } from '@mui/icons-material';
+import Ingredients from './Ingredients';
+import Directions from './Directions';
+import { useState } from 'react';
+import { useReducer } from 'react';
+import Loading from '../../../../common/Loading';
 import {
   ingredientReducer,
   directionReducer,
   initialIngredients,
   initialDirections,
-} from "./reducer";
-import { useEffect } from "react";
-import PrepTime from "./PrepTime";
-import PublicRecipe from "./PublicRecipe";
-import axios from "axios";
-import { useContext } from "react";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
+} from './reducer';
+import { useEffect } from 'react';
+import PrepTime from './PrepTime';
+import PublicRecipe from './PublicRecipe';
+import axios from 'axios';
+import { useContext } from 'react';
+import AuthContext from '../../../../setup/app-context-menager/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const AddRecipe = () => {
+  const navigate = useNavigate();
   const { userData } = useContext(AuthContext);
-  const [prepTime, setPrepTime] = useState({ value: "", time: "minutes" });
-  const [cookTime, setCookTime] = useState({ value: "", time: "minutes" });
+  const [prepTime, setPrepTime] = useState({ value: '', time: 'minutes' });
+  const [cookTime, setCookTime] = useState({ value: '', time: 'minutes' });
   const [isPublic, setIsPublic] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [ingredientInputs, dispatch] = useReducer(
     ingredientReducer,
@@ -32,17 +36,19 @@ const AddRecipe = () => {
     directionReducer,
     initialDirections
   );
-  const [preview, setPreview] = useState("");
-  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState('');
+  const [image, setImage] = useState('');
   const [form, setForm] = useState({
-    title: "",
-    summary: "",
+    title: '',
+    summary: '',
     extendedIngredients: [],
     directions: [],
-    servings: "",
-    pricePerServing: "",
-    readyInMinutes: "",
-    preparationMinutes: "",
+    servings: '',
+    pricePerServing: '',
+    readyInMinutes: '',
+    preparationMinutes: '',
+    createdBy: userData?.nickname,
+    createdByUserId: userData?._id,
   });
 
   const handleImage = (e) => {
@@ -67,8 +73,8 @@ const AddRecipe = () => {
       ...prevForm,
       extendedIngredients: ingredientInputs,
       directions: directionInputs,
-      preparationMinutes: cookTime.value + " " + cookTime.time,
-      readyInMinutes: prepTime.value + " " + prepTime.time,
+      preparationMinutes: cookTime.value + ' ' + cookTime.time,
+      readyInMinutes: prepTime.value + ' ' + prepTime.time,
     }));
   }, [ingredientInputs, directionInputs, cookTime, prepTime]);
 
@@ -84,19 +90,21 @@ const AddRecipe = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true);
       const formData = new FormData();
 
-      formData.append("image", image);
-      formData.append("form", JSON.stringify({ ...form, private: isPublic }));
+      formData.append('image', image);
+      formData.append('form', JSON.stringify({ ...form, private: !isPublic }));
 
-      const res = await axios.post(
+      await axios.post(
         `/api/user/${userData?.email}/addPersonalRecipe`,
         formData
       );
-
-      console.log(res.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsSubmitting(false);
+      navigate('/account/profile/recipes');
     }
   };
 
@@ -126,7 +134,7 @@ const AddRecipe = () => {
                   value={form.title}
                   onChange={handleInputChange}
                   placeholder="Give your recipe a title"
-                  required
+                  // required
                 />
               </div>
               <div className="input-wrap">
@@ -138,7 +146,7 @@ const AddRecipe = () => {
                   name="summary"
                   value={form.summary}
                   onChange={handleInputChange}
-                  required
+                  // required
                 ></textarea>
               </div>
             </div>
@@ -155,7 +163,7 @@ const AddRecipe = () => {
                 className="file"
                 id="input_file"
                 type="file"
-                required
+                // required
                 accept="image/png, image/jpeg"
                 onChange={handleImage}
               />
@@ -181,7 +189,7 @@ const AddRecipe = () => {
                 name="servings"
                 value={form.servings}
                 onChange={handleInputChange}
-                required
+                // required
               />
             </div>
             <div className="input-wrap">
@@ -206,11 +214,17 @@ const AddRecipe = () => {
           <PublicRecipe isPublic={isPublic} setIsPublic={setIsPublic} />
           <div className="buttons-div">
             <span onClick={() => setShowLeaveModal(true)}>CANCEL</span>
-            <input
-              type="submit"
-              value={"Submit Recipe"}
-              className={`btn-submit highlight`}
-            />
+            {isSubmitting ? (
+              <button className="btn-submit disabled">
+                <Loading className="scaled-loading" />
+              </button>
+            ) : (
+              <input
+                type="submit"
+                value={'Submit Recipe'}
+                className={`btn-submit highlight`}
+              />
+            )}
           </div>
         </Form>
       </Wrapper>
@@ -229,7 +243,6 @@ const Servings = styled.div`
   .input-wrap {
     display: flex;
     flex-direction: column;
-    padding: 20px 0;
     font-size: 16px;
     width: 45%;
 
@@ -238,6 +251,7 @@ const Servings = styled.div`
       height: 46px;
       padding: 0 10px;
       font-size: 14px;
+      margin-top: 8px;
     }
   }
 `;
@@ -250,6 +264,7 @@ const Form = styled.form`
     justify-content: end;
 
     .btn-submit {
+      position: relative;
       font-weight: bold;
       color: #fff;
       cursor: pointer;
@@ -260,6 +275,19 @@ const Form = styled.form`
       width: 160px;
       height: 46px;
       letter-spacing: 1.1px;
+
+      .scaled-loading {
+        transform: scale(0.8) !important;
+      }
+    }
+
+    .disabled {
+      outline: 6px solid green;
+      background-color: #d9d9d9;
+      outline: 2px solid #d9d9d9;
+    }
+
+    .highlight {
       background-color: var(--red-color);
       outline: 2px solid var(--red-color);
 
@@ -373,7 +401,7 @@ const Wrapper = styled.div`
   width: 700px;
   max-width: 100%;
   margin: 0 auto;
-  margin: 200px auto 0 auto;
+  margin: 200px auto 100px auto;
   background-color: #f2f2f2;
   box-shadow: var(--card-shadow-border);
   padding: 40px;
@@ -399,7 +427,7 @@ const Wrapper = styled.div`
 
     .plus-shape::before,
     .plus-shape::after {
-      content: "";
+      content: '';
       position: absolute;
       background-color: var(--red-color);
     }
@@ -432,7 +460,7 @@ const Wrapper = styled.div`
 
       .underline {
         position: absolute;
-        content: "";
+        content: '';
         width: 100%;
         height: 20px;
         background-color: #e0af4c;

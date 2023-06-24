@@ -1,7 +1,7 @@
-import Pages from "./pages/Pages";
-import { BrowserRouter } from "react-router-dom";
-import "./styles.css";
-import { GlobalContextProvider } from "./setup/app-context-menager/GlobalContext";
+import Pages from './pages/Pages';
+import { BrowserRouter } from 'react-router-dom';
+import './styles.css';
+import { GlobalContextProvider } from './setup/app-context-menager/GlobalContext';
 
 function App() {
   return (

@@ -14,7 +14,6 @@ const PersonalInfo = () => {
   const [clicked, setClicked] = useState(true);
   const [buttonSave, setButtonSave] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
-  const personalRef = useRef(null);
   const { user } = useAuth0();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -94,7 +93,7 @@ const PersonalInfo = () => {
     <form onSubmit={submitForm}>
       <SectionHeader
         title="Personal Info"
-        text="These details will be used for all the Meredith profiles associated with your email address. By filling out this information, you will receive a more personalized experience across all Meredith websites."
+        text="Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sunt omnis aut voluptate veritatis veniam quos libero praesentium obcaecati iure ratione."
         span="Only you can see the information on this page.  It will not be displayed for other users to see."
         icon={<HttpsOutlined />}
         showLoading={showLoading}

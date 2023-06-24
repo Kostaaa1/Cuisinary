@@ -1,4 +1,3 @@
-import React, { useContext } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { Close, Add } from "@mui/icons-material";
@@ -13,11 +12,9 @@ const AddCustomModal = ({ showModal, favorite }) => {
   const [checkedColls, setCheckedColls] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const { user } = useAuth0();
-  // const { userCollections } = useContext(AuthContext);
   const queryClient = useQueryClient();
   const [collections, setCollections] = useState([]);
   const [userCollections, setUserCollections] = useState([]);
-
   const userData = queryClient.getQueryData(["user-data", user?.email]);
 
   useEffect(() => {

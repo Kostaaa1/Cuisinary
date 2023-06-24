@@ -21,7 +21,7 @@ const ReviewSchema = new mongoose.Schema({
 const Review = mongoose.model("Review", ReviewSchema);
 
 const RecipeSchema = new mongoose.Schema({
-  id: { type: Number, required: true },
+  id: { type: Number },
   recipeTitle: { type: String, required: true },
   data: {},
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],

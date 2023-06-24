@@ -1,12 +1,12 @@
-import React, { useContext, useEffect } from "react";
-import styled from "styled-components";
-import { RecipeContext } from "../Recipe";
-import { FavoriteBorder, Favorite } from "@mui/icons-material";
-import axios from "axios";
-import { useUser } from "../../../setup/auth/useAuth";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AuthContext from "../../../setup/app-context-menager/AuthContext";
+import React, { useContext, useEffect } from 'react';
+import styled from 'styled-components';
+import { RecipeContext } from '../Recipe';
+import { FavoriteBorder, Favorite } from '@mui/icons-material';
+import axios from 'axios';
+import { useUser } from '../../../setup/auth/useAuth';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import AuthContext from '../../../setup/app-context-menager/AuthContext';
 
 const Description = () => {
   const { recipe, favorite, setFavorite } = useContext(RecipeContext);
@@ -31,7 +31,7 @@ const Description = () => {
       userData.collections[0]?.collRecipes.push({ recipeTitle: recipe.title });
 
       if (checkForRecipe) {
-        toast.info("This recipe is already in your collection!");
+        toast.info('This recipe is already in your collection!');
         return;
       }
 
@@ -39,14 +39,14 @@ const Description = () => {
       await toast.promise(
         axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }),
         {
-          pending: "Saving recipe...",
-          success: "Recipe saved to your collection!",
-          error: "An error occurred while saving the recipe!",
+          pending: 'Saving recipe...',
+          success: 'Recipe saved to your collection!',
+          error: 'An error occurred while saving the recipe!',
         }
       );
     } catch (error) {
       console.log(error);
-      toast.error("An error occurred while saving the recipe!");
+      toast.error('An error occurred while saving the recipe!');
     }
   };
 
@@ -104,7 +104,6 @@ const Container = styled.div`
     display: flex;
     width: 100%;
     flex-wrap: wrap;
-    height: 120px;
 
     .desc-wrap {
       width: 50%;

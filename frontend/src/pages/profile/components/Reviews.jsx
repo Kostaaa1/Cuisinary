@@ -166,7 +166,7 @@ const Reviews = ({ userData }) => {
                           <Link to={"/recipe/" + review.recipeId}>
                             <h2> {review.recipeTitle} </h2>
                           </Link>
-                          <div>
+                          <div className="stars-wrap">
                             {[...Array(5)].map((_, id) =>
                               id <= review.starRating ? (
                                 <Star key={id} />
@@ -178,6 +178,7 @@ const Reviews = ({ userData }) => {
                                 />
                               )
                             )}
+                            <span>&nbsp; My Review</span>
                           </div>
                           <p> {review.comment} </p>
                         </div>
@@ -380,6 +381,11 @@ const ReviewsSections = styled.section`
         margin-left: 28px;
         width: 100%;
         height: 84px;
+
+        .stars-wrap {
+          display: flex;
+          align-items: center;
+        }
 
         .bordered {
           color: var(--grey-color) !important;

@@ -1,18 +1,21 @@
-import styled from "styled-components";
-import Search from "./components/Search";
-import Navbar from "./components/Navbar";
-import { FaUserCircle, FaSearch } from "react-icons/fa";
-import { useState, memo, useEffect, useContext } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import Logo from "../../common/Logo";
-import GlobalContext from "../../setup/app-context-menager/GlobalContext";
-import ScrolledHeader from "./ScrolledHeader";
-import Dropdown from "./components/Dropdown";
-import { useAuth } from "../../setup/auth/useAuth";
-import { Close, Menu } from "@mui/icons-material";
-import SideNavbar from "./components/SideNavbar";
-import { AnimatePresence, motion } from "framer-motion";
-import { useWindowSize } from "../../utils/useWindowSize";
+import styled from 'styled-components';
+import { FaSearch } from 'react-icons/fa';
+import { useState, memo, useEffect, useContext } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Close, Menu } from '@mui/icons-material';
+import { AnimatePresence, motion } from 'framer-motion';
+import Search from './components/Search';
+import Navbar from './components/Navbar';
+import Logo from '../../common/Logo';
+import GlobalContext from '../../setup/app-context-menager/GlobalContext';
+import ScrolledHeader from './ScrolledHeader';
+import Dropdown from './components/Dropdown';
+import { useAuth } from '../../setup/auth/useAuth';
+import SideNavbar from './components/SideNavbar';
+import { useWindowSize } from '../../utils/useWindowSize';
+import { userLinkList } from './navbar-constants';
+import useNoScroll from '../../utils/useNoScroll';
+import UserIconComponent from '../../common/UserStateComponent';
 
 const Header = () => {
   const { showSearch, setShowSearch } = useContext(GlobalContext);
@@ -20,37 +23,55 @@ const Header = () => {
   const [activateScrolled, setActivateScrolled] = useState(false);
   const { authenticated } = useAuth();
   const [showSideNav, setShowSideNav] = useState(false);
+  const [clickedCategory, setClickedCategory] = useState('');
   const windowSize = useWindowSize();
+  useNoScroll(showSideNav);
 
   const showSearched = () => {
     setShowSearch(!showSearch);
   };
 
   useEffect(() => {
+    if (showSideNav && windowSize[0] > 1120) {
+      setShowSideNav(false);
+    }
+  }, [windowSize]);
+
+  useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setActivateScrolled(true);
-      } else {
-        setActivateScrolled(false);
-      }
+      window.scrollY > 50
+        ? setActivateScrolled(true)
+        : setActivateScrolled(false);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
   });
 
+  const handleClickOnProfile = () => {
+    if (authenticated) {
+      setShowSideNav(true),
+        setClickedCategory({
+          name: 'My Profile',
+          categories: userLinkList,
+        });
+    } else {
+      loginWithPopup();
+    }
+  };
+
   return (
     <>
-      <HeaderContainer>
+      <HeaderContainer className="header-container">
         {windowSize[0] > 1120 ? (
           <>
             {!activateScrolled ? (
               <VerticalHeader>
                 <HeaderControl>
-                  <Logo to={"/"} />
+                  <Logo to={'/'} />
                   {showSearch && <Search showSearched={showSearched} />}
                   {!showSearch && (
                     <ul className="wrapper">
@@ -58,25 +79,11 @@ const Header = () => {
                         <FaSearch className="search" onClick={showSearched} />
                       </li>
                       <div className="divider-line"></div>
-                      {authenticated ? (
-                        <>
-                          <Dropdown />
-                          <div className="divider-line"></div>
-                        </>
-                      ) : (
-                        <>
-                          <li
-                            className="underline list"
-                            onClick={loginWithPopup}
-                          >
-                            <FaUserCircle className="user" /> Log in
-                          </li>
-                          <div className="divider-line"></div>
-                        </>
-                      )}
+                      <Dropdown />
+                      <div className="divider-line"></div>
                       <li className="underline list">About Us</li>
                       <div className="divider-line"></div>
-                      <li className="underline">Newsletter</li>
+                      <li className="underline list">Newsletter</li>
                       <div className="divider-line"></div>
                       <li className="underline list">Sweepstakes</li>
                     </ul>
@@ -95,28 +102,40 @@ const Header = () => {
                 <div className="hamburger-wrap">
                   <Menu onClick={() => setShowSideNav(true)} />
                 </div>
-                <Logo to={"/"} />
+                <Logo to={'/'} />
                 {showSearch ? (
                   <Search
-                    style={{ width: "400px" }}
+                    style={{ width: '400px' }}
                     showSearched={showSearched}
                   />
                 ) : (
                   <ul className="wrapper-resize">
                     <li className="list">
-                      <FaSearch className="search" onClick={showSearched} />
+                      <FaSearch
+                        className="search"
+                        onClick={() => {
+                          setShowSideNav(true), setClickedCategory('');
+                        }}
+                      />
                     </li>
                     <div className="divider-line"></div>
-                    <Dropdown />
+                    <li className="list" onClick={handleClickOnProfile}>
+                      <UserIconComponent />
+                    </li>
                   </ul>
                 )}
               </>
             ) : (
               <>
                 <div className="hamburger-wrap">
-                  <Close onClick={() => setShowSideNav(false)} />
+                  <Close
+                    onClick={() => {
+                      setShowSideNav(false);
+                      setClickedCategory('');
+                    }}
+                  />
                 </div>
-                <Logo to={"/"} />
+                <Logo to={'/'} />
                 <div className="wrapper-resize"></div>
               </>
             )}
@@ -124,7 +143,7 @@ const Header = () => {
         )}
       </HeaderContainer>
       <AnimatePresence>
-        {showSideNav && (
+        {showSideNav && windowSize[0] < 1120 && (
           <SideNav
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -133,12 +152,14 @@ const Header = () => {
           >
             <motion.div
               className="side-navbar"
-              initial={{ x: "-100%" }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 35 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 35 }}
             >
               <SideNavbar
+                clickedCategory={clickedCategory}
+                setClickedCategory={setClickedCategory}
                 showSideNav={showSideNav}
                 showSearched={showSearched}
                 setShowSideNav={setShowSideNav}
@@ -154,7 +175,7 @@ const Header = () => {
 const SideNav = styled(motion.nav)`
   position: fixed;
   overflow: none;
-  content: "";
+  content: '';
   top: 0;
   left: 0;
   display: flex;
@@ -165,28 +186,30 @@ const SideNav = styled(motion.nav)`
   background-color: rgba(22, 22, 22, 0.75);
   z-index: 10;
 
-  .user {
+  ul {
     display: flex;
-    align-items: center;
-    color: var(--main-color);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    list-style: none;
+    margin-top: 22px;
 
-    &:hover {
-      text-decoration: underline;
-      text-decoration-color: var(--red-color);
-      text-underline-offset: 5px;
-      text-decoration-thickness: 10%;
-    }
+    & > li {
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      font-size: 14px;
+      color: var(--gray-color);
+      font-weight: 400;
 
-    svg {
-      margin-right: 7px;
-      color: var(--red-color);
-      width: 26px;
-      height: 26px;
-      background-color: white;
-      border-radius: 50%;
+      &:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--red-color);
+        text-underline-offset: 5px;
+        text-decoration-thickness: 10%;
+      }
     }
   }
 
@@ -203,33 +226,6 @@ const SideNav = styled(motion.nav)`
         cursor: pointer;
         font-size: 28px;
         margin-right: 10px;
-      }
-    }
-
-    ul {
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      flex-direction: column;
-      list-style: none;
-      margin-top: 22px;
-
-      & > li {
-        width: 100%;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        padding: 14px 0;
-        font-size: 14px;
-        color: var(--gray-color);
-        font-weight: 400;
-
-        &:hover {
-          text-decoration: underline;
-          text-decoration-color: var(--red-color);
-          text-underline-offset: 5px;
-          text-decoration-thickness: 10%;
-        }
       }
     }
   }
@@ -297,11 +293,13 @@ const HeaderContainer = styled.header`
 
   ul li {
     position: relative;
+    height: 24px;
     list-style: none;
     display: flex;
     align-items: center;
     cursor: pointer;
-    height: 50px;
+    height: max-content;
+    font-weight: 500;
 
     .search {
       color: var(--grey-color);
@@ -313,10 +311,6 @@ const HeaderContainer = styled.header`
     height: 22px;
     width: 1px;
     background-color: #d1d1d1;
-  }
-
-  .list {
-    height: 24px;
   }
 `;
 
@@ -332,7 +326,7 @@ const HeaderControl = styled.div`
   }
 
   .hamburger-wrap {
-    width: 160px;
+    flex: 1;
     cursor: pointer;
   }
 
@@ -341,15 +335,26 @@ const HeaderControl = styled.div`
   }
 
   .wrapper-resize {
+    flex: 1;
     display: flex;
     list-style: none;
     align-items: center;
-    justify-content: space-between;
-    width: 160px;
+    justify-content: flex-end;
+
+    .divider-line {
+      margin: 0 14px;
+    }
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 `;
 
-const VerticalHeader = styled.div`
+/* const VerticalHeader = styled.div` */
+const VerticalHeader = styled(motion.div)`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -361,7 +366,6 @@ const VerticalHeader = styled.div`
 
   .wrapper {
     color: var(--main-color);
-    font-weight: 500;
     display: flex;
     width: 450px;
     align-items: center;

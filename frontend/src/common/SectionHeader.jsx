@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
-import LineBreak from "./LineBreak";
-import Loading from "./Loading";
-import styled from "styled-components";
-import useAddFixed from "../pages/profile/hooks/useAddFixed";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef } from 'react';
+import LineBreak from './LineBreak';
+import Loading from './Loading';
+import styled from 'styled-components';
+import useAddFixed from '../pages/profile/hooks/useAddFixed';
+import { useParams } from 'react-router-dom';
 
 const SectionHeader = ({
   title,
@@ -81,7 +81,7 @@ const Section = styled.section`
     height: 90px;
 
     h1 {
-      font-size: 34px !important;
+      font-size: 36px !important;
     }
 
     .button-replace {

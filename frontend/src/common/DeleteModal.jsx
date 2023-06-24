@@ -1,21 +1,14 @@
 import styled from "styled-components";
-import { Close, Delete, Lock } from "@mui/icons-material";
-import Button from "../../../../common/Button";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
+import { Close, Delete } from "@mui/icons-material";
+import Button from "./Button";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 
-const RemoveModal = ({ collectionTitle, onClick }) => {
-  const { user } = useAuth0();
-  const navigate = useNavigate();
-  const params = useParams();
-
+const DeleteModal = ({ text, message, type, name, onClick, closeModal }) => {
   useEffect(() => {
     const handle = (e) => {
       if (e.key !== "Escape") return;
-      onClick();
+      closeModal();
     };
 
     document.addEventListener("keydown", handle);
@@ -23,15 +16,6 @@ const RemoveModal = ({ collectionTitle, onClick }) => {
       document.removeEventListener("keydown", handle);
     };
   }, []);
-
-  const deleteCollection = async () => {
-    axios.post(`/api/user/${user.email}/${params.id}/deleteCollection`, {
-      id: params.id,
-      email: user.email,
-    });
-
-    navigate("/account/profile/collection");
-  };
 
   return (
     <Modal>
@@ -44,22 +28,21 @@ const RemoveModal = ({ collectionTitle, onClick }) => {
         <div className="modal-header">
           <span className="flex-header">
             <Delete />
-            <h3>Delete Collection</h3>
+            <h4>{text}</h4>
           </span>
-          <Close className="cross" onClick={onClick} />
+          <Close className="cross" onClick={closeModal} />
         </div>
         <div className="content">
           <p>
-            Are you sure you want to delete your
-            <span> {collectionTitle} </span> collection?
+            {message} <span> {` ${name} `} </span> {type}?
           </p>
           <div className="buttons-wrap">
-            <button className="btn-border" onClick={onClick}>
+            <button className="btn-border" onClick={closeModal}>
               Cancel
             </button>
             <Button
               value={"Delete"}
-              onClick={deleteCollection}
+              onClick={onClick}
               style={{ width: "120px", height: "50px" }}
             />
           </div>
@@ -108,10 +91,9 @@ const Section = styled(motion.div)`
       justify-content: center;
     }
 
-    h3 {
+    h4 {
       color: #fff;
       font-weight: bold;
-      margin: 0;
       margin-left: 10px;
     }
   }
@@ -166,4 +148,4 @@ const Section = styled(motion.div)`
   }
 `;
 
-export default RemoveModal;
+export default DeleteModal;

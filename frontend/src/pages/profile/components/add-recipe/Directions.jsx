@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import DragableInput from "../../../../common/DraggableInput";
-import { Add, Check, Close, SwapVert } from "@mui/icons-material";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import DragableInput from '../../../../common/DraggableInput';
+import { Add, Check, Close, SwapVert } from '@mui/icons-material';
+import { DndContext, closestCenter } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import ButtonBorder from "../../../../common/ButtonBorder";
-import { useEffect } from "react";
+} from '@dnd-kit/sortable';
+import ButtonBorder from '../../../../common/ButtonBorder';
+import { useEffect } from 'react';
 
 const FormDirections = ({ directionInputs, dispatch }) => {
   const [showReorder, setShowReorder] = useState(false);
@@ -24,13 +24,13 @@ const FormDirections = ({ directionInputs, dispatch }) => {
         (input) => input.id === over.id
       );
 
-      dispatch({ type: "SORT_DIRECTIONS", indexOfActive, indexOfOver });
+      dispatch({ type: 'SORT_DIRECTIONS', indexOfActive, indexOfOver });
     }
   };
 
   const handleInputChange = (e) => {
     const { value, id } = e.target;
-    dispatch({ type: "CHANGE_VALUE", value, id });
+    dispatch({ type: 'CHANGE_VALUE', value, id });
   };
 
   return (
@@ -70,10 +70,10 @@ const FormDirections = ({ directionInputs, dispatch }) => {
                   placeholder={direction.placeholder}
                   value={direction.value}
                   onChange={(e) => handleInputChange(e, direction.id)}
-                  required
+                  // required
                 ></textarea>
                 <Close
-                  onClick={() => dispatch({ type: "REMOVE_DIRECTION", id })}
+                  onClick={() => dispatch({ type: 'REMOVE_DIRECTION', id })}
                 />
               </div>
             </div>
@@ -103,13 +103,13 @@ const FormDirections = ({ directionInputs, dispatch }) => {
       )}
       <ButtonBorder
         style={{
-          width: "160px",
-          height: "50px",
-          letterSpacing: "1.2px",
+          width: '160px',
+          height: '50px',
+          letterSpacing: '1.2px',
         }}
         icon={<Add />}
-        value={"ADD STEP"}
-        onClick={() => dispatch({ type: "ADD_DIRECTION" })}
+        value={'ADD STEP'}
+        onClick={() => dispatch({ type: 'ADD_DIRECTION' })}
       />
     </Section>
   );

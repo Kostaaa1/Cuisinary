@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import styled from "styled-components";
 import { DragIndicator } from "@mui/icons-material";
 
-const DragableInput = ({ id, placeholder, step }) => {
+const DragableInput = ({ id, value, placeholder, step }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -16,7 +16,7 @@ const DragableInput = ({ id, placeholder, step }) => {
     <DragInput ref={setNodeRef} style={style} {...attributes} {...listeners}>
       {step && <p className="step-class"> Step {step} </p>}
       <div className="holder-wrap">
-        <p className="text">{placeholder}</p>
+        <p className="text">{value === "" ? placeholder : value}</p>
         <DragIndicator />
       </div>
     </DragInput>
@@ -37,30 +37,6 @@ const DragInput = styled.div`
   .step-class {
     font-weight: 600;
   }
-  /* .inputs-div {
-    .input-wrap {
-      display: flex;
-      align-items: center;
-      height: 50px;
-      margin: 12px 0;
-
-      input {
-        font-size: 14px;
-        padding: 0 10px;
-        height: 100%;
-        width: 100%;
-      }
-
-      svg {
-        margin-left: 14px;
-        padding: 2px;
-        color: var(--grey-color);
-        outline: 2px solid var(--grey-color);
-        border-radius: 50%;
-        cursor: pointer;
-      }
-    }
-  } */
 
   .holder-wrap {
     display: flex;

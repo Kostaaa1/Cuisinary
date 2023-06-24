@@ -1,6 +1,6 @@
-import styled from "styled-components";
-import { NavLink } from "react-router-dom";
-import { DragIndicator } from "@mui/icons-material";
+import styled from 'styled-components';
+import { NavLink } from 'react-router-dom';
+import { DragIndicator } from '@mui/icons-material';
 
 const FavoriteCollection = ({ collection, onLoad, layoutArr, onClick }) => {
   return (
@@ -16,10 +16,10 @@ const FavoriteCollection = ({ collection, onLoad, layoutArr, onClick }) => {
           )}
         </div>
         <div className="collection-description">
-          <p>{collection.private ? "PRIVATE" : "PUBLIC"}</p>
-          <h4>{collection.collName}</h4>
+          <p>{collection.private ? 'PRIVATE' : 'PUBLIC'}</p>
+          <h3>{collection.collName}</h3>
           <span>
-            <DragIndicator /> Collection // {collection?.collRecipes.length}
+            <DragIndicator /> Collection // {collection?.collRecipes?.length}
           </span>
         </div>
       </CustomLink>
@@ -36,20 +36,19 @@ const CustomLink = styled(NavLink)`
 const Collection = styled.div`
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 280px;
   box-shadow: var(--card-shadow-border);
   overflow: none;
-  max-height: 400px;
 
   .collection-description {
     display: flex;
     flex-direction: column;
     word-break: break-all;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: space-around;
     flex-wrap: wrap;
-    padding: 20px;
-    height: 140px;
+    padding: 18px;
+    height: 130px;
 
     span {
       display: flex;
@@ -76,9 +75,7 @@ const Collection = styled.div`
       }
     }
 
-    h4 {
-      margin: 12px 0;
-
+    h3 {
       &:hover {
         text-decoration: underline;
         text-decoration-color: var(--main-color);
@@ -89,7 +86,7 @@ const Collection = styled.div`
   }
 
   .collection-layout {
-    height: 270px;
+    height: 280px;
     display: grid;
     grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
     gap: 3.5px;

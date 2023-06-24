@@ -2,17 +2,17 @@ import { Add, Remove } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import ButtonBorder from "../../../../common/ButtonBorder";
-import RemoveModal from "./RemoveModal";
+import RemoveRecipeModal from "./RemoveRecipeModal";
 import Loading from "../../../../common/Loading";
 import AddCustomModal from "./AddCustomModal";
 import useNoScroll from "../../../../utils/useNoScroll";
 import { useNavigate } from "react-router-dom";
 
 const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
+  const navigate = useNavigate();
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   useNoScroll(showModal, showRemoveModal);
-  const navigate = useNavigate();
 
   const closeModals = () => {
     setShowRemoveModal(false);
@@ -23,7 +23,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
     <Card>
       {favorite.loading && (
         <div className="transparent-card">
-          <Loading className="loading" />
+          <Loading style={{ marginBottom: "120px" }} />
         </div>
       )}
       <img
@@ -51,7 +51,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
         </Delete>
       )}
       {showRemoveModal && (
-        <RemoveModal
+        <RemoveRecipeModal
           remove={() => {
             addRecipeName(favorite.recipeTitle);
             addLoading();
@@ -76,21 +76,16 @@ const Card = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  min-height: 420px;
+  min-height: 380px;
   box-shadow: var(--card-shadow-border);
 
-  .loading {
-    transform: translate(0, -55px);
-  }
-
-  @media (max-width: 1030px) {
+  @media (max-width: 1270px) {
     width: 270px;
   }
 
   .transparent-card {
     position: absolute;
-    background-color: rgba(245, 245, 245, 0.73);
-    content: "";
+    background-color: rgba(245, 245, 245, 0.83);
     top: 0;
     left: 0;
     width: 100%;
@@ -107,7 +102,6 @@ const Card = styled.div`
 
   .card-content {
     padding: 1rem;
-    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -127,6 +121,7 @@ const Card = styled.div`
       color: var(--grey-color);
       cursor: pointer;
       font-size: 18px;
+      padding-bottom: 42px;
 
       &:hover {
         text-decoration: underline;

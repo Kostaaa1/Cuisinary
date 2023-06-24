@@ -1,13 +1,13 @@
-import styled from "styled-components";
-import DragableInput from "../../../../common/DraggableInput";
-import { Add, Check, Close, SwapVert } from "@mui/icons-material";
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import ButtonBorder from "../../../../common/ButtonBorder";
-import { useState } from "react";
+import styled from 'styled-components';
+import DragableInput from '../../../../common/DraggableInput';
+import { Add, Check, Close, SwapVert } from '@mui/icons-material';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import ButtonBorder from '../../../../common/ButtonBorder';
+import { useState } from 'react';
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+} from '@dnd-kit/sortable';
 
 const Ingredients = ({ ingredientInputs, dispatch }) => {
   const [showReorder, setShowReorder] = useState(false);
@@ -23,12 +23,12 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
         (input) => input.id === over.id
       );
 
-      dispatch({ type: "SORT_INGREDIENTS", indexOfActive, indexOfOver });
+      dispatch({ type: 'SORT_INGREDIENTS', indexOfActive, indexOfOver });
     }
   };
 
   const handleInputChange = (e, id) => {
-    dispatch({ type: "CHANGE_VALUE", value: e.target.value, id });
+    dispatch({ type: 'CHANGE_VALUE', value: e.target.value, id });
   };
 
   return (
@@ -64,13 +64,13 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
                 type="text"
                 placeholder={ingredient.placeholder}
                 value={ingredient.value}
-                required
+                // required
                 onChange={(e) => handleInputChange(e, ingredient.id)}
               />
               <Close
                 onClick={() =>
                   dispatch({
-                    type: "REMOVE_INGREDIENT",
+                    type: 'REMOVE_INGREDIENT',
                     id,
                   })
                 }
@@ -92,6 +92,7 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
                 <DragableInput
                   key={ingredient.id}
                   id={ingredient.id}
+                  value={ingredient.value}
                   placeholder={ingredient.placeholder}
                 />
               ))}
@@ -100,10 +101,10 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
         </div>
       )}
       <ButtonBorder
-        style={{ width: "160px", height: "50px", letterSpacing: "1.2px" }}
+        style={{ width: '160px', height: '50px', letterSpacing: '1.2px' }}
         icon={<Add />}
-        value={"ADD INGREDIENT"}
-        onClick={() => dispatch({ type: "ADD_INGREDIENT" })}
+        value={'ADD INGREDIENT'}
+        onClick={() => dispatch({ type: 'ADD_INGREDIENT' })}
       />
     </Section>
   );

@@ -1,15 +1,16 @@
-import { Person } from "@mui/icons-material";
-import React, { useEffect, useRef, useState } from "react";
-import { useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
-import Loading from "../../../../common/Loading";
-import NavigationWrap from "../../../../common/NavigationWrap";
-import AuthContext from "../../../../setup/app-context-menager/AuthContext";
-import { useLayoutData } from "../../hooks/useLayoutData";
-import FavoriteCollection from "../collections/FavoriteCollection";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import useSmoothScroll from "../../../../utils/useSmoothScroll";
+import { Person, Star, StarBorder } from '@mui/icons-material';
+import React, { useEffect, useRef, useState } from 'react';
+import { useContext } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import Loading from '../../../../common/Loading';
+import NavigationWrap from './UserNavigationWrap';
+import AuthContext from '../../../../setup/app-context-menager/AuthContext';
+import { useLayoutData } from '../../hooks/useLayoutData';
+import FavoriteCollection from '../collections/FavoriteCollection';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import useSmoothScroll from '../../../../utils/useSmoothScroll';
+import { useMemo } from 'react';
 
 const UserInfo = () => {
   const navigate = useNavigate();
@@ -20,42 +21,59 @@ const UserInfo = () => {
   const h3Refs = [useRef(null), useRef(null), useRef(null)];
   const params = useParams();
   const queryClient = useQueryClient();
+  const [currentHeader, setCurrentHeader] = useState('Collections');
+  useSmoothScroll();
 
-  const handleClick = (index) => {
-    setActiveIndex(index);
-  };
   const url = window.location.href.slice(21);
   const navigationLinks = [
-    { url: "/", content: "Home" },
+    { url: '/', content: 'Home' },
     {
-      url: "/account/profile/collection",
-      content: "Saved Items & Collections",
+      url: '/account/profile/collection',
+      content: 'Saved Items & Collections',
     },
     { url: `/profile/${userData?._id}`, content: userData?.nickname },
   ];
-  useSmoothScroll();
 
   const fetchUserData = async () => {
     const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
     const data = await res.json();
 
     layoutData(data.collections);
-
     return data;
   };
 
-  const { data: inspectUserData = {}, isFetching } = useQuery(
-    ["user-info"],
+  const { data: inspectUserData = {} } = useQuery(
+    ['user-info'],
     fetchUserData,
     {
       enabled: !!userData,
-      refetchOnMount: "always",
+      refetchOnMount: 'always',
     }
   );
 
+  const pageData = useMemo(() => {
+    if (Object.entries(inspectUserData).length === 0) return;
+    const { collections, reviews, personalRecipes } = inspectUserData;
+
+    switch (activeIndex) {
+      case 0:
+        setCurrentHeader('Collections');
+        return collections?.filter((collection) => !collection.private);
+      case 1:
+        setCurrentHeader('Recipes');
+        console.log(personalRecipes);
+        return personalRecipes?.filter((recipe) => !recipe.private);
+      case 2:
+        setCurrentHeader('Reviews');
+        return reviews || [];
+      default:
+        return [];
+    }
+  }, [inspectUserData, activeIndex]);
+
   useEffect(() => {
     return () => {
-      queryClient.setQueryData(["user-info"], {});
+      queryClient.setQueryData(['user-info'], {});
     };
   }, [queryClient]);
 
@@ -86,53 +104,96 @@ const UserInfo = () => {
             <div className="saved">
               <div className="saved-wrapper">
                 <h5
-                  onClick={() => handleClick(0)}
+                  onClick={() => setActiveIndex(0)}
                   ref={h3Refs[0]}
-                  className={activeIndex === 0 ? "selected" : ""}
+                  className={activeIndex === 0 ? 'selected' : ''}
                 >
                   SAVED ITEMS & COLLECTIONS
                 </h5>
                 <h5
-                  onClick={() => handleClick(1)}
+                  onClick={() => setActiveIndex(1)}
                   ref={h3Refs[1]}
-                  className={activeIndex === 1 ? "selected" : ""}
+                  className={activeIndex === 1 ? 'selected' : ''}
                 >
                   PERSONAL RECIPES
                 </h5>
                 <h5
-                  onClick={() => handleClick(2)}
+                  onClick={() => setActiveIndex(2)}
                   ref={h3Refs[2]}
-                  className={activeIndex === 2 ? "selected" : ""}
+                  className={activeIndex === 2 ? 'selected' : ''}
                 >
                   REVIEWS
                 </h5>
               </div>
-              {layoutData.length > 0 && collections?.length > 0 && (
-                <div className="collection-flex">
-                  <h3> {collections?.length} Collections </h3>
-                  {collections && (
-                    <div className="collection-wrap">
-                      {activeIndex === 0 &&
-                        collections
-                          ?.filter((collection) => !collection.private)
-                          .map((collection, id) => (
-                            <FavoriteCollection
-                              key={id}
-                              collection={collection}
-                              layoutArr={layoutArr[id]}
-                              onClick={() => {
-                                navigate(
-                                  collection.collName === "All Saved Items"
-                                    ? `${url}/collection/all-saved-items`
-                                    : `${url}/collection/${collection._id}`
-                                );
-                              }}
-                            />
-                          ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="collection-flex">
+                <h3>
+                  {pageData?.length} {currentHeader}
+                </h3>
+                {pageData?.length > 0 && (
+                  <div className="collection-wrap">
+                    {activeIndex === 0 &&
+                      pageData.map((collection, id) => (
+                        <FavoriteCollection
+                          key={id}
+                          collection={collection}
+                          layoutArr={layoutArr[id]}
+                          onClick={() => {
+                            navigate(
+                              collection.collName === 'All Saved Items'
+                                ? `${url}/collection/all-saved-items`
+                                : `${url}/collection/${collection._id}`
+                            );
+                          }}
+                        />
+                      ))}
+                    {activeIndex === 1 &&
+                      pageData.map((recipe, id) => (
+                        <Card key={recipe._id}>
+                          <Link
+                            to={`/account/${inspectUserData._id}/recipe/${recipe._id}`}
+                          >
+                            <img src={recipe?.picture?.image} alt="" />
+                            <div className="card-content">
+                              <p>{recipe.private ? 'PRIVATE' : 'PUBLIC'}</p>
+                              <h3> {recipe.title} </h3>
+                            </div>
+                          </Link>
+                        </Card>
+                      ))}
+                    {activeIndex === 2 &&
+                      pageData.map((review, id) => (
+                        <div key={id} className="reviews">
+                          <Link to={'/recipe/' + review.recipeId}>
+                            <img src={review.recipeImage} alt="review-image" />
+                          </Link>
+                          <div className="control-flex">
+                            <Link to={'/recipe/' + review.recipeId}>
+                              <h2> {review.recipeTitle} </h2>
+                            </Link>
+                            <div className="stars-wrap">
+                              {[...Array(5)].map((_, id) =>
+                                id <= review.starRating ? (
+                                  <Star key={id} />
+                                ) : (
+                                  <StarBorder
+                                    key={id}
+                                    className="bordered"
+                                    style={{ color: 'var(--red-color)' }}
+                                  />
+                                )
+                              )}
+                              <span>
+                                &nbsp;
+                                {`${inspectUserData?.nickname}'s Rating`}
+                              </span>
+                            </div>
+                            <p> {review.comment} </p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </ProfileContent>
         </>
@@ -141,14 +202,74 @@ const UserInfo = () => {
   );
 };
 
+const Card = styled.div`
+  position: relative;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--card-shadow-border);
+
+  img {
+    width: 100%;
+    height: 280px;
+  }
+
+  .card-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: 120px;
+
+    .summary {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      outline: 1px solid black;
+      font-size: 14px;
+      font-weight: 400 !important;
+    }
+
+    h3 {
+      text-align: start;
+      cursor: pointer;
+      padding-bottom: 42px;
+
+      &:hover {
+        text-decoration: underline;
+        color: var(--main-color);
+        text-decoration-color: var(--main-color);
+        text-underline-offset: 5px;
+        text-decoration-thickness: 10%;
+      }
+    }
+
+    p {
+      font-weight: 600;
+      letter-spacing: 1.4px;
+      font-size: 12px;
+      color: var(--grey-color);
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--red-color);
+        text-underline-offset: 5px;
+        text-decoration-thickness: 20%;
+      }
+    }
+  }
+`;
+
 const ProfileWrap = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   background-color: white;
+  justify-content: center;
 
   img {
     width: 330px;
@@ -162,7 +283,7 @@ const ProfileWrap = styled.div`
 
   .profile-info {
     position: relative;
-    right: 24px;
+    right: 18px;
     top: -50px;
     width: 100%;
     background-color: #fff;
@@ -182,7 +303,7 @@ const ProfileWrap = styled.div`
       margin: 12px 0;
     }
 
-    @media (max-width: 910px) {
+    @media screen and (max-width: 910px) {
       top: 0;
       right: 0;
       margin: 0 auto;
@@ -243,6 +364,64 @@ const ProfileContent = styled.div`
     }
 
     .collection-flex {
+      .reviews {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--grey-hover-color);
+        height: 100%;
+
+        img {
+          height: 160px;
+          width: 320px;
+        }
+
+        .control-flex {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          margin-left: 28px;
+          width: 100%;
+          height: 84px;
+
+          .stars-wrap {
+            display: flex;
+            align-items: center;
+
+            span {
+              font-weight: 400;
+              color: var(--grey-color);
+            }
+          }
+
+          .bordered {
+            color: var(--grey-color) !important;
+          }
+
+          h2 {
+            cursor: pointer;
+            width: fit-content;
+            color: var(--grey-color);
+            font-size: 22px;
+
+            &:hover {
+              color: var(--main-color);
+              text-decoration: underline;
+              text-decoration-color: var(--main-color);
+              text-underline-offset: 5px;
+              text-decoration-thickness: 8%;
+            }
+          }
+        }
+
+        p {
+          font-size: 14px;
+        }
+
+        svg {
+          color: var(--red-color);
+        }
+      }
+
       & > h3 {
         font-size: 18px !important;
         margin: 50px 0 30px 0;
@@ -269,8 +448,8 @@ const Section = styled.section`
     transform: translate(0, -420px);
   }
 
-  @media (max-width: 1240px) {
-    padding: 0 22px;
+  @media (max-width: 1270px) {
+    padding: 0 36px;
   }
 `;
 

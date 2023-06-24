@@ -8,14 +8,16 @@ const Return = ({ value, onClick, icon }) => {
   );
 };
 
-const Back = styled.div`
+const Back = styled.button`
   /* position: absolute; */
   display: flex;
+  border: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   width: fit-content;
   top: 0;
+  user-select: none;
 
   svg {
     color: var(--red-color);
@@ -24,7 +26,7 @@ const Back = styled.div`
   }
 
   h6 {
-    letter-spacing: 1.1px !important;
+    letter-spacing: 1.8px !important;
     color: var(--main-color);
   }
 
@@ -32,7 +34,7 @@ const Back = styled.div`
     text-decoration: underline;
     text-decoration-color: var(--red-color);
     text-underline-offset: 5px;
-    text-decoration-thickness: 10%;
+    text-decoration-thickness: 12%;
   }
 `;
 

@@ -1,92 +1,13 @@
-import { useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import styled from 'styled-components';
+import useDropdown from '../userDropdown';
 
 const Navbar = () => {
-  const navigate = useNavigate();
-  const categoryNavigation = (query) => {
-    navigate("/category/" + query);
-  };
-  const [categoryData, setCategoryData] = useState([
-    {
-      visibility: false,
-      name: "DINNERS",
-      categories: [
-        { list: "Quick & Easy", query: "quick" },
-        { list: "Main Dishes", query: "main" },
-        { list: "Soups", query: "soup" },
-        { list: "Stews", query: "stew" },
-        { list: "30-Minute Meals", query: "minute" },
-      ],
-    },
-    {
-      visibility: false,
-      name: "MEALS",
-      categories: [
-        { list: "Breakfast", query: "breakfast" },
-        { list: "Lunch", query: "lunch" },
-        { list: "Healthy", query: "healthy" },
-        { list: "Salads", query: "salad" },
-        { list: "Bread", query: "bread" },
-        { list: "Desserts", query: "dessert" },
-      ],
-    },
-    {
-      visibility: false,
-      name: "INGREDIENTS",
-      categories: [
-        { list: "Chicken", query: "chicken" },
-        { list: "Beef", query: "beef" },
-        { list: "Pork", query: "pork" },
-        { list: "Pasta", query: "pasta" },
-        { list: "Fruits", query: "Fruits" },
-        { list: "Vegetables", query: "vegetables" },
-      ],
-    },
-    {
-      visibility: false,
-      name: "CUISINES",
-      categories: [
-        { list: "Mexican", query: "mexican" },
-        { list: "Italian", query: "italian" },
-        { list: "Chinese", query: "chinese" },
-        { list: "Indian", query: "indian" },
-        { list: "German", query: "german" },
-        { list: "Greek", query: "greek" },
-        { list: "Filipino", query: "filipino" },
-        { list: "Japanese", query: "japenese" },
-      ],
-    },
-    {
-      visibility: false,
-      name: "OCCASIONS",
-      categories: [
-        { list: "Christmas", query: "christmas" },
-        { list: "Thanksgiving", query: "thanksgiving" },
-        { list: "Easter", query: "easter" },
-      ],
-    },
-  ]);
-
-  const hanldeDropDownEnter = (index) => {
-    setCategoryData(
-      categoryData.map((category, i) =>
-        i === index
-          ? { ...categoryData[index], visibility: true }
-          : { ...category, visibility: false }
-      )
-    );
-  };
-
-  const hanldeDropDownLeave = (index) => {
-    setCategoryData(
-      categoryData.map((category, i) =>
-        i === index
-          ? { ...categoryData[index], visibility: false }
-          : { ...category, visibility: false }
-      )
-    );
-  };
+  const {
+    categoryData,
+    hanldeDropDownEnter,
+    hanldeDropDownLeave,
+    categoryNavigation,
+  } = useDropdown();
 
   return (
     <Nav>
@@ -102,7 +23,7 @@ const Navbar = () => {
             onMouseEnter={() => hanldeDropDownEnter(index)}
             onMouseLeave={() => hanldeDropDownLeave(index)}
             className="ul-dropdown"
-            style={{ display: category.visibility ? "flex" : "none" }}
+            style={{ display: category.visibility ? 'flex' : 'none' }}
           >
             {category.categories.map((data) => (
               <div key={data.query} className="li-control">
@@ -139,11 +60,6 @@ const Wrapper = styled.div`
   flex-direction: column;
 
   &:hover {
-    /* text-decoration: underline;
-    text-decoration-color: var(--red-color);
-    text-underline-offset: 5px;
-    text-decoration-thickness: 10%; */
-
     .ul-dropdown {
       display: flex;
     }
@@ -151,10 +67,11 @@ const Wrapper = styled.div`
 
   h6 {
     letter-spacing: 1.4px !important;
-    margin-right: 36px;
-    font-size: 12px !important;
+    margin-right: 34px;
     color: var(--main-color);
     cursor: pointer;
+    font-weight: 800;
+    font-size: 12px !important;
   }
 `;
 
@@ -163,21 +80,22 @@ const CategoryDropdown = styled.ul`
   top: 100%;
   left: 0;
   transform: translate(-5%);
-  width: 210px;
+  width: 190px;
   background-color: white;
   flex-direction: column;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
 
   .li-control {
     li {
       color: var(--main-color);
-      margin: 2px 12px;
+      margin: 16px 12px;
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 14px;
       letter-spacing: -0.6px;
-    }
 
-    &:hover {
-      background-color: var(--light-grey-hover-color);
+      &:hover {
+        color: rgba(0, 0, 0, 0.78);
+      }
     }
   }
 `;

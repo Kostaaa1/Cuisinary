@@ -20,6 +20,7 @@ const fileSizeFormatter = (bytes, decimal) => {
 module.exports = {
   updateUser: async (req, res) => {
     try {
+      console.log(req.body);
       const updateData = {};
       Object.entries(req.body.user).forEach(([key, value]) => {
         if (value) updateData[key] = value;
@@ -42,14 +43,31 @@ module.exports = {
       let { cloudinaryId } = userImage.picture;
 
       if (cloudinaryId) {
-        await cloudinary.uploader.destroy(cloudinaryId, () => {
-          console.log("Deleted from cloudinary");
-        });
+        await cloudinary.uploader.destroy(
+          cloudinaryId,
+          {
+            folder: "user-profile-images",
+            transformation: [
+              {
+                quality: "best",
+                width: 140,
+                height: 140,
+                crop: "scale",
+                // quality: 70,
+              },
+            ],
+          },
+          () => {
+            console.log("Deleted from cloudinary");
+          }
+        );
       }
 
       const result = await cloudinary.uploader.upload(path, {
-        transformation: [{ width: 350, height: 350, fetch_format: "auto" }],
+        folder: "user-profile-images",
       });
+
+      console.log(result);
 
       const user = await User.findOneAndUpdate(
         { email: email },
@@ -243,11 +261,20 @@ module.exports = {
         readyInMinutes,
         preparationMinutes,
         private,
+        createdBy,
+        createdByUserId,
       } = JSON.parse(req.body.form);
       const { path, originalname, mimetype, size } = req.file;
       const { email } = req.params;
 
-      const result = await cloudinary.uploader.upload(path);
+      const result = await cloudinary.uploader.upload(path, {
+        folder: "user-personal-recipes",
+        eager: [
+          { fetch_format: "avif", format: "" },
+          { fetch_format: "jp2", format: "" },
+          { fetch_format: "webp", flags: "awebp", format: "" },
+        ],
+      });
 
       const user = await User.findOneAndUpdate(
         { email },
@@ -263,6 +290,8 @@ module.exports = {
               readyInMinutes,
               preparationMinutes,
               private,
+              createdBy,
+              createdByUserId,
               picture: {
                 fileName: originalname,
                 fileType: mimetype,
@@ -280,6 +309,44 @@ module.exports = {
       res.status(201).json("Created New Recipe");
     } catch (error) {
       res.status(400).send(error);
+    }
+  },
+  getPersonalRecipe: async (req, res) => {
+    try {
+      const { userId, id } = req.params;
+      const user = await User.findById(userId);
+
+      const personalRecipe = user.personalRecipes.find(
+        (recipe) => recipe._id.toString() === id
+      );
+
+      res.status(200).json(personalRecipe);
+    } catch (error) {
+      res.status(400).send(error.message);
+    }
+  },
+  deletePersonalRecipe: async (req, res) => {
+    try {
+      const { id, email } = req.params;
+      const user = await User.findOne({ email });
+
+      const findRecipe = user.personalRecipes.find(
+        (recipe) => recipe._id.toString() === id
+      );
+
+      await cloudinary.uploader.destroy(
+        findRecipe.picture.cloudinaryId,
+        { folder: "user-profile-images" },
+        () => {
+          console.log("Deleted from cloudinary");
+        }
+      );
+
+      await user.updateOne({ $pull: { personalRecipes: { _id: id } } });
+
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).send(error.message);
     }
   },
 };

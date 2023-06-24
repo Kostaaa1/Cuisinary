@@ -1,10 +1,10 @@
-import { useState, useEffect, useContext } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { FavoriteBorder, Favorite } from "@mui/icons-material";
-import axios from "axios";
-import useNoScroll from "../utils/useNoScroll";
-import AuthContext from "../setup/app-context-menager/AuthContext";
+import { useState, useEffect, useContext } from 'react';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { FavoriteBorder, Favorite } from '@mui/icons-material';
+import axios from 'axios';
+import useNoScroll from '../utils/useNoScroll';
+import AuthContext from '../setup/app-context-menager/AuthContext';
 
 const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
   const { userData } = useContext(AuthContext);
@@ -31,10 +31,10 @@ const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
 
   return (
     <Card key={recipeData?.id} className="card">
-      <Link to={"/recipe/" + recipeData?.id}>
+      <Link to={'/recipe/' + recipeData?.id}>
         <img src={recipeData?.image} alt="" />
         <div className="card-desc">
-          <h5> {params?.toUpperCase()} </h5>
+          <h6> {params?.toUpperCase()} </h6>
           <h3>{recipeData?.title}</h3>
         </div>
       </Link>
@@ -86,8 +86,8 @@ const Card = styled.div`
     align-items: flex-start;
     padding: 1.2rem 0.7rem;
 
-    h5 {
-      letter-spacing: 1.4px;
+    h6 {
+      letter-spacing: 1.4px !important;
       color: var(--grey-color);
     }
 

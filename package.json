@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/Kostaaa1/Cuisine-mern-demo#readme",
   "devDependencies": {
+    "@babel/eslint-parser": "^7.22.5",
+    "@babel/preset-react": "^7.22.5",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20"
   }
