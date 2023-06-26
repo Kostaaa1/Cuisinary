@@ -27,14 +27,12 @@ const PersonalRecipes = () => {
         title="Personal Recipes"
         text="Recipes you have created on Culinary."
         span="Other users will see the recipes you've made public."
-        buttonValue={
-          userData.personalRecipes.length > 0 ? 'ADD RECIPE +' : null
-        }
+        buttonValue={userData?.personalRecipes?.length > 0 ? 'ADD RECIPE +' : null}
         buttonSave={true}
         icon={<SupervisorAccount />}
         onClick={() => navigate('/account/add-recipe')}
       />
-      {personalRecipes.length === 0 ? (
+      {personalRecipes?.length === 0 ? (
         <div className="recipe-add">
           <h2>You haven't created any recipes yet.</h2>
           <p>To add a recipe click the button bellow</p>
@@ -46,10 +44,10 @@ const PersonalRecipes = () => {
         </div>
       ) : (
         <Grid>
-          {personalRecipes.map((recipe) => (
+          {personalRecipes?.map((recipe) => (
             <Card key={recipe._id}>
               <Link to={`/account/${userData._id}/recipe/${recipe._id}`}>
-                <img src={recipe.picture.image} alt="" />
+                <img src={recipe?.picture?.image} />
                 <div className="card-content">
                   <p> {recipe.private ? 'PRIVATE' : 'PUBLIC'} </p>
                   <h3> {recipe.title} </h3>
@@ -81,13 +79,14 @@ const Card = styled.div`
     transform: translate(0, -55px);
   }
 
-  @media (max-width: 1270px) {
-    width: 270px;
-  }
-
   img {
     width: 100%;
     height: 280px;
+  }
+
+  .blur-img {
+    position: absolute;
+    top: 0;
   }
 
   .card-content {

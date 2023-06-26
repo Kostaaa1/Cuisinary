@@ -7,11 +7,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 const SearchForm = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [searchValue, setSearhValue] = useState(
-    params.search ? params.search : ''
-  );
-  const { searchBarRef2, showSearch2, setShowSearch2 } =
-    useContext(GlobalContext);
+  const [searchValue, setSearhValue] = useState(params.search ? params.search : '');
+  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(GlobalContext);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -29,10 +26,7 @@ const SearchForm = () => {
         Search Results For <span> {params.search} </span>
       </h5>
       {showSearch2 ? (
-        <div
-          className={`input-wrap ${showSearch2 ? 'active' : ''}`}
-          ref={searchBarRef2}
-        >
+        <div className={`input-wrap ${showSearch2 ? 'active' : ''}`} ref={searchBarRef2}>
           <SearchOutlined onClick={submitHandler} />
           <input
             type="text"
@@ -68,7 +62,7 @@ const SearchForm = () => {
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  width: 550px;
+  width: 440px;
   height: 100px;
   max-width: 100%;
   margin-bottom: 12px;

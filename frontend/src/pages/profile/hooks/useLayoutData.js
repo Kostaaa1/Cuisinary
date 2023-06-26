@@ -25,6 +25,7 @@ export const useLayoutData = () => {
   ]);
 
   const layoutData = (collections) => {
+    console.log(collections, 'fropm use Layout Data')
     if (!collections) return;
 
     if (userData) {

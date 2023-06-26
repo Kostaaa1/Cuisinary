@@ -1,6 +1,4 @@
 const User = require("../models/User");
-const jwt = require("jsonwebtoken");
-const CryptoJS = require("crypto-js");
 const cloudinary = require("../middleware/cloudinary");
 
 const fileSizeFormatter = (bytes, decimal) => {
@@ -43,31 +41,22 @@ module.exports = {
       let { cloudinaryId } = userImage.picture;
 
       if (cloudinaryId) {
-        await cloudinary.uploader.destroy(
-          cloudinaryId,
-          {
-            folder: "user-profile-images",
-            transformation: [
-              {
-                quality: "best",
-                width: 140,
-                height: 140,
-                crop: "scale",
-                // quality: 70,
-              },
-            ],
-          },
-          () => {
-            console.log("Deleted from cloudinary");
-          }
-        );
+        await cloudinary.uploader.destroy(cloudinaryId, () => {
+          console.log("Deleted from cloudinary");
+        });
       }
 
       const result = await cloudinary.uploader.upload(path, {
         folder: "user-profile-images",
+        transformation: [
+          {
+            width: 350,
+            height: 350,
+            crop: "fill",
+            format: "jpg",
+          },
+        ],
       });
-
-      console.log(result);
 
       const user = await User.findOneAndUpdate(
         { email: email },
@@ -274,6 +263,9 @@ module.exports = {
           { fetch_format: "jp2", format: "" },
           { fetch_format: "webp", flags: "awebp", format: "" },
         ],
+        transformation: {
+          format: "jpg",
+        },
       });
 
       const user = await User.findOneAndUpdate(

@@ -272,8 +272,8 @@ const ProfileWrap = styled.div`
   justify-content: center;
 
   img {
-    width: 330px;
-    height: 330px;
+    width: 350px;
+    height: 350px;
   }
 
   @media (max-width: 910px) {

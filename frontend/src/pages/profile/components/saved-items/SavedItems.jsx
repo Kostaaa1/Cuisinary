@@ -23,8 +23,7 @@ import DeleteModal from '../../../../common/DeleteModal';
 
 const SavedItems = () => {
   const params = useParams();
-  const [showDeleteCollectionModal, setShowDeleteCollectionModal] =
-    useState(false);
+  const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
   const [showEditCollectionModal, setShowEditCollectionModal] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth0();
@@ -77,9 +76,7 @@ const SavedItems = () => {
 
   const addLoading = (index) => {
     setCollectionArray((prevState) =>
-      prevState.map((recipe, i) =>
-        i === index ? { ...recipe, loading: true } : recipe
-      )
+      prevState.map((recipe, i) => (i === index ? { ...recipe, loading: true } : recipe))
     );
 
     setTimeout(() => {
@@ -148,9 +145,7 @@ const SavedItems = () => {
             <>
               <h1>{collectionData?.collName}</h1>
               <div className="height-div">
-                {collectionData?.collDesc && (
-                  <h3>{collectionData?.collDesc}</h3>
-                )}
+                {collectionData?.collDesc && <h3>{collectionData?.collDesc}</h3>}
                 <p>
                   <span>
                     {collectionData?.private ? (
@@ -175,8 +170,8 @@ const SavedItems = () => {
           <section>
             <h2>You haven't saved anything yet. Start browsing!</h2>
             <p>
-              You can save items to your profile by clicking the heart icon in
-              the share bar.
+              You can save items to your profile by clicking the heart icon in the share
+              bar.
             </p>
             <Button
               value={'BACK HOME'}
@@ -190,8 +185,7 @@ const SavedItems = () => {
         )}
         <div className="collection-control">
           {collectionArray.map((favorite, id) =>
-            arrayOfRecipeNames.includes(favorite?.recipeTitle) &&
-            !favorite.loading ? (
+            arrayOfRecipeNames.includes(favorite?.recipeTitle) && !favorite.loading ? (
               <TransparentCard
                 key={id}
                 favorite={favorite}
@@ -292,7 +286,7 @@ const Saved = styled.div`
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-      height: 70px;
+      height: 90px;
 
       h4 {
         font-weight: 400;

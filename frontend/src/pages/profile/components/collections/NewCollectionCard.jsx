@@ -1,5 +1,5 @@
-import { Add } from "@mui/icons-material";
-import styled from "styled-components";
+import { Add } from '@mui/icons-material';
+import styled from 'styled-components';
 
 const NewCollectionCard = ({ onClick }) => {
   return (
@@ -13,13 +13,12 @@ const NewCollectionCard = ({ onClick }) => {
 };
 
 const Card = styled.div`
-  cursor: pointer;
   display: flex;
   flex-direction: column;
-  width: 260px;
-  font-size: 14px;
+  width: 280px;
   box-shadow: var(--card-shadow-border);
-  overflow: hidden;
+  overflow: none;
+  min-height: 400px;
 
   h3 {
     margin: -50px auto;

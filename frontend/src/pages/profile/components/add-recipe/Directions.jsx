@@ -13,6 +13,10 @@ import { useEffect } from 'react';
 const FormDirections = ({ directionInputs, dispatch }) => {
   const [showReorder, setShowReorder] = useState(false);
 
+  useEffect(() => {
+    console.log(directionInputs);
+  }, [directionInputs]);
+
   const handleDragEnd = (e) => {
     const { active, over } = e;
 
@@ -89,12 +93,13 @@ const FormDirections = ({ directionInputs, dispatch }) => {
               items={directionInputs}
               strategy={verticalListSortingStrategy}
             >
-              {directionInputs.map((direction, id) => (
+              {directionInputs.map((direction) => (
                 <DragableInput
                   key={direction.id}
                   id={direction.id}
                   placeholder={direction.placeholder}
-                  step={parseFloat(id + 1).toString()}
+                  value={direction.value}
+                  step={parseFloat(direction.id).toString()}
                 />
               ))}
             </SortableContext>

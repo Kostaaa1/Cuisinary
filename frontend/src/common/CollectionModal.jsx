@@ -1,23 +1,18 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import Button from "./Button";
-import { Close, HttpsOutlined, Add } from "@mui/icons-material";
-import { useEffect } from "react";
-import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useParams } from "react-router-dom";
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import Button from './Button';
+import { Close, HttpsOutlined, Add } from '@mui/icons-material';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useParams } from 'react-router-dom';
 
-const CollectionModal = ({
-  showModal,
-  collectionTitle,
-  collectionDesc,
-  isPrivate,
-}) => {
+const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate }) => {
   const params = useParams();
-  const [collName, setCollName] = useState(collectionTitle || "");
-  const [collDesc, setCollDesc] = useState(collectionDesc || "");
+  const [collName, setCollName] = useState(collectionTitle || '');
+  const [collDesc, setCollDesc] = useState(collectionDesc || '');
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
 
@@ -45,13 +40,13 @@ const CollectionModal = ({
 
   useEffect(() => {
     const handle = (e) => {
-      if (e.key !== "Escape") return;
+      if (e.key !== 'Escape') return;
       showModal();
     };
-    document.addEventListener("keydown", handle);
+    document.addEventListener('keydown', handle);
 
     return () => {
-      document.removeEventListener("keydown", handle);
+      document.removeEventListener('keydown', handle);
     };
   }, []);
 
@@ -67,8 +62,8 @@ const CollectionModal = ({
         <div className="new-collection">
           <div className="collection-header">
             <div className="header-flex">
-              <Add className="add-svg" />
-              <h3>{params.id ? "Edit Collection" : "New Collection"}</h3>
+              <Add />
+              <h3>{params.id ? 'Edit Collection' : 'New Collection'}</h3>
             </div>
             <Close className="close" onClick={showModal} />
           </div>
@@ -81,9 +76,9 @@ const CollectionModal = ({
                 type="text"
                 value={collName}
                 onChange={(e) => setCollName(e.target.value)}
-                placeholder={"Give your collection a name"}
+                placeholder={'Give your collection a name'}
               />
-              <span className="ta-length">{collName.length}/40 characters</span>
+              <span className="span-length">{collName.length}/40 characters</span>
             </div>
             <div>
               <label>Description (optional)</label>
@@ -92,17 +87,15 @@ const CollectionModal = ({
                 rows="6"
                 id="tagline"
                 type="text"
-                placeholder={!collDesc && "Add description"}
+                placeholder={!collDesc && 'Add description'}
                 maxLength="300"
                 value={collDesc}
                 onChange={(e) => setCollDesc(e.target.value)}
               />
-              <span className="ta-length">
-                {collDesc.length}/300 characters
-              </span>
+              <span className="span-length">{collDesc.length}/300 characters</span>
             </div>
             <div className="checkbox">
-              <div className="wrap">
+              <div className="wrap-check">
                 <input
                   class="styled-checkbox check"
                   id="styled-checkbox"
@@ -110,7 +103,7 @@ const CollectionModal = ({
                   checked={collPrivate}
                   onChange={(e) => setCollPrivate(e.currentTarget.checked)}
                 />
-                <label htmlFor="styled-checkbox" className="">
+                <label htmlFor="styled-checkbox" className="checkbox-label">
                   Private Collection <HttpsOutlined />
                 </label>
               </div>
@@ -119,9 +112,9 @@ const CollectionModal = ({
             <div className="button">
               <p onClick={showModal}>Cancel</p>
               <Button
-                type={"submit"}
-                value={params.id ? "Edit Collection" : "Create Collection"}
-                style={{ width: "180px", height: "50px", fontSize: "14px" }}
+                type={'submit'}
+                value={params.id ? 'Edit Collection' : 'Create Collection'}
+                style={{ width: '180px', height: '50px', fontSize: '14px' }}
               />
             </div>
           </form>
@@ -134,7 +127,7 @@ const CollectionModal = ({
 const Modal = styled.div`
   position: fixed;
   overflow: none;
-  content: "";
+  content: '';
   top: 0;
   left: 0;
   width: 100%;
@@ -159,7 +152,7 @@ const Section = styled(motion.div)`
     flex-direction: column;
 
     .collection-header {
-      padding: 0 20px;
+      padding: 0 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -171,10 +164,6 @@ const Section = styled(motion.div)`
       .header-flex {
         display: flex;
         align-items: center;
-
-        .add-svg {
-          margin-right: 4px;
-        }
 
         h3 {
           font-weight: 600;
@@ -197,65 +186,56 @@ const Section = styled(motion.div)`
 
       label {
         font-weight: 600;
-        margin-bottom: 10px;
       }
 
-      .ta-length {
-        font-weight: 400;
-        font-size: 12px;
-      }
-
-      input {
+      input[type]:not([type='checkbox']) {
         width: 100%;
         height: 50px;
         padding: 0 10px;
         font-size: 14px;
+        margin-top: 10px;
       }
 
       textarea {
+        margin-top: 10px;
         resize: none;
         padding: 15px 10px;
         font-size: 14px;
       }
 
-      span {
-        font-size: 10px;
-        font-weight: 200;
-        margin-top: 5px;
+      .span-length {
+        font-weight: 300;
+        font-size: 11px !important;
+        margin-top: 4px;
       }
     }
 
     .checkbox {
-      user-select: none;
       display: flex;
-
-      .wrap {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: start;
-        align-content: center;
-        text-align: center;
-        font-size: 14px;
-
-        svg {
-          color: var(--grey-color);
-          transform: scale(1.4);
-          font-size: 14px;
-          margin-left: 6px;
-        }
-      }
+      justify-content: space-between;
+      flex-wrap: wrap;
 
       span {
-        font-weight: 400;
+        font-weight: 300;
         font-size: 12px;
+        margin-bottom: 24px;
       }
 
-      .check {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        border-radius: 3px;
-        cursor: pointer;
+      .wrap-check {
+        width: max-content;
+        height: max-content;
+        user-select: none;
+
+        label {
+          display: inline-flex;
+          align-items: center;
+
+          svg {
+            margin-left: 4px;
+            font-size: 16px;
+            color: var(--grey-color);
+          }
+        }
       }
     }
 

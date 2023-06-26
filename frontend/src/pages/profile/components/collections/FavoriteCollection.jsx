@@ -37,6 +37,7 @@ const Collection = styled.div`
   display: flex;
   flex-direction: column;
   width: 280px;
+  min-height: 400px;
   box-shadow: var(--card-shadow-border);
   overflow: none;
 

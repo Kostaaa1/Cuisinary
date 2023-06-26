@@ -16,24 +16,35 @@ import Header from './navbar/Header';
 import PersonalRecipe from './profile/components/personal-recipe/PersonalRecipe';
 import Footer from './Footer';
 import styled from 'styled-components';
+import { useMemo } from 'react';
 
 const Pages = () => {
   const location = useLocation();
-  const [lists, setLists] = useState([]);
 
-  useEffect(() => {
-    const route = location.pathname.slice(16);
-    const currentComponent = lists.filter((list) => list.selected);
+  const lists = useMemo(() => {
+    const currentRoute = location.pathname.slice(16);
+    const customCollectionRoute = currentRoute.split('/collection/')[1];
 
-    if (currentComponent.route !== route) {
-      setLists(
-        profileLists.map((list) =>
-          list.route === route
-            ? { ...list, selected: true }
-            : { ...list, selected: false }
-        )
-      );
+    if (customCollectionRoute) {
+      const component = {
+        id: profileLists.length,
+        component: 'SavedItems',
+        route: `/collection/${customCollectionRoute}`,
+        selected: true,
+      };
+
+      const isRoutePresent = profileLists.some((list) => list.route === component.route);
+
+      if (!isRoutePresent) {
+        return [...profileLists, component];
+      }
     }
+
+    return profileLists.map((list) =>
+      list.route === currentRoute
+        ? { ...list, selected: true }
+        : { ...list, selected: false }
+    );
   }, [location.pathname]);
 
   const shouldRenderHeader = !(
@@ -63,39 +74,18 @@ const Pages = () => {
               showHeader={false}
             />
             <Route
-              path="/account/profile/"
-              element={
-                <MyProfile
-                  listContent={lists}
-                  staticList={StaticList}
-                  setLists={setLists}
-                />
-              }
+              path="/account/profile"
+              element={<MyProfile listContent={lists} staticList={StaticList} />}
             />
             <Route
               path="/account/profile/:name/"
-              element={
-                <MyProfile
-                  listContent={lists}
-                  staticList={StaticList}
-                  setLists={setLists}
-                />
-              }
+              element={<MyProfile listContent={lists} staticList={StaticList} />}
             />
             <Route
               path="/account/profile/:name/:id"
-              element={
-                <MyProfile
-                  listContent={lists}
-                  staticList={StaticList}
-                  setLists={setLists}
-                />
-              }
+              element={<MyProfile listContent={lists} staticList={StaticList} />}
             />
-            <Route
-              path="/account/:userId/recipe/:id"
-              element={<PersonalRecipe />}
-            />
+            <Route path="/account/:userId/recipe/:id" element={<PersonalRecipe />} />
             <Route path="/profile/:profileId" element={<UserInfo />} />
             <Route
               path="/profile/:profileId/collection/:collectionId"

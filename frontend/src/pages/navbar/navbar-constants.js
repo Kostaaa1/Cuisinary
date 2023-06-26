@@ -1,5 +1,5 @@
 export const userLinkList = [
-  { list: 'My Profile', query: 'profile/' },
+  { list: 'My Profile', query: 'profile' },
   { list: 'Saved Items & Collections', query: 'profile/collection' },
   { list: 'Add a Recipe', query: 'profile/recipes' },
   { list: 'Help', query: '/' },

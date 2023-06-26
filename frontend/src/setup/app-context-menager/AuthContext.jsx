@@ -21,16 +21,17 @@ export const AuthContextProvider = ({ children }) => {
   });
 
   const logoutUser = () => {
-    localStorage.removeItem(
-      '@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@'
+    logout().then(() =>
+      localStorage.removeItem(
+        '@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@'
+      )
     );
-    logout();
   };
 
   useEffect(() => {
     if (userData) {
       setUserCollections(
-        userData.collections.filter(x => x.collName !== 'All Saved Items')
+        userData.collections.filter((x) => x.collName !== 'All Saved Items')
       );
     }
   }, [userData]);

@@ -24,12 +24,8 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const navigate = useNavigate();
   useSmoothScroll();
 
-  const {
-    arrayOfRecipeNames,
-    setArrayOfRecipeNames,
-    collectionId,
-    collectionParams,
-  } = useContext(GlobalContext);
+  const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId, collectionParams } =
+    useContext(GlobalContext);
 
   // forcing refetches based on the URL. Trying to reduce the repeating of the code, i do not know if this is a good practice. It works tho.
   let refetchOnMount = 'always';
@@ -37,7 +33,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const prefixPath = '/account/profile';
 
   if (
-    path === prefixPath + '/' ||
+    path === prefixPath + '' ||
     path === prefixPath + '/public-profile' ||
     path === prefixPath + '/change-password'
   ) {
@@ -51,8 +47,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   } = useQuery(['user-data', user?.email], getUserData, {
     enabled: !!user,
     refetchOnMount,
-    // refetchOnMount:
-    //   location.pathname !== '/account/profile/change-password' && 'always',
   });
 
   useEffect(() => {
@@ -79,24 +73,25 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
     }
   }, [windowSize]);
 
-  useEffect(() => {
-    if (params.id) {
-      const comp = {
-        id: listContent.length,
-        component: 'SavedItems',
-        route: `/collection/${params.id}`,
-        selected: true,
-      };
+  const renderListItem = (list) => {
+    let url = `/${Object.entries(params)
+      .map((x) => x[1])
+      .join('/')}`;
+    url = url === '/' ? '' : url;
+    const isSelected = list.selected && list.route === url;
 
-      const isRoutePresent = listContent.some(
-        (list) => list.route === comp.route
-      );
-
-      if (!isRoutePresent) {
-        setLists([...listContent, comp]);
+    if (isSelected) {
+      const Component = staticList[list.component];
+      if (!isRefetching && !isLoading) {
+        return (
+          <Component key={list.id} userData={userData} isRefetching={isRefetching} />
+        );
+      } else {
+        return <Loading key={list.id} className="loading" scaled={true} />;
       }
     }
-  });
+    return null;
+  };
 
   return (
     <Wrapper>
@@ -116,10 +111,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                     }}
                     key={id}
                   >
-                    <List
-                      className={list.selected ? 'selected' : ''}
-                      list={list}
-                    />
+                    <List className={list.selected ? 'selected' : ''} list={list} />
                   </div>
                 ))}
             </ul>
@@ -143,10 +135,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
                     .filter((list) => list.text && list)
                     .map((list, id) => (
                       <CustomLink to={'/account/profile' + list.route} key={id}>
-                        <List
-                          className={list.selected ? 'selected' : ''}
-                          list={list}
-                        />
+                        <List className={list.selected ? 'selected' : ''} list={list} />
                       </CustomLink>
                     ))}
                 </ul>
@@ -154,42 +143,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
             </div>
           )}
           {!showResponsiveList && (
-            <div className="components">
-              {listContent.map((list) => {
-                const url = `/${Object.entries(params)
-                  .map((x) => x[1])
-                  .join('/')}`;
-
-                const isSelected = list.selected && list.route === url;
-
-                const isDefaultRoute =
-                  Object.keys(params).length === 0 && list.route === '/';
-
-                if (isSelected || isDefaultRoute) {
-                  const Component = staticList[list.component];
-
-                  if (!isRefetching && !isLoading) {
-                    return (
-                      <Component
-                        key={list.id}
-                        userData={userData}
-                        isRefetching={isRefetching}
-                      />
-                    );
-                  } else {
-                    return (
-                      <Loading
-                        key={list.id}
-                        className="loading"
-                        scaled={true}
-                      />
-                    );
-                  }
-                }
-
-                return null;
-              })}
-            </div>
+            <div className="components">{listContent.map(renderListItem)}</div>
           )}
         </Container>
       )}
