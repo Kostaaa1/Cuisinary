@@ -1,6 +1,6 @@
-import { HttpsOutlined } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { HttpsOutlined } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
 
 const PublicRecipe = ({ isPublic, setIsPublic }) => {
   return (
@@ -43,6 +43,9 @@ const PublicRecipe = ({ isPublic, setIsPublic }) => {
 };
 
 const Section = styled.div`
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  padding: 34px 0;
+
   .checkbox {
     margin: 20px 0 14px 0;
     user-select: none;

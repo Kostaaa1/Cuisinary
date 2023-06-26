@@ -22,9 +22,7 @@ export const initialDirections = [
 
 export const ingredientReducer = (state, action) => {
   const newId =
-    state.length > 0
-      ? (Number(state[state.length - 1].id) + 1).toString()
-      : '1';
+    state.length > 0 ? (Number(state[state.length - 1].id) + 1).toString() : '1';
 
   switch (action.type) {
     case 'ADD_INGREDIENT':
@@ -37,6 +35,7 @@ export const ingredientReducer = (state, action) => {
         },
       ];
     case 'REMOVE_INGREDIENT':
+      if (state.length === 1) return state;
       return state.filter((_, index) => index !== action.id);
     case 'SORT_INGREDIENTS':
       return arrayMove(state, action.indexOfActive, action.indexOfOver);
@@ -50,11 +49,8 @@ export const ingredientReducer = (state, action) => {
 };
 
 export const directionReducer = (state, action) => {
-  console.log(state, action);
   const newId =
-    state.length > 0
-      ? (Number(state[state.length - 1].id) + 1).toString()
-      : '1';
+    state.length > 0 ? (Number(state[state.length - 1].id) + 1).toString() : '1';
 
   switch (action.type) {
     case 'ADD_DIRECTION':
@@ -67,6 +63,7 @@ export const directionReducer = (state, action) => {
         },
       ];
     case 'REMOVE_DIRECTION':
+      if (state.length === 1) return state;
       return state.filter((_, index) => index !== action.id);
     case 'SORT_DIRECTIONS':
       return arrayMove(state, action.indexOfActive, action.indexOfOver);
@@ -74,7 +71,7 @@ export const directionReducer = (state, action) => {
       return state.map((input) =>
         input.id === action.id ? { ...input, value: action.value } : input
       );
-    default:
-      return state;
+    // default:
+    //   return state;
   }
 };

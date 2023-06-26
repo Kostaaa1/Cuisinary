@@ -1,10 +1,10 @@
-import { useMemo } from "react";
-import styled from "styled-components";
+import { useMemo } from 'react';
+import styled from 'styled-components';
 
 const PrepTime = ({ prepTime, setPrepTime, cookTime, setCookTime }) => {
   const handleInputChange = (e) => {
     const { name, value, id } = e.target;
-    id === "prep"
+    id === 'prep'
       ? setPrepTime((state) => ({
           ...state,
           [name]: value,
@@ -16,7 +16,7 @@ const PrepTime = ({ prepTime, setPrepTime, cookTime, setCookTime }) => {
   };
 
   const total = useMemo(() => {
-    if (prepTime.value === "" && cookTime.value === "") return "0";
+    if (prepTime.value === '' && cookTime.value === '') return '0';
 
     const timeUnits = {
       days: 0,
@@ -28,11 +28,11 @@ const PrepTime = ({ prepTime, setPrepTime, cookTime, setCookTime }) => {
       timeUnits[unit] += parseInt(value);
     };
 
-    if (prepTime.value !== "") {
+    if (prepTime.value !== '') {
       compute(prepTime.time, prepTime.value);
     }
 
-    if (cookTime.value !== "") {
+    if (cookTime.value !== '') {
       compute(cookTime.time, cookTime.value);
     }
 
@@ -48,11 +48,9 @@ const PrepTime = ({ prepTime, setPrepTime, cookTime, setCookTime }) => {
 
     return Object.entries(timeUnits)
       .map((v) => `${v[1]} ${v[0]}`)
-      .filter((x) => x[0] !== "0")
-      .map((v, i, arr) =>
-        i === arr.length - 1 && arr.length !== 1 ? `and ${v}` : v
-      )
-      .join(" ");
+      .filter((x) => x[0] !== '0')
+      .map((v, i, arr) => (i === arr.length - 1 && arr.length !== 1 ? `and ${v}` : v))
+      .join(' ');
   }, [prepTime, cookTime]);
 
   return (
@@ -112,11 +110,17 @@ const PrepTime = ({ prepTime, setPrepTime, cookTime, setCookTime }) => {
 };
 
 const TimeSection = styled.div`
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  padding: 20px 0;
+
+  .field-wrap:not(.field-wrap:last-child) {
+    margin: 12px 0;
+  }
+
   .field-wrap {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 12px 0;
     height: 46px;
 
     span {
@@ -129,6 +133,7 @@ const TimeSection = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
+      height: 100%;
 
       select {
         cursor: pointer;
@@ -141,7 +146,7 @@ const TimeSection = styled.div`
       input {
         text-align: center;
         width: 60px;
-        height: 46px;
+        height: 100%;
       }
     }
   }

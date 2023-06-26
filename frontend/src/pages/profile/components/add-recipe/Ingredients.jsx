@@ -4,10 +4,7 @@ import { Add, Check, Close, SwapVert } from '@mui/icons-material';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import ButtonBorder from '../../../../common/ButtonBorder';
 import { useState } from 'react';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 const Ingredients = ({ ingredientInputs, dispatch }) => {
   const [showReorder, setShowReorder] = useState(false);
@@ -16,12 +13,8 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
     const { active, over } = e;
 
     if (active.id !== over.id) {
-      const indexOfActive = ingredientInputs.findIndex(
-        (input) => input.id === active.id
-      );
-      const indexOfOver = ingredientInputs.findIndex(
-        (input) => input.id === over.id
-      );
+      const indexOfActive = ingredientInputs.findIndex((input) => input.id === active.id);
+      const indexOfOver = ingredientInputs.findIndex((input) => input.id === over.id);
 
       dispatch({ type: 'SORT_INGREDIENTS', indexOfActive, indexOfOver });
     }
@@ -36,14 +29,13 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
       <div className="ingredients-wrap">
         <label>Ingredients</label>
         <p>
-          Enter one ingredient per line. Include the quantity (i.e. cups,
-          tablespoons) and any special preparation (i.e. sifted, softened,
-          chopped). Use optional headers to organize the different parts of the
-          recipe (i.e. Cake, Frosting, Dressing).
+          Enter one ingredient per line. Include the quantity (i.e. cups, tablespoons) and
+          any special preparation (i.e. sifted, softened, chopped). Use optional headers
+          to organize the different parts of the recipe (i.e. Cake, Frosting, Dressing).
         </p>
       </div>
       <div className="reorder-div">
-        <p>Enter directions below</p>
+        <p>Enter ingredients below</p>
         {!showReorder ? (
           <span onClick={() => setShowReorder(true)}>
             <SwapVert />
@@ -64,7 +56,7 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
                 type="text"
                 placeholder={ingredient.placeholder}
                 value={ingredient.value}
-                // required
+                required
                 onChange={(e) => handleInputChange(e, ingredient.id)}
               />
               <Close
@@ -80,10 +72,7 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
         </div>
       ) : (
         <div className="sortable-div">
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={ingredientInputs}
               strategy={verticalListSortingStrategy}
@@ -111,7 +100,8 @@ const Ingredients = ({ ingredientInputs, dispatch }) => {
 };
 
 const Section = styled.div`
-  margin: 20px 0;
+  padding: 34px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
   .ingredients-wrap {
     p {

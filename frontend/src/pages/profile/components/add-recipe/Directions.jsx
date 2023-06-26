@@ -3,30 +3,18 @@ import styled from 'styled-components';
 import DragableInput from '../../../../common/DraggableInput';
 import { Add, Check, Close, SwapVert } from '@mui/icons-material';
 import { DndContext, closestCenter } from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import ButtonBorder from '../../../../common/ButtonBorder';
-import { useEffect } from 'react';
 
 const FormDirections = ({ directionInputs, dispatch }) => {
   const [showReorder, setShowReorder] = useState(false);
-
-  useEffect(() => {
-    console.log(directionInputs);
-  }, [directionInputs]);
 
   const handleDragEnd = (e) => {
     const { active, over } = e;
 
     if (active.id !== over.id) {
-      const indexOfActive = directionInputs.findIndex(
-        (input) => input.id === active.id
-      );
-      const indexOfOver = directionInputs.findIndex(
-        (input) => input.id === over.id
-      );
+      const indexOfActive = directionInputs.findIndex((input) => input.id === active.id);
+      const indexOfOver = directionInputs.findIndex((input) => input.id === over.id);
 
       dispatch({ type: 'SORT_DIRECTIONS', indexOfActive, indexOfOver });
     }
@@ -42,9 +30,9 @@ const FormDirections = ({ directionInputs, dispatch }) => {
       <div className="description-wrap">
         <label>Directions</label>
         <p>
-          Explain how to make your recipe, including oven temperatures, baking
-          or cooking times, and pan sizes, etc. Use optional headers to organize
-          the different parts of the recipe (i.e. Prep, Bake, Decorate).
+          Explain how to make your recipe, including oven temperatures, baking or cooking
+          times, and pan sizes, etc. Use optional headers to organize the different parts
+          of the recipe (i.e. Prep, Bake, Decorate).
         </p>
       </div>
       <div className="reorder-div">
@@ -74,21 +62,16 @@ const FormDirections = ({ directionInputs, dispatch }) => {
                   placeholder={direction.placeholder}
                   value={direction.value}
                   onChange={(e) => handleInputChange(e, direction.id)}
-                  // required
+                  required
                 ></textarea>
-                <Close
-                  onClick={() => dispatch({ type: 'REMOVE_DIRECTION', id })}
-                />
+                <Close onClick={() => dispatch({ type: 'REMOVE_DIRECTION', id })} />
               </div>
             </div>
           ))}
         </div>
       ) : (
         <div className="sortable-div">
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
               items={directionInputs}
               strategy={verticalListSortingStrategy}
@@ -107,6 +90,7 @@ const FormDirections = ({ directionInputs, dispatch }) => {
         </div>
       )}
       <ButtonBorder
+        type="button"
         style={{
           width: '160px',
           height: '50px',
@@ -121,7 +105,8 @@ const FormDirections = ({ directionInputs, dispatch }) => {
 };
 
 const Section = styled.div`
-  margin: 20px 0;
+  padding: 34px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
   .description-wrap {
     p {

@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import LineBreak from '../../../../common/LineBreak';
 import { AddAPhoto } from '@mui/icons-material';
 import Ingredients from './Ingredients';
 import Directions from './Directions';
@@ -28,10 +27,7 @@ const AddRecipe = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
-  const [ingredientInputs, dispatch] = useReducer(
-    ingredientReducer,
-    initialIngredients
-  );
+  const [ingredientInputs, dispatch] = useReducer(ingredientReducer, initialIngredients);
   const [directionInputs, dispatchDirections] = useReducer(
     directionReducer,
     initialDirections
@@ -87,7 +83,6 @@ const AddRecipe = () => {
     }));
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -97,10 +92,7 @@ const AddRecipe = () => {
       formData.append('image', image);
       formData.append('form', JSON.stringify({ ...form, private: !isPublic }));
 
-      await axios.post(
-        `/api/user/${userData?.email}/addPersonalRecipe`,
-        formData
-      );
+      await axios.post(`/api/user/${userData?.email}/addPersonalRecipe`, formData);
     } catch (error) {
       console.log(error);
     } finally {
@@ -120,10 +112,9 @@ const AddRecipe = () => {
           </div>
         </div>
         <p>
-          Uploading personal recipes is easy! Add yours to your favorites, share
-          with friends, family, or the Cuisinary community.
+          Uploading personal recipes is easy! Add yours to your favorites, share with
+          friends, family, or the Cuisinary community.
         </p>
-        <LineBreak className="line-break" />
         <Form onSubmit={handleSubmit}>
           <div className="form-header">
             <div className="wrapper">
@@ -135,7 +126,7 @@ const AddRecipe = () => {
                   value={form.title}
                   onChange={handleInputChange}
                   placeholder="Give your recipe a title"
-                  // required
+                  required
                 />
               </div>
               <div className="input-wrap">
@@ -147,7 +138,7 @@ const AddRecipe = () => {
                   name="summary"
                   value={form.summary}
                   onChange={handleInputChange}
-                  // required
+                  required
                 ></textarea>
               </div>
             </div>
@@ -164,23 +155,14 @@ const AddRecipe = () => {
                 className="file"
                 id="input_file"
                 type="file"
-                // required
+                required
                 accept="image/png, image/jpeg"
                 onChange={handleImage}
               />
             </div>
           </div>
-          <LineBreak className="line-break" />
-          <Ingredients
-            ingredientInputs={ingredientInputs}
-            dispatch={dispatch}
-          />
-          <LineBreak className="line-break" />
-          <Directions
-            directionInputs={directionInputs}
-            dispatch={dispatchDirections}
-          />
-          <LineBreak className="line-break" />
+          <Ingredients ingredientInputs={ingredientInputs} dispatch={dispatch} />
+          <Directions directionInputs={directionInputs} dispatch={dispatchDirections} />
           <Servings>
             <div className="input-wrap">
               <label>Servings</label>
@@ -190,7 +172,7 @@ const AddRecipe = () => {
                 name="servings"
                 value={form.servings}
                 onChange={handleInputChange}
-                // required
+                required
               />
             </div>
             <div className="input-wrap">
@@ -204,14 +186,12 @@ const AddRecipe = () => {
               />
             </div>
           </Servings>
-          <LineBreak className="line-break" />
           <PrepTime
             prepTime={prepTime}
             setPrepTime={setPrepTime}
             cookTime={cookTime}
             setCookTime={setCookTime}
           />
-          <LineBreak className="line-break" />
           <PublicRecipe isPublic={isPublic} setIsPublic={setIsPublic} />
           <div className="buttons-div">
             <span onClick={() => setShowLeaveModal(true)}>CANCEL</span>
@@ -229,9 +209,7 @@ const AddRecipe = () => {
           </div>
         </Form>
       </Wrapper>
-      {showLeaveModal && (
-        <showLeaveModal setShowLeaveModal={setShowLeaveModal} />
-      )}
+      {showLeaveModal && <showLeaveModal setShowLeaveModal={setShowLeaveModal} />}
     </>
   );
 };
@@ -240,6 +218,8 @@ const Servings = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 34px 0;
 
   .input-wrap {
     display: flex;
@@ -252,7 +232,7 @@ const Servings = styled.div`
       height: 46px;
       padding: 0 10px;
       font-size: 14px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
   }
 `;
@@ -324,12 +304,15 @@ const Form = styled.form`
   label {
     font-size: 16px;
     font-weight: bold;
-    margin: 8px 0;
   }
 
   .form-header {
     display: flex;
     justify-content: space-between;
+    padding: 34px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    margin-top: 34px;
 
     .form-file {
       width: 35%;
@@ -380,6 +363,10 @@ const Form = styled.form`
       justify-content: space-between;
       width: 60%;
 
+      label {
+        margin-bottom: 6px;
+      }
+
       .input-wrap {
         display: flex;
         flex-direction: column;
@@ -407,6 +394,10 @@ const Wrapper = styled.div`
   box-shadow: var(--card-shadow-border);
   padding: 40px;
 
+  @media screen and (max-width: 1120px) {
+    margin-top: 140px;
+  }
+
   .line-break {
     margin: 46px 0;
   }
@@ -417,7 +408,7 @@ const Wrapper = styled.div`
 
   .header {
     display: flex;
-    margin-bottom: 36px;
+    padding-bottom: 34px;
 
     .plus-shape {
       transform: scale(0.8);
