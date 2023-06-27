@@ -7,7 +7,7 @@ const LineBreak = ({ className }) => {
 
 const Break = styled.div`
   width: 100%;
-  border: 1px solid rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.11);
 `;
 
 export default LineBreak;

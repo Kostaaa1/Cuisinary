@@ -78,8 +78,7 @@ const Recipe = () => {
   const averageRate = useMemo(() => {
     if (reviews) {
       let sum = reviews?.reduce((acc, num) => (acc += num.starRating + 1), 0);
-      let average =
-        sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
+      let average = sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
       setComments(reviews.filter((review) => review.comment !== ''));
       return average;
     }
@@ -146,12 +145,6 @@ const Recipe = () => {
 };
 
 const Wrapper = styled.div`
-  /* position: relative;
-  width: 1040px;
-  max-width: 100%;
-  margin: 0 auto;
-  height: 100%;
-  margin: 200px auto 0 auto; */
   position: relative;
   display: flex;
   flex-direction: column;
@@ -161,9 +154,19 @@ const Wrapper = styled.div`
   padding: 250px 0 0 0;
   margin: 0 auto;
 
+  @media screen and (max-width: 1270px) {
+    margin: 180px auto 0 auto;
+    padding: 0 36px;
+  }
+
   @media screen and (max-width: 1120px) {
     margin: 180px auto 0 auto;
-    padding: 0 18px;
+  }
+
+  @media screen and (max-width: 800px) {
+    align-items: center;
+    max-width: 1240px;
+    padding: 62px;
   }
 
   .line-break {
@@ -177,7 +180,14 @@ const Wrapper = styled.div`
 
   .container {
     max-width: 600px;
-    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    @media screen and (max-width: 800px) {
+      max-width: 100%;
+    }
   }
 `;
 

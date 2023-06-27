@@ -10,13 +10,8 @@ export const AuthContextProvider = ({ children }) => {
   const { getUserData } = useUser();
   const [userCollections, setUserCollections] = useState([]);
   const [arrayId, setArrayId] = useState([]);
-  // const [contextUser, setContextUser] = useState({});s
 
-  const {
-    data: userData,
-    refetch,
-    isLoading: contextUserLoading,
-  } = useQuery(['context-user', user?.email], getUserData, {
+  const { data: userData } = useQuery(['context-user', user?.email], getUserData, {
     enabled: !!user,
   });
 
@@ -41,10 +36,7 @@ export const AuthContextProvider = ({ children }) => {
     setArrayId,
     userData,
     userCollections,
-    refetch,
     logoutUser,
-    contextUserLoading,
-    // userData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

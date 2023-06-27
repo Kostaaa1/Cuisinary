@@ -1,15 +1,10 @@
 import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../setup/auth/useAuth';
-import { useContext } from 'react';
-import AuthContext from '../setup/app-context-menager/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const UserIconComponent = () => {
   const { authenticated } = useAuth();
-  const { logoutUser } = useContext(AuthContext);
-  const navigate = useNavigate();
   const { loginWithPopup } = useAuth0();
 
   return (
@@ -27,6 +22,10 @@ const User = styled.span`
   font-size: 14px;
   cursor: pointer;
   font-weight: 500;
+
+  @media screen and (max-width: 800px) {
+    font-size: 12px;
+  }
 
   &:hover {
     text-decoration: underline;

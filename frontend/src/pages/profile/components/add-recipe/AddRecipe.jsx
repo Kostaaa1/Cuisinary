@@ -18,6 +18,7 @@ import axios from 'axios';
 import { useContext } from 'react';
 import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import useSmoothScroll from '../../../../utils/useSmoothScroll';
 
 const AddRecipe = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const AddRecipe = () => {
     createdBy: userData?.nickname,
     createdByUserId: userData?._id,
   });
+  useSmoothScroll()
 
   const handleImage = (e) => {
     const file = e.target.files[0];

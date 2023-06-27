@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../../../common/Loading';
@@ -28,11 +28,11 @@ const PersonalRecipe = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showIconFullsize, setShowIconFullsize] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
-  useNoScroll(showImageModal);
-  useSmoothScroll();
-
-  const { userData, contextUserLoading } = useContext(AuthContext);
+  const { userData } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  useNoScroll(showImageModal);
+  // useSmoothScroll();
+  const fixedRef = useRef(null);
 
   useEffect(() => {
     const cleanup = () => {
@@ -48,18 +48,16 @@ const PersonalRecipe = () => {
       const res = await axios.get(
         `/api/user/${params?.userId}/${params.id}/getPersonalRecipe`
       );
-
       return res.data;
     } catch (error) {
       console.log(error);
     }
   };
 
-  const { data: recipeData } = useQuery(
-    ['personal-recipes'],
-    fetchPersonalRecipe,
-    { enabled: !!params, refetchOnMount: 'always' }
-  );
+  const { data: recipeData } = useQuery(['personal-recipes'], fetchPersonalRecipe, {
+    enabled: !!params,
+    refetchOnMount: 'always',
+  });
 
   const deletePersonalRecipe = async () => {
     try {
@@ -119,7 +117,7 @@ const PersonalRecipe = () => {
                 )}
                 <img src={recipeData?.picture.image} alt="" />
               </div>
-              <div className="recipe-info">
+              <div className="recipe-info" ref={fixedRef}>
                 <AccessTime />
                 <div className="info-wrap">
                   <h5>Prep:</h5>
@@ -299,7 +297,7 @@ const Recipe = styled.main`
   }
 
   section {
-    width: 600px;
+    width: 550px;
     max-width: 100%;
   }
 
@@ -354,7 +352,7 @@ const Recipe = styled.main`
 
       @media screen and (max-width: 890px) {
         padding: 20px;
-        width: 600px;
+        width: 550px;
         margin: 20px 0;
       }
 

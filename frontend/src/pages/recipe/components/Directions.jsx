@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import LineBreak from "../../../common/LineBreak";
-import { RecipeContext } from "../Recipe";
-import { ImSpoonKnife } from "react-icons/im";
-import { Link } from "react-scroll";
-import { South } from "@mui/icons-material";
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import LineBreak from '../../../common/LineBreak';
+import { RecipeContext } from '../Recipe';
+import { ImSpoonKnife } from 'react-icons/im';
+import { Link } from 'react-scroll';
+import { South } from '@mui/icons-material';
 
 const Directions = () => {
   const { recipe } = useContext(RecipeContext);
@@ -17,12 +17,7 @@ const Directions = () => {
         dangerouslySetInnerHTML={{ __html: recipe?.instructions }}
       ></div>
       <div className="buttons">
-        <Link
-          className="btn-highlight"
-          to="review-id"
-          smooth={true}
-          duration={500}
-        >
+        <Link className="btn-highlight" to="review-id" smooth={true} duration={500}>
           I MADE IT
           <span>
             <ImSpoonKnife />
@@ -58,7 +53,7 @@ const Steps = styled.div`
       align-items: center;
       justify-content: center;
       color: var(--main-color);
-      outline: 4px solid var(--red-color);
+      outline: 2px solid var(--red-color);
       font-weight: 800;
       letter-spacing: 1px;
       border: none;

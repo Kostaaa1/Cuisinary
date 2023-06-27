@@ -56,7 +56,6 @@ const Modal = styled(motion.div)`
     align-items: center;
     justify-content: center;
     height: 100%;
-    /* width: 100%; */
     max-height: 880px;
     transform: scale(0.9);
 

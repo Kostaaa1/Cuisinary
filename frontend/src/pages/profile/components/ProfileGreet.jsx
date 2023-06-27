@@ -8,10 +8,11 @@ import PersonAvatar from '../../../common/PersonAvatar';
 const ProfileGreet = () => {
   const { userData } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [profileImgLoaded, setProfileImgLoaded] = useState(false);
 
   return (
     <Greet>
-      {!userData ? (
+      {!userData && !profileImgLoaded ? (
         <h4 className="h4-div">Loading...</h4>
       ) : (
         <>
@@ -22,6 +23,7 @@ const ProfileGreet = () => {
               src={`${userData?.picture?.image}`}
               alt="profile-picture"
               className="profile-picture"
+              onLoad={() => setProfileImgLoaded(true)}
             />
           )}
           <div className="user-info-wrap">

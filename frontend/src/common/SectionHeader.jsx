@@ -1,9 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import LineBreak from './LineBreak';
 import Loading from './Loading';
 import styled from 'styled-components';
 import useAddFixed from '../pages/profile/hooks/useAddFixed';
-import { useParams } from 'react-router-dom';
 
 const SectionHeader = ({
   title,
@@ -15,9 +14,8 @@ const SectionHeader = ({
   buttonValue,
   onClick,
 }) => {
-  const params = useParams();
   const headerRef = useRef(null);
-  useAddFixed(headerRef, params);
+  useAddFixed(headerRef);
 
   return (
     <>

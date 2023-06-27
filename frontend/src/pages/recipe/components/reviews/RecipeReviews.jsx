@@ -32,9 +32,7 @@ const RecipeReviews = () => {
   ]);
 
   useEffect(() => {
-    let myReview = reviews?.filter(
-      (review) => review.userId === userData?._id
-    )[0];
+    let myReview = reviews?.filter((review) => review.userId === userData?._id)[0];
     if (myReview) {
       setMyReview(myReview);
       setComment(myReview?.comment);
@@ -142,75 +140,86 @@ const RecipeReviews = () => {
   };
 
   return (
-    <Reviews>
+    <Section>
       <Header>
         <h1>Reviews ({reviews?.length || '0'})</h1>
       </Header>
-      {isEditting || isCreating ? (
-        <Loading styles={{ marginTop: '-10%' }} />
-      ) : (
-        <>
-          <div className="wrapper">
-            {submitted && myReview ? (
-              <UserReview
-                recipeImg={recipe?.image}
-                myReview={myReview}
-                showSubmit={showSubmit}
-              />
-            ) : (
-              <ReviewsForm>
-                <StarRatings
-                  clickId={clickId}
-                  setClickId={setClickId}
-                  setLastId={setLastId}
-                  starRef={starRef}
-                  setRateArr={setRateArr}
-                  lastId={lastId}
-                  rateArr={rateArr}
-                  recipe={recipe}
-                />
-                <form onSubmit={handleSubmit}>
-                  <label className="h4-margin">
-                    <h4>
-                      {`Your Review  `}
-                      <span>(optional)</span>
-                    </h4>
-                  </label>
-                  <textarea
-                    placeholder="What did you think about this recipe? Did you make any changes or notes?"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                  ></textarea>
-                  <div className="buttons">
-                    <p onClick={clearInputs}>CANCEL</p>
-                    <input
-                      type="submit"
-                      value="SUBMIT"
-                      className={`btn-submit ${clickId > -1 ? 'active' : ''}`}
-                      disabled={clickId > -1 ? false : true}
+      <Reviews>
+        <Wrapper>
+          {isEditting || isCreating ? (
+            <Loading styles={{ marginTop: '-10%' }} />
+          ) : (
+            <>
+              <div>
+                {submitted && myReview ? (
+                  <UserReview
+                    recipeImg={recipe?.image}
+                    myReview={myReview}
+                    showSubmit={showSubmit}
+                  />
+                ) : (
+                  <ReviewsForm>
+                    <StarRatings
+                      clickId={clickId}
+                      setClickId={setClickId}
+                      setLastId={setLastId}
+                      starRef={starRef}
+                      setRateArr={setRateArr}
+                      lastId={lastId}
+                      rateArr={rateArr}
+                      recipe={recipe}
                     />
-                  </div>
-                </form>
-              </ReviewsForm>
-            )}
-          </div>
-          {starArray && averageRate && <BarChart />}
-          <Comments />
-        </>
-      )}
-    </Reviews>
+                    <form onSubmit={handleSubmit}>
+                      <label className="h4-margin">
+                        <h4>
+                          {`Your Review  `}
+                          <span>(optional)</span>
+                        </h4>
+                      </label>
+                      <textarea
+                        placeholder="What did you think about this recipe? Did you make any changes or notes?"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                      ></textarea>
+                      <div className="buttons">
+                        <p onClick={clearInputs}>CANCEL</p>
+                        <input
+                          type="submit"
+                          value="SUBMIT"
+                          className={`btn-submit ${clickId > -1 ? 'active' : ''}`}
+                          disabled={clickId > -1 ? false : true}
+                        />
+                      </div>
+                    </form>
+                  </ReviewsForm>
+                )}
+              </div>
+              {starArray && averageRate && <BarChart />}
+              <Comments />
+            </>
+          )}
+        </Wrapper>
+      </Reviews>
+    </Section>
   );
 };
 
+const Section = styled.section`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+`;
+const Wrapper = styled.div`
+  background-color: white;
+  padding: 20px;
+  min-height: 300px;
+`;
+
 const Reviews = styled.div`
   position: relative;
-  min-height: 400px;
-
-  .wrapper {
-    width: 450px;
-    margin: 34px auto;
-    max-width: 100%;
-  }
+  background-color: #f4f7ea;
+  width: 100%;
+  padding: 30px;
 `;
 
 const ReviewsForm = styled.div`
@@ -307,8 +316,7 @@ const ReviewsForm = styled.div`
 `;
 
 const Header = styled.div`
-  display: flex;
-  align-items: flex-end;
+  margin-bottom: 12px;
 
   h1 {
     font-size: 34px;

@@ -1,9 +1,9 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
 const ButtonBorder = ({ value, style, onClick, icon }) => {
   return (
-    <Button style={style} onClick={onClick}>
+    <Button type="button" style={style} onClick={onClick}>
       {icon}
       {value}
     </Button>

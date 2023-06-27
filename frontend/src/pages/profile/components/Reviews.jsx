@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { Star, StarBorder } from "@mui/icons-material";
-import Button from "../../../common/Button";
-import Loading from "../../../common/Loading";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { Star, StarBorder } from '@mui/icons-material';
+import Button from '../../../common/Button';
+import Loading from '../../../common/Loading';
+import { Link } from 'react-router-dom';
 import {
   ArrowDropDown,
   Check,
   KeyboardArrowDown,
   SupervisorAccount,
-} from "@mui/icons-material";
-import SectionHeader from "../../../common/SectionHeader";
+} from '@mui/icons-material';
+import SectionHeader from '../../../common/SectionHeader';
 
 const Reviews = ({ userData }) => {
   const loadCount = 5;
@@ -22,29 +22,29 @@ const Reviews = ({ userData }) => {
   const [isSorting, setIsSorting] = useState(false);
   const [hideDropdown, setHideDropdown] = useState(false);
   const [sortData, setSortData] = useState([
-    { text: "Newest", clicked: true, id: 0 },
-    { text: "Oldest", clicked: false, id: 1 },
-    { text: "Most Positive", clicked: false, id: 2 },
-    { text: "Least Positive", clicked: false, id: 3 },
+    { text: 'Newest', clicked: true, id: 0 },
+    { text: 'Oldest', clicked: false, id: 1 },
+    { text: 'Most Positive', clicked: false, id: 2 },
+    { text: 'Least Positive', clicked: false, id: 3 },
   ]);
   const [sortingTitle, setSortingTitle] = useState(
-    sortData.filter((item) => item.clicked)[0].text || ""
+    sortData.filter((item) => item.clicked)[0].text || ''
   );
 
   useEffect(() => {
     if (userData) {
       let arr = userData?.reviews;
       switch (sortingTitle) {
-        case "Newest":
+        case 'Newest':
           arr?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
           break;
-        case "Oldest":
+        case 'Oldest':
           arr?.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
           break;
-        case "Least Positive":
+        case 'Least Positive':
           arr?.sort((a, b) => a.starRating - b.starRating);
           break;
-        case "Most Positive":
+        case 'Most Positive':
           arr?.sort((a, b) => b.starRating - a.starRating);
           break;
         default:
@@ -86,9 +86,7 @@ const Reviews = ({ userData }) => {
 
     setSortData((prevState) =>
       prevState.map((item, i) =>
-        item.text === title
-          ? { ...item, clicked: true }
-          : { ...item, clicked: false }
+        item.text === title ? { ...item, clicked: true } : { ...item, clicked: false }
       )
     );
 
@@ -106,12 +104,16 @@ const Reviews = ({ userData }) => {
       }
     };
 
-    document.addEventListener("click", handleClick);
+    document.addEventListener('click', handleClick);
 
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener('click', handleClick);
     };
   }, []);
+
+  useEffect(() => {
+    console.log(userData.reviews);
+  }, [userData.reviews]);
 
   return (
     <Container>
@@ -131,7 +133,7 @@ const Reviews = ({ userData }) => {
                 {sortData.filter((item) => item.clicked)[0].text.toUpperCase()}
                 <ArrowDropDown />
               </span>
-              <ul className={`${hideDropdown ? "" : "hide-dropdown"} dropdown`}>
+              <ul className={`${hideDropdown ? '' : 'hide-dropdown'} dropdown`}>
                 {sortData.map((item) => (
                   <li key={item.id}>
                     {item.clicked && <Check />}
@@ -142,12 +144,9 @@ const Reviews = ({ userData }) => {
             </div>
           </div>
           <ReviewsSections>
-            <div
-              className="head-info"
-              onClick={() => setShowReviews(!showReviews)}
-            >
+            <div className="head-info" onClick={() => setShowReviews(!showReviews)}>
               <h3>Your Reviews</h3>
-              <KeyboardArrowDown className={showReviews ? "" : "show"} />
+              <KeyboardArrowDown className={showReviews ? '' : 'show'} />
             </div>
             {showReviews && (
               <div className="reviews-control">
@@ -159,11 +158,11 @@ const Reviews = ({ userData }) => {
                   <>
                     {reviews?.map((review, id) => (
                       <div key={id} className="reviews">
-                        <Link to={"/recipe/" + review.recipeId}>
+                        <Link to={'/recipe/' + review.recipeId}>
                           <img src={review.recipeImage} alt="review-image" />
                         </Link>
                         <div className="control-flex">
-                          <Link to={"/recipe/" + review.recipeId}>
+                          <Link to={'/recipe/' + review.recipeId}>
                             <h2> {review.recipeTitle} </h2>
                           </Link>
                           <div className="stars-wrap">
@@ -174,7 +173,7 @@ const Reviews = ({ userData }) => {
                                 <StarBorder
                                   key={id}
                                   className="bordered"
-                                  style={{ color: "var(--red-color)" }}
+                                  style={{ color: 'var(--red-color)' }}
                                 />
                               )
                             )}
@@ -188,9 +187,9 @@ const Reviews = ({ userData }) => {
                       <div className="button-flex">
                         {!isLoadingMore ? (
                           <Button
-                            value={"LOAD MORE"}
+                            value={'LOAD MORE'}
                             onClick={handleLoadMore}
-                            style={{ width: "160px", height: "50px" }}
+                            style={{ width: '160px', height: '50px' }}
                           />
                         ) : (
                           <Loading />

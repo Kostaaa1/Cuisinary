@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { Create, Star, StarBorder } from "@mui/icons-material";
+import styled from 'styled-components';
+import { Create, Star, StarBorder } from '@mui/icons-material';
 
 const UserReview = ({ recipeImg, myReview, showSubmit }) => {
   return (
@@ -15,13 +15,17 @@ const UserReview = ({ recipeImg, myReview, showSubmit }) => {
       </div>
       <div className="my-review-rates">
         {[...Array(5)].map((_, i) =>
-          i <= myReview.starRating ? <Star key={i} className="red-star" /> : <StarBorder key={i} />
+          i <= myReview.starRating ? (
+            <Star key={i} className="red-star" />
+          ) : (
+            <StarBorder key={i} />
+          )
         )}
         <span>
           {myReview?.createdAt
-            ?.split("/")
-            .map((date) => (date.length === 1 && date.length !== 4 ? "0" + date : date))
-            .join("/")}
+            ?.split('/')
+            .map((date) => (date.length === 1 && date.length !== 4 ? '0' + date : date))
+            .join('/')}
         </span>
       </div>
       <p> {myReview.comment} </p>
@@ -77,6 +81,11 @@ const MyReview = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
+
+      img {
+        width: 56px;
+        height: 56px;
+      }
 
       h4 {
         font-size: 16px;

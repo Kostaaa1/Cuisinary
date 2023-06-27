@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
-import { RecipeContext } from "../Recipe";
-import { Link } from "react-scroll";
+import React, { useContext } from 'react';
+import styled from 'styled-components';
+import { RecipeContext } from '../Recipe';
+import { Link } from 'react-scroll';
 
 const RecipeHeader = () => {
   const { recipe, comments, reviews, averageRate, starArray } = useContext(RecipeContext);
@@ -41,6 +41,8 @@ const RecipeHeader = () => {
 };
 
 const Header = styled.div`
+  width: 100%;
+
   h1 {
     font-size: 46px !important;
   }

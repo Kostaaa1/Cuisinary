@@ -36,14 +36,11 @@ const Description = () => {
       }
 
       setFavorite(true);
-      await toast.promise(
-        axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }),
-        {
-          pending: 'Saving recipe...',
-          success: 'Recipe saved to your collection!',
-          error: 'An error occurred while saving the recipe!',
-        }
-      );
+      await toast.promise(axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }), {
+        pending: 'Saving recipe...',
+        success: 'Recipe saved to your collection!',
+        error: 'An error occurred while saving the recipe!',
+      });
     } catch (error) {
       console.log(error);
       toast.error('An error occurred while saving the recipe!');
@@ -93,6 +90,7 @@ const Description = () => {
 };
 
 const Container = styled.div`
+  width: 100%;
   max-width: 100%;
 
   img {

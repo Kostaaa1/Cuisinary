@@ -54,6 +54,7 @@ module.exports = {
             height: 350,
             crop: "fill",
             format: "jpg",
+            fetch_format: "jpg",
           },
         ],
       });
@@ -258,13 +259,12 @@ module.exports = {
 
       const result = await cloudinary.uploader.upload(path, {
         folder: "user-personal-recipes",
-        eager: [
-          { fetch_format: "avif", format: "" },
-          { fetch_format: "jp2", format: "" },
-          { fetch_format: "webp", flags: "awebp", format: "" },
-        ],
         transformation: {
+          crop: "fill",
           format: "jpg",
+          fetch_format: "jpg",
+          width: 880,
+          height: 880,
         },
       });
 

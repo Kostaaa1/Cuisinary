@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-const useAddFixed = (ref, params) => {
-  const urlArr = ['reviews', 'change-password'];
-  if (urlArr.includes(params.name)) return;
-
+const useAddFixed = (ref) => {
   useEffect(() => {
     const handleScroll = () => {
       const height = window.innerWidth > 1120 ? 148 : 88;

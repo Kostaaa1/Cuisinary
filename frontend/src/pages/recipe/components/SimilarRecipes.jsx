@@ -10,14 +10,11 @@ import LineBreak from '../../../common/LineBreak';
 
 const SimilarRecipes = () => {
   const queryClient = useQueryClient();
-  const { recipe, favoriteForSimilar, setFavoriteForSimilar } =
-    useContext(RecipeContext);
+  const { recipe, favoriteForSimilar, setFavoriteForSimilar } = useContext(RecipeContext);
 
   const fetchSimilarRecipes = async () => {
     try {
-      const res = await axios.get(
-        `/api/recipe/${recipe?.title}/getSimilarRecipes`
-      );
+      const res = await axios.get(`/api/recipe/${recipe?.title}/getSimilarRecipes`);
       return res.data;
     } catch (error) {
       console.log(error);
@@ -76,9 +73,7 @@ const SimilarRecipes = () => {
               </>
             )}
           </Grid>
-          {favoriteForSimilar && (
-            <SavedModal setFavorite={setFavoriteForSimilar} />
-          )}
+          {favoriteForSimilar && <SavedModal setFavorite={setFavoriteForSimilar} />}
         </Similar>
       )}
     </>
@@ -96,9 +91,13 @@ const Similar = styled.div`
   background-color: white;
   /* padding: 0 36px; */
 
-  @media screen and (max-width: 1240px) {
+  @media screen and (max-width: 1270px) {
     padding-left: 36px;
     padding-right: 36px;
+  }
+
+  @media screen and (max-width: 800px) {
+    padding: 0 62px;
   }
 
   h2 {

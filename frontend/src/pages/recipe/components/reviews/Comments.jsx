@@ -42,7 +42,7 @@ const Comments = () => {
             </span>
           </div>
           <p> {comment.comment} </p>
-          <LineBreak className="line-break" />
+          {i !== comments.length - 1 && <LineBreak className="line-break" />}
         </div>
       ))}
       <div id="link-to-similar"></div>
@@ -102,8 +102,8 @@ const CommentsContainer = styled.div`
       img,
       svg {
         border-radius: 50%;
-        width: 30px;
-        height: 30px;
+        width: 44px;
+        height: 44px;
         margin-right: 8px;
       }
     }

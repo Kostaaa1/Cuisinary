@@ -15,7 +15,7 @@ import SideNavbar from './components/SideNavbar';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { userLinkList } from './navbar-constants';
 import useNoScroll from '../../utils/useNoScroll';
-import UserIconComponent from '../../common/UserStateComponent';
+import UserStateComponent from '../../common/UserStateComponent';
 
 const Header = () => {
   const { showSearch, setShowSearch } = useContext(GlobalContext);
@@ -39,9 +39,7 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      window.scrollY > 50
-        ? setActivateScrolled(true)
-        : setActivateScrolled(false);
+      window.scrollY > 50 ? setActivateScrolled(true) : setActivateScrolled(false);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -104,10 +102,7 @@ const Header = () => {
                 </div>
                 <Logo to={'/'} />
                 {showSearch ? (
-                  <Search
-                    style={{ width: '400px' }}
-                    showSearched={showSearched}
-                  />
+                  <Search style={{ width: '400px' }} showSearched={showSearched} />
                 ) : (
                   <ul className="wrapper-resize">
                     <li className="list">
@@ -120,7 +115,7 @@ const Header = () => {
                     </li>
                     <div className="divider-line"></div>
                     <li className="list" onClick={handleClickOnProfile}>
-                      <UserIconComponent />
+                      <UserStateComponent />
                     </li>
                   </ul>
                 )}
@@ -325,9 +320,12 @@ const HeaderControl = styled.div`
     padding: 0 36px;
   }
 
+  @media (max-width: 800px) {
+    padding: 0 62px;
+  }
+
   .hamburger-wrap {
     flex: 1;
-    cursor: pointer;
   }
 
   svg {
@@ -342,7 +340,7 @@ const HeaderControl = styled.div`
     justify-content: flex-end;
 
     .divider-line {
-      margin: 0 14px;
+      margin: 0 10px;
     }
 
     span {
