@@ -1,12 +1,13 @@
-import { Add, Remove } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import ButtonBorder from "../../../../common/ButtonBorder";
-import RemoveRecipeModal from "./RemoveRecipeModal";
-import Loading from "../../../../common/Loading";
-import AddCustomModal from "./AddCustomModal";
-import useNoScroll from "../../../../utils/useNoScroll";
-import { useNavigate } from "react-router-dom";
+import { Add, Remove } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import ButtonBorder from '../../../../common/ButtonBorder';
+import RemoveRecipeModal from './RemoveRecipeModal';
+import Loading from '../../../../common/Loading';
+import AddCustomModal from './AddCustomModal';
+import useNoScroll from '../../../../utils/useNoScroll';
+import { useNavigate } from 'react-router-dom';
+import StarRating from '../../../../common/StarRating';
 
 const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
     <Card>
       {favorite.loading && (
         <div className="transparent-card">
-          <Loading style={{ marginBottom: "120px" }} />
+          <Loading style={{ marginBottom: '120px' }} />
         </div>
       )}
       <img
@@ -35,8 +36,12 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
         <h4 onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}>
           {favorite?.recipeTitle}
         </h4>
+        <div className="flex">
+          <StarRating averageRate={favorite?.averageRate} />
+          <p> {favorite?.recipeReviewsLength} </p>
+        </div>
         <ButtonBorder
-          style={{ width: "160px", height: "36px" }}
+          style={{ width: '160px', height: '36px' }}
           value={
             <p>
               <Add /> <span> Add to collection </span>
@@ -76,7 +81,7 @@ const Card = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  min-height: 380px;
+  min-height: 400px;
   box-shadow: var(--card-shadow-border);
 
   @media (max-width: 1270px) {
@@ -85,7 +90,7 @@ const Card = styled.div`
 
   .transparent-card {
     position: absolute;
-    background-color: rgba(245, 245, 245, 0.83);
+    background-color: rgba(245, 245, 245, 0.73);
     top: 0;
     left: 0;
     width: 100%;
@@ -102,10 +107,23 @@ const Card = styled.div`
 
   .card-content {
     padding: 1rem;
+    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
+
+    .flex {
+      height: max-content;
+      display: flex;
+      align-items: start;
+
+      p {
+        font-size: 14px;
+        margin-left: 6px;
+        color: var(--grey-color);
+      }
+    }
 
     .summary {
       display: inline-flex;
@@ -120,8 +138,6 @@ const Card = styled.div`
       text-align: start;
       color: var(--grey-color);
       cursor: pointer;
-      font-size: 18px;
-      padding-bottom: 42px;
 
       &:hover {
         text-decoration: underline;

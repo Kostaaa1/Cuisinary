@@ -5,9 +5,10 @@ import { Star, StarBorder, StarHalf } from '@mui/icons-material';
 import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 import { RecipeContext } from '../../Recipe';
 import LineBreak from '../../../../common/LineBreak';
+import StarRating from '../../../../common/StarRating';
 
 const BarChartComponent = () => {
-  const { reviews, averageRate, starArray } = useContext(RecipeContext);
+  const { reviews, averageRate } = useContext(RecipeContext);
   const [fiveLength, setFiveLength] = useState(0);
   const [fourLength, setFourLength] = useState(0);
   const [threeLength, setThreeLength] = useState(0);
@@ -15,11 +16,11 @@ const BarChartComponent = () => {
   const [oneLength, setOneLength] = useState(0);
 
   useEffect(() => {
-    setFiveLength(reviews?.filter((review) => review.starRating === 4).length);
-    setFourLength(reviews?.filter((review) => review.starRating === 3).length);
-    setThreeLength(reviews?.filter((review) => review.starRating === 2).length);
-    setTwoLength(reviews?.filter((review) => review.starRating === 1).length);
-    setOneLength(reviews?.filter((review) => review.starRating === 0).length);
+    setFiveLength(reviews?.filter((review) => review.starRating === 5).length);
+    setFourLength(reviews?.filter((review) => review.starRating === 4).length);
+    setThreeLength(reviews?.filter((review) => review.starRating === 3).length);
+    setTwoLength(reviews?.filter((review) => review.starRating === 2).length);
+    setOneLength(reviews?.filter((review) => review.starRating === 1).length);
   }, []);
 
   const data = useMemo(() => {
@@ -57,7 +58,7 @@ const BarChartComponent = () => {
       <LineBreak className="line-break" />
       <Average>
         <div className="average-rate">
-          <div className="rate-control">{starArray?.map((star) => star)}</div>
+          <StarRating averageRate={averageRate} />
           <span>{averageRate?.toString()} out of 5</span>
         </div>
         <p>{reviews?.length} Ratings</p>
@@ -95,12 +96,7 @@ const BarChartComponent = () => {
           }}
         >
           <Bar barSize={13} dataKey="pv" stackId="a" fill="var(--gold-color)" />
-          <Bar
-            barSize={13}
-            dataKey="amt"
-            stackId="a"
-            fill="var(--grey-hover-color)"
-          />
+          <Bar barSize={13} dataKey="amt" stackId="a" fill="var(--grey-hover-color)" />
         </BarChartCustom>
         <div className="control">
           <div className="control-wrap">

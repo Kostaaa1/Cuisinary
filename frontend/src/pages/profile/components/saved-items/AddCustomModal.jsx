@@ -1,26 +1,26 @@
-import styled from "styled-components";
-import { useState } from "react";
-import { Close, Add } from "@mui/icons-material";
-import { useEffect } from "react";
-import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
+import styled from 'styled-components';
+import { useState } from 'react';
+import { Close, Add } from '@mui/icons-material';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+import { motion } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AddCustomModal = ({ showModal, favorite }) => {
-  const [collName, setCollName] = useState("");
+  const [collName, setCollName] = useState('');
   const [checkedColls, setCheckedColls] = useState([]);
   const [showInput, setShowInput] = useState(false);
   const { user } = useAuth0();
   const queryClient = useQueryClient();
   const [collections, setCollections] = useState([]);
   const [userCollections, setUserCollections] = useState([]);
-  const userData = queryClient.getQueryData(["user-data", user?.email]);
+  const userData = queryClient.getQueryData(['user-data', user?.email]);
 
   useEffect(() => {
     if (userData) {
       let collections = userData.collections.filter(
-        (x) => x.collName !== "All Saved Items"
+        (x) => x.collName !== 'All Saved Items'
       );
       setUserCollections(collections);
     }
@@ -41,13 +41,13 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
   useEffect(() => {
     const handle = (e) => {
-      if (e.key !== "Escape") return;
+      if (e.key !== 'Escape') return;
       showModal();
     };
 
-    document.addEventListener("keydown", handle);
+    document.addEventListener('keydown', handle);
     return () => {
-      document.removeEventListener("keydown", handle);
+      document.removeEventListener('keydown', handle);
     };
   }, []);
 
@@ -59,13 +59,10 @@ const AddCustomModal = ({ showModal, favorite }) => {
         collName: collName,
       });
 
-      setCollections((prevState) => [
-        { collName, collRecipes: [] },
-        ...prevState,
-      ]);
+      setCollections((prevState) => [{ collName, collRecipes: [] }, ...prevState]);
 
       setShowInput(false);
-      setCollName("");
+      setCollName('');
     } catch (error) {
       console.log(error);
     }
@@ -73,13 +70,9 @@ const AddCustomModal = ({ showModal, favorite }) => {
 
   const handleCheckbox = (e, collName, id) => {
     if (e.currentTarget.checked) {
-      setCheckedColls((prevState) =>
-        prevState.map((x, i) => (i === id ? collName : x))
-      );
+      setCheckedColls((prevState) => prevState.map((x, i) => (i === id ? collName : x)));
     } else {
-      setCheckedColls((prevState) =>
-        prevState.map((x, i) => (i === id ? undefined : x))
-      );
+      setCheckedColls((prevState) => prevState.map((x, i) => (i === id ? undefined : x)));
     }
   };
 
@@ -90,9 +83,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
       let checkedCollWithRecipe = userCollections
         .filter(({ collName }, i) => collName === checkedColls[i])
         .map((coll) =>
-          coll.collRecipes.some(
-            ({ recipeTitle }) => recipeTitle === favorite.recipeTitle
-          )
+          coll.collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle)
             ? false
             : coll.collName
         )
@@ -149,17 +140,14 @@ const AddCustomModal = ({ showModal, favorite }) => {
                         className="add"
                         type="text"
                         placeholder="Collection Name"
-                        value={collName ? collName : ""}
+                        value={collName ? collName : ''}
                         onChange={(e) => setCollName(e.target.value)}
                       />
                       <button onClick={addNewCollection}>Add</button>
                     </div>
                   </div>
                 ) : (
-                  <div
-                    className="add-collection"
-                    onClick={() => setShowInput(true)}
-                  >
+                  <div className="add-collection" onClick={() => setShowInput(true)}>
                     <Add />
                     <h5>NEW COLLECTION</h5>
                   </div>
@@ -174,14 +162,14 @@ const AddCustomModal = ({ showModal, favorite }) => {
                       id={`styled-checkbox-${id}`}
                     />
                     <label htmlFor={`styled-checkbox-${id}`}>
-                      {coll.collName ? coll.collName : ""}
+                      {coll.collName ? coll.collName : ''}
                     </label>
                   </div>
                 ))}
                 {!showInput && (
                   <div className="buttons">
                     <div></div>
-                    <input className="submit" type="submit" value={"Done"} />
+                    <input className="submit" type="submit" value={'Done'} />
                   </div>
                 )}
               </form>
@@ -196,7 +184,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
 const Modal = styled.div`
   position: fixed;
   overflow: hidden;
-  content: "";
+  content: '';
   top: 0;
   left: 0;
   width: 100%;
@@ -338,7 +326,7 @@ const Section = styled(motion.div)`
             align-items: center;
             overflow: auto;
 
-            input[type="text"] {
+            input[type='text'] {
               &:focus {
                 outline: none;
               }

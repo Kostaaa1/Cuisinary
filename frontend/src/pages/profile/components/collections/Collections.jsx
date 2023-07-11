@@ -1,18 +1,17 @@
-import { HttpsOutlined } from "@mui/icons-material";
-import { useMemo, useState } from "react";
-import styled from "styled-components";
-import FavoriteCollection from "./FavoriteCollection";
-import CollectionModal from "../../../../common/CollectionModal";
-import NewCollectionCard from "./NewCollectionCard";
-import { useNavigate } from "react-router-dom";
-import useNoScroll from "../../../../utils/useNoScroll";
-import { useRef } from "react";
-import SectionHeader from "../../../../common/SectionHeader";
+import { HttpsOutlined } from '@mui/icons-material';
+import { useEffect, useMemo, useState } from 'react';
+import styled from 'styled-components';
+import FavoriteCollection from './FavoriteCollection';
+import CollectionModal from '../../../../common/CollectionModal';
+import NewCollectionCard from './NewCollectionCard';
+import { useNavigate } from 'react-router-dom';
+import useNoScroll from '../../../../utils/useNoScroll';
+import { useRef } from 'react';
+import SectionHeader from '../../../../common/SectionHeader';
 
 const Collections = ({ userData }) => {
   const navigate = useNavigate();
   const [showCollectionModal, setShowCollectionModal] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   useNoScroll(showCollectionModal);
   const mockData = [
     {
@@ -41,6 +40,10 @@ const Collections = ({ userData }) => {
     );
   }, [userData, mockData]);
 
+  useEffect(() => {
+    console.log(userData?.collections);
+  }, [userData?.collections]);
+
   return (
     <>
       <Collection>
@@ -55,24 +58,17 @@ const Collections = ({ userData }) => {
             onClick={() => setShowCollectionModal(true)}
           />
           <div>
-            <h4 className="h3-space">
-              {userData?.collections.length} Collections
-            </h4>
+            <h4 className="h3-space">{userData?.collections.length} Collections</h4>
             <div className="collection-control">
               {userData?.collections.map((collection, id) => (
                 <FavoriteCollection
                   key={collection._id}
                   collection={collection}
                   layoutArr={layoutArr[id]}
-                  onLoad={() => {
-                    setImageLoaded(true);
-                  }}
                   onClick={() => {
-                    collection.collName === "All Saved Items"
-                      ? navigate("/account/profile/saved-items")
-                      : navigate(
-                          `/account/profile/collection/${collection._id}`
-                        );
+                    collection.collName === 'All Saved Items'
+                      ? navigate('/account/profile/saved-items')
+                      : navigate(`/account/profile/collection/${collection._id}`);
                   }}
                 />
               ))}
@@ -82,9 +78,7 @@ const Collections = ({ userData }) => {
         </div>
       </Collection>
       {showCollectionModal && (
-        <CollectionModal
-          showModal={() => setShowCollectionModal(!showCollectionModal)}
-        />
+        <CollectionModal showModal={() => setShowCollectionModal(!showCollectionModal)} />
       )}
     </>
   );

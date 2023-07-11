@@ -11,6 +11,7 @@ const ButtonBorder = ({ value, style, onClick, icon }) => {
 };
 
 const Button = styled.button`
+  background-color: #fff;
   color: var(--main-color);
   text-decoration: none;
   outline: 2px solid var(--red-color);

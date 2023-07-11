@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Star, StarBorder } from '@mui/icons-material';
 import Button from '../../../common/Button';
 import Loading from '../../../common/Loading';
 import { Link } from 'react-router-dom';
+import StarRating from '../../../common/StarRating';
 import {
   ArrowDropDown,
   Check,
@@ -103,7 +103,6 @@ const Reviews = ({ userData }) => {
         setHideDropdown(false);
       }
     };
-
     document.addEventListener('click', handleClick);
 
     return () => {
@@ -129,7 +128,7 @@ const Reviews = ({ userData }) => {
             <h3> {reviews.length} reviews </h3>
             <div ref={sortingRef} className="relative-flex">
               <span onClick={() => setHideDropdown(!hideDropdown)}>
-                SORT BY:
+                SORT BY:&nbsp;
                 {sortData.filter((item) => item.clicked)[0].text.toUpperCase()}
                 <ArrowDropDown />
               </span>
@@ -166,17 +165,7 @@ const Reviews = ({ userData }) => {
                             <h2> {review.recipeTitle} </h2>
                           </Link>
                           <div className="stars-wrap">
-                            {[...Array(5)].map((_, id) =>
-                              id <= review.starRating ? (
-                                <Star key={id} />
-                              ) : (
-                                <StarBorder
-                                  key={id}
-                                  className="bordered"
-                                  style={{ color: 'var(--red-color)' }}
-                                />
-                              )
-                            )}
+                            <StarRating averageRate={review.starRating} />
                             <span>&nbsp; My Review</span>
                           </div>
                           <p> {review.comment} </p>

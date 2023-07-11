@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Create, Star, StarBorder } from '@mui/icons-material';
+import StarRating from '../../../../common/StarRating';
 
 const UserReview = ({ recipeImg, myReview, showSubmit }) => {
   return (
@@ -14,13 +15,7 @@ const UserReview = ({ recipeImg, myReview, showSubmit }) => {
         </span>
       </div>
       <div className="my-review-rates">
-        {[...Array(5)].map((_, i) =>
-          i <= myReview.starRating ? (
-            <Star key={i} className="red-star" />
-          ) : (
-            <StarBorder key={i} />
-          )
-        )}
+        <StarRating averageRate={myReview.starRating} />
         <span>
           {myReview?.createdAt
             ?.split('/')
@@ -39,14 +34,6 @@ const MyReview = styled.div`
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
-
-    .red-star {
-      color: var(--red-color);
-    }
-
-    svg {
-      color: var(--grey-color);
-    }
 
     span {
       font-size: 10px;
@@ -83,8 +70,8 @@ const MyReview = styled.div`
       justify-content: center;
 
       img {
-        width: 56px;
-        height: 56px;
+        width: 44px;
+        height: 44px;
       }
 
       h4 {

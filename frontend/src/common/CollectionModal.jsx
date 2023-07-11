@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router-dom';
+import useNoScroll from '../utils/useNoScroll';
 
 const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate }) => {
   const params = useParams();
@@ -15,6 +16,7 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
   const [collDesc, setCollDesc] = useState(collectionDesc || '');
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
+  useNoScroll(showModal);
 
   const submitCollection = async (e) => {
     e.preventDefault();

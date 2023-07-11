@@ -124,7 +124,7 @@ a {
   top: 60px;
   margin-left: -24px;
   padding: 16px 24px;
-  width: 962px;
+  width: 966px;
   box-shadow: inset 0px -2px 0 var(--grey-hover-color);
 
   @media (max-width: 1270px) {

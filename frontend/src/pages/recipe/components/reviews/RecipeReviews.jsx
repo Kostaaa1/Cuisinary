@@ -2,22 +2,23 @@ import axios from 'axios';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import UserReview from './UserReview';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Loading from '../../../../common/Loading';
 import Comments from './Comments';
 import BarChart from './BarChart';
 import { RecipeContext } from '../../Recipe';
 import { useParams } from 'react-router-dom';
 import StarRatings from './StarRatings';
-import AuthContext from '../../../../setup/app-context-menager/AuthContext';
-import LineBreak from '../../../../common/LineBreak';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const RecipeReviews = () => {
   const params = useParams();
   const starRef = useRef(null);
-  const { recipe, reviews, setReviews, starArray, averageRate } =
+  const { recipe, reviews, setAverageRate, setReviews, averageRate, favorite } =
     useContext(RecipeContext);
-  const { userData } = useContext(AuthContext);
+  const queryClient = useQueryClient();
+  const { user } = useAuth0();
+  const userData = queryClient.getQueryData(['user-data', user?.email]);
   const [submitted, setSubmitted] = useState(false);
   const [myReview, setMyReview] = useState(null);
   const [comment, setComment] = useState('');
@@ -37,7 +38,7 @@ const RecipeReviews = () => {
       setMyReview(myReview);
       setComment(myReview?.comment);
       setSubmitted(true);
-      setClickId(myReview.starRating);
+      setClickId(myReview.starRating - 1);
     }
   }, [reviews, userData]);
 
@@ -49,7 +50,7 @@ const RecipeReviews = () => {
       setClickId(-1);
       setComment('');
     } else {
-      let rating = myReview.starRating;
+      const rating = myReview.starRating - 1;
       setRateArr((prevState) =>
         prevState
           .slice(0, rating + 1)
@@ -60,6 +61,7 @@ const RecipeReviews = () => {
               .map((item) => item && { ...item, bool: false, class: '' })
           )
       );
+
       setClickId(rating);
       setComment(myReview.comment);
       setSubmitted(true);
@@ -77,7 +79,6 @@ const RecipeReviews = () => {
           ...data,
           recipeImage: recipe.image,
         }),
-
         axios.post(`/api/recipe/${params.id}/editRecipeReview`, {
           ...data,
           recipeId: myReview._id,
@@ -85,14 +86,14 @@ const RecipeReviews = () => {
         }),
       ]);
 
-      setReviews(editRecipeReview.data);
+      setAverageRate(editRecipeReview.data.averageRate);
+      setReviews(editRecipeReview.data.reviews);
     } catch (error) {
       console.log(error);
     } finally {
       setSubmitted(true);
     }
   };
-
   const createReview = async (data) => {
     try {
       const [userReview, recipeReviews] = await Promise.all([
@@ -107,7 +108,8 @@ const RecipeReviews = () => {
         }),
       ]);
 
-      setReviews(recipeReviews.data);
+      setReviews(recipeReviews.data.reviews);
+      setAverageRate(recipeReviews.data.updatedAverage);
     } catch (error) {
       console.log(error);
     } finally {
@@ -118,22 +120,49 @@ const RecipeReviews = () => {
   const { isLoading: isCreating, mutate: create } = useMutation(createReview);
   const { isLoading: isEditting, mutate: edit } = useMutation(editReview);
 
+  const calculateAverageRate = () => {
+    const clickedStar = clickId + 1;
+
+    const sum =
+      reviews
+        .filter((review) => review.nickname !== userData.nickname)
+        .reduce((acc, num) => (acc += num.starRating), 0) + clickedStar;
+
+    const average =
+      reviews.length > 0
+        ? parseFloat(sum / (myReview ? reviews.length : reviews.length + 1)).toFixed(1)
+        : sum;
+    return average;
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      const sum = calculateAverageRate();
 
-      const data = {
-        comment: comment,
-        starRating: clickId,
+      const collectionsIncludesRecipe = userData.collections
+        .map((coll) =>
+          coll.collRecipes.some((x) => x.recipeTitle === recipe.title)
+            ? coll.collName
+            : ''
+        )
+        .filter((coll) => coll);
+
+      const reviewData = {
+        comment,
+        averageRate: sum,
+        recipeReviewsLength: myReview ? reviews.length : reviews.length + 1,
+        starRating: clickId + 1,
         recipeTitle: recipe.title,
+        collections: collectionsIncludesRecipe,
+        id: recipe.id,
       };
 
       if (myReview) {
-        edit(data);
+        edit(reviewData);
         return;
       }
-
-      create(data);
+      create(reviewData);
     } catch (error) {
       console.log(error);
     }
@@ -194,7 +223,7 @@ const RecipeReviews = () => {
                   </ReviewsForm>
                 )}
               </div>
-              {starArray && averageRate && <BarChart />}
+              {averageRate > 0 && <BarChart />}
               <Comments />
             </>
           )}

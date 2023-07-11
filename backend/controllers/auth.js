@@ -4,6 +4,7 @@ const User = require("../models/User");
 
 const addRecipeToSavedCollection = async (email, data) => {
   try {
+    const { recipeTitle, averageRate, recipeReviewsLength, recipe } = data;
     const filter = {
       email,
       "collections.collName": "All Saved Items",
@@ -11,13 +12,14 @@ const addRecipeToSavedCollection = async (email, data) => {
     const update = {
       $push: {
         "collections.$.collRecipes": {
-          $each: [{ recipeTitle: data.recipeTitle, recipe: data.recipe }],
+          $each: [{ recipeTitle, averageRate, recipe, recipeReviewsLength }],
           $position: 0,
         },
       },
     };
     const options = { unique: true, new: true, runValidators: true };
     const user = await User.findOneAndUpdate(filter, update, options);
+
     return user.collections[0];
   } catch (error) {
     res.status(404).json(error.message);
@@ -28,6 +30,7 @@ module.exports = {
   addToFavorite: async (req, res) => {
     try {
       const { email } = req.params;
+      const { id, averageRate, recipeReviewsLength } = req.body;
       const existingRecipe = await Recipe.findOne({ id: req.body.id });
       let newRecipeData;
 
@@ -39,15 +42,17 @@ module.exports = {
 
         newRecipeData = {
           recipeTitle: title,
+          averageRate: averageRate || "",
+          recipeReviewsLength: recipeReviewsLength || "",
           recipe: {
-            id: id,
+            id,
             imageType: imageType,
             image: image,
             summary: summary,
           },
         };
 
-        Recipe.create({
+        await Recipe.create({
           id,
           recipeTitle: title,
           data: recipe.data,
@@ -55,6 +60,8 @@ module.exports = {
       } else {
         newRecipeData = {
           recipeTitle: existingRecipe.data.title,
+          averageRate: averageRate || "",
+          recipeReviewsLength: recipeReviewsLength || "",
           recipe: {
             id: existingRecipe.data.id,
             imageType: existingRecipe.data.imageType,
@@ -64,6 +71,7 @@ module.exports = {
         };
       }
 
+      console.log(newRecipeData);
       const collection = await addRecipeToSavedCollection(email, newRecipeData);
       res.status(200).json(collection);
     } catch (error) {

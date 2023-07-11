@@ -1,6 +1,6 @@
-import styled from "@emotion/styled";
-import React, { useEffect, useRef, useState } from "react";
-import { Star, StarBorder } from "@mui/icons-material";
+import styled from '@emotion/styled';
+import React, { useEffect, useRef, useState } from 'react';
+import { Star, StarBorder } from '@mui/icons-material';
 
 const StarRatings = ({
   clickId,
@@ -16,7 +16,7 @@ const StarRatings = ({
     setRateArr((prevState) =>
       prevState
         .slice(0, id + 1)
-        .map((item, i) => item && { ...item, bool: true, class: "star-border" })
+        .map((item) => item && { ...item, bool: true, class: 'star-border' })
         .concat(
           prevState
             .slice(id + 1, prevState.length)
@@ -28,18 +28,18 @@ const StarRatings = ({
   const handleOnMouseLeave = () => {
     if (clickId < 0) {
       setRateArr((prevState) =>
-        prevState.map((item, i) => item && { ...item, bool: false, class: "" })
+        prevState.map((item, i) => item && { ...item, bool: false, class: '' })
       );
       setLastId(-1);
     } else {
       setRateArr((prevState) =>
         prevState
           .slice(0, clickId + 1)
-          .map((item) => item && { ...item, bool: true, class: "star-border" })
+          .map((item) => item && { ...item, bool: true, class: 'star-border' })
           .concat(
             prevState
               .slice(clickId + 1, prevState.length)
-              .map((item) => item && { ...item, bool: false, class: "" })
+              .map((item) => item && { ...item, bool: false, class: '' })
           )
       );
     }
@@ -47,18 +47,14 @@ const StarRatings = ({
 
   useEffect(() => {
     const onMouseLeave = (event) => {
-      if (
-        lastId > -1 &&
-        starRef.current &&
-        !starRef.current.contains(event.target)
-      ) {
+      if (lastId > -1 && starRef.current && !starRef.current.contains(event.target)) {
         handleOnMouseLeave();
       }
     };
 
-    document.addEventListener("mousemove", onMouseLeave);
+    document.addEventListener('mousemove', onMouseLeave);
     return () => {
-      document.removeEventListener("mousemove", onMouseLeave);
+      document.removeEventListener('mousemove', onMouseLeave);
     };
   }, [lastId, clickId]);
 
@@ -71,11 +67,11 @@ const StarRatings = ({
     setRateArr((prevState) =>
       prevState
         .slice(0, clickId + 1)
-        .map((item) => item && { ...item, bool: true, class: "" })
+        .map((item) => item && { ...item, bool: true, class: '' })
         .concat(
           rateArr
             .slice(clickId + 1, rateArr.length)
-            .map((item) => item && { ...item, bool: false, class: "" })
+            .map((item) => item && { ...item, bool: false, class: '' })
         )
     );
   }, [clickId]);
@@ -93,11 +89,7 @@ const StarRatings = ({
         </h4>
       </div>
       <Ratings>
-        <div
-          className="star-flex"
-          ref={starRef}
-          onMouseLeave={handleOnMouseLeave}
-        >
+        <div className="star-flex" ref={starRef} onMouseLeave={handleOnMouseLeave}>
           {rateArr.map((star, id) =>
             star.bool ? (
               <Star
@@ -110,7 +102,7 @@ const StarRatings = ({
             ) : (
               <StarBorder
                 key={id}
-                className={star.class !== "" ? star.class : ""}
+                className={star.class !== '' ? star.class : ''}
                 onMouseEnter={() => handleOnMouseEnter(id)}
                 onMouseLeave={handleOnMouseLeave}
               />
@@ -118,7 +110,7 @@ const StarRatings = ({
           )}
           <div className="divider"></div>
         </div>
-        <p>{lastId !== -1 ? rateArr[lastId].text : ""}</p>
+        <p>{lastId !== -1 ? rateArr[lastId].text : ''}</p>
       </Ratings>
     </>
   );

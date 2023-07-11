@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 import { DragIndicator } from '@mui/icons-material';
 
-const FavoriteCollection = ({ collection, onLoad, layoutArr, onClick }) => {
+const FavoriteCollection = ({ collection, layoutArr, onClick }) => {
   return (
     <Collection onClick={onClick}>
       <CustomLink>
         <div className="collection-layout">
           {layoutArr?.map((recipe, id) =>
             recipe.data.image ? (
-              <img key={id} onLoad={onLoad} src={recipe.data.image} alt="" />
+              <img key={id} src={recipe.data.image} alt="" />
             ) : (
               <div key={id} className="grey-div"></div>
             )

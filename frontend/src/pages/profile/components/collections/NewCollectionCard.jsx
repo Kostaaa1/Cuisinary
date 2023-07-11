@@ -19,16 +19,19 @@ const Card = styled.div`
   box-shadow: var(--card-shadow-border);
   overflow: none;
   min-height: 400px;
+  cursor: pointer;
 
-  h3 {
-    margin: -50px auto;
-
-    &:hover {
+  &:hover {
+    h3 {
       text-decoration: underline;
       text-decoration-color: var(--main-color);
       text-underline-offset: 5px;
       text-decoration-thickness: 10%;
     }
+  }
+
+  h3 {
+    margin: -50px auto;
   }
 
   .add {

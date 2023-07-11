@@ -1,13 +1,12 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const useNoScroll = (arg1, arg2) => {
   useEffect(() => {
-    console.log('use no scroll called')
-    const body = document.querySelector("body");
+    const body = document.querySelector('body');
     if (arg1 || arg2) {
-      body.classList.add("no-scroll");
+      body.classList.add('no-scroll');
     } else {
-      body.classList.remove("no-scroll");
+      body.classList.remove('no-scroll');
     }
   }, [arg1, arg2]);
 };

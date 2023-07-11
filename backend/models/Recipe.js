@@ -25,6 +25,7 @@ const RecipeSchema = new mongoose.Schema({
   recipeTitle: { type: String, required: true },
   data: {},
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+  averageRate: Number,
 });
 
 const Recipe = mongoose.model("Recipe", RecipeSchema);

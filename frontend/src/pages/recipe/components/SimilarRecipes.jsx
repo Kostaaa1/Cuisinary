@@ -86,7 +86,7 @@ const Similar = styled.div`
   flex-direction: column;
   width: 100%;
   max-width: 1240px;
-  margin: 0 auto;
+  margin: 0 auto 120px auto;
   height: 100%;
   background-color: white;
   /* padding: 0 36px; */

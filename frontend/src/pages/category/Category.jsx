@@ -27,13 +27,7 @@ const Category = () => {
     fetchCategorized
   );
 
-  const CardDescriptionProps = (
-    favorite,
-    params,
-    setFavorite,
-    key,
-    recipeData
-  ) => {
+  const CardDescriptionProps = (favorite, params, setFavorite, key, recipeData) => {
     return (
       <CardDescription
         favorite={favorite}
@@ -65,13 +59,7 @@ const Category = () => {
           {categoryRecipes
             ?.slice(3, categoryRecipes.length)
             ?.map((recipe, id) =>
-              CardDescriptionProps(
-                favorite,
-                params.recipe,
-                setFavorite,
-                id,
-                recipe
-              )
+              CardDescriptionProps(favorite, params.recipe, setFavorite, id, recipe)
             )}
         </Grid>
       ) : (

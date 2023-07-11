@@ -7,16 +7,21 @@ import { useUser } from '../../../setup/auth/useAuth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthContext from '../../../setup/app-context-menager/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Description = () => {
-  const { recipe, favorite, setFavorite } = useContext(RecipeContext);
-  // const { userData } = useUser();
-  const { userData } = useContext(AuthContext);
+  const { recipe, favorite, reviews, averageRate, setFavorite } =
+    useContext(RecipeContext);
+  const queryClient = useQueryClient();
+  const { user } = useAuth0();
+  const userData = queryClient.getQueryData(['user-data', user?.email]);
 
   const checkIfRecipeExists = () => {
     let checkForRecipe = userData?.collections[0]?.collRecipes.find(
       (recipes) => recipes.recipeTitle === recipe?.title
     );
+
     return checkForRecipe;
   };
 
@@ -34,13 +39,26 @@ const Description = () => {
         toast.info('This recipe is already in your collection!');
         return;
       }
-
       setFavorite(true);
-      await toast.promise(axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }), {
-        pending: 'Saving recipe...',
-        success: 'Recipe saved to your collection!',
-        error: 'An error occurred while saving the recipe!',
-      });
+
+      const saveData = {
+        id: recipe.id,
+        averageRate: averageRate,
+        recipeReviewsLength: reviews.length,
+      };
+
+      console.log(reviews, recipe);
+
+      await toast.promise(
+        reviews.length > 0 && averageRate > 0
+          ? axios.post(`/api/auth/${userData?.email}`, saveData)
+          : axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }),
+        {
+          pending: 'Saving recipe...',
+          success: 'Recipe saved to your collection!',
+          error: 'An error occurred while saving the recipe!',
+        }
+      );
     } catch (error) {
       console.log(error);
       toast.error('An error occurred while saving the recipe!');

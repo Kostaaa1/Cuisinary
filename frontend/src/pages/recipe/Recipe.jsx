@@ -1,4 +1,3 @@
-import { Star, StarHalf, StarBorder } from '@mui/icons-material';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,9 +11,10 @@ import Description from './components/Description';
 import RecipeHeader from './components/RecipeHeader';
 import Summary from './components/Summary';
 import axios from 'axios';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import useSmoothScroll from '../../utils/useSmoothScroll';
+import { useUser } from '../../setup/auth/useAuth';
 
 export const RecipeContext = createContext('');
 
@@ -26,14 +26,20 @@ const Recipe = () => {
   const [isFetched, setIsFetched] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [favoriteForSimilar, setFavoriteForSimilar] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [averageRate, setAverageRate] = useState('');
+  const { getUserData } = useUser();
   useSmoothScroll();
 
-  const queryClient = useQueryClient();
-  const userData = queryClient.getQueryData(['user-data', user?.email]);
+  const { data: userData } = useQuery(['user-data', user?.email], getUserData, {
+    enabled: !!user,
+    refetchOnMount: 'always',
+  });
 
   useEffect(() => {
-    getRecipe();
+    if (userData) {
+      getRecipe();
+      isFavorite();
+    }
   }, [userData]);
 
   const getRecipe = async () => {
@@ -41,19 +47,22 @@ const Recipe = () => {
       const recipeData = await axios.get(`/api/recipe/${params.id}/getRecipe`);
       const recipe = recipeData.data;
 
+      console.log(recipe, 'yooooooooo');
       setRecipe(recipe[0].data);
       setReviews(recipe[1]);
-
-      const checkCollections = userData?.collections.some((collection) =>
-        collection.collRecipes.some((col) => col.recipeTitle === recipe.title)
-      );
-
-      setFavorite(checkCollections);
+      setAverageRate(recipe[0].averageRate);
     } catch (error) {
       console.log(error);
     } finally {
       setIsFetched(true);
     }
+  };
+
+  const isFavorite = () => {
+    const checkCollections = userData?.collections.some((coll) =>
+      coll.collRecipes.some((col) => col.recipeTitle === recipe.title)
+    );
+    setFavorite(checkCollections);
   };
 
   const summary = useMemo(() => {
@@ -75,40 +84,10 @@ const Recipe = () => {
     }
   }, [recipe]);
 
-  const averageRate = useMemo(() => {
-    if (reviews) {
-      let sum = reviews?.reduce((acc, num) => (acc += num.starRating + 1), 0);
-      let average = sum !== 0 ? parseFloat((sum / reviews?.length).toFixed(1)) : 0;
-      setComments(reviews.filter((review) => review.comment !== ''));
-      return average;
-    }
-  }, [reviews]);
-
-  const starArray = useMemo(() => {
-    if (averageRate > 0) {
-      let arr = averageRate
-        .toString()
-        .split('.')
-        .map((num) => Number(num));
-
-      return Array(5)
-        .fill('')
-        .map((_, i) =>
-          i <= arr[0] - 1 ? (
-            <Star key={i} />
-          ) : i === arr[0] && arr[1] >= 5 ? (
-            <StarHalf key={i} />
-          ) : (
-            <StarBorder key={i} />
-          )
-        );
-    }
-  }, [averageRate]);
-
   const value = {
     recipe,
     averageRate,
-    comments,
+    setAverageRate,
     favorite,
     summary,
     setFavorite,
@@ -117,12 +96,11 @@ const Recipe = () => {
     setFavoriteForSimilar,
     setReviews,
     getRecipe,
-    starArray,
   };
 
   return (
     <RecipeContext.Provider value={value}>
-      {recipe && isFetched ? (
+      {recipe && isFetched && userData ? (
         <>
           <Wrapper>
             <div className="container">

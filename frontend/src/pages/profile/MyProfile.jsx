@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useCallback, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import List from '../../pages/profile/components/List';
@@ -33,21 +33,22 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const prefixPath = '/account/profile';
 
   if (
-    path === prefixPath + '' ||
-    path === prefixPath + '/public-profile' ||
-    path === prefixPath + '/change-password'
+    // path === prefixPath + '' ||
+    // path === prefixPath + '/public-profile' ||
+    path ===
+    prefixPath + '/change-password'
   ) {
     refetchOnMount = false;
   }
 
-  const {
-    data: userData,
-    isRefetching,
-    isLoading,
-  } = useQuery(['user-data', user?.email], getUserData, {
-    enabled: !!user,
-    refetchOnMount,
-  });
+  const { data: userData, isRefetching } = useQuery(
+    ['user-data', user?.email],
+    getUserData,
+    {
+      enabled: !!user,
+      refetchOnMount,
+    }
+  );
 
   useEffect(() => {
     if (
@@ -64,6 +65,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
       titles: arrayOfRecipeNames,
       collectionId: collectionParams === 'saved-items' ? '' : collectionId,
     };
+
     await axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
   };
 
@@ -82,7 +84,7 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
 
     if (isSelected) {
       const Component = staticList[list.component];
-      if (!isRefetching && !isLoading) {
+      if (userData && !isRefetching) {
         return (
           <Component key={list.id} userData={userData} isRefetching={isRefetching} />
         );
@@ -90,7 +92,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
         return <Loading key={list.id} className="loading" scaled={true} />;
       }
     }
-    return null;
   };
 
   return (
@@ -251,7 +252,7 @@ const Container = styled.div`
   }
 
   .profile {
-    min-width: 260px;
+    max-width: 260px;
     height: 100%;
     margin-right: 14px;
     background-color: #fff;

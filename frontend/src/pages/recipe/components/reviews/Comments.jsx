@@ -5,35 +5,37 @@ import { useNavigate } from 'react-router-dom';
 import PersonAvatar from '../../../../common/PersonAvatar';
 import LineBreak from '../../../../common/LineBreak';
 import { RecipeContext } from '../../Recipe';
+import StarRating from '../../../../common/StarRating';
 
 const Comments = () => {
   const navigate = useNavigate();
-  const { comments } = useContext(RecipeContext);
+  const { reviews } = useContext(RecipeContext);
 
   return (
     <CommentsContainer>
-      {comments?.map((comment, i) => (
+      {reviews?.map((review, i) => (
         <div key={i} className="head-wrap">
           <div className="head-flex">
-            {comment.userImage === '' ? (
+            {review.userImage === '' ? (
               <PersonAvatar style={{ borderRadius: '50%' }} />
             ) : (
-              <img src={comment.userImage} alt="" />
+              <img src={review.userImage} alt="" />
             )}
-            <h5 onClick={() => navigate(`/profile/${comment.userId}`)}>
-              {comment.nickname}
+            <h5 onClick={() => navigate(`/profile/${review.userId}`)}>
+              {review.nickname}
             </h5>
           </div>
           <div className="review-rates">
-            {[...Array(5)].map((_, i) =>
-              i <= comment.starRating ? (
+            <StarRating averageRate={review.starRating} />
+            {/* {[...Array(5)].map((_, i) =>
+              i <= review.starRating ? (
                 <Star key={i} className="red-star" />
               ) : (
                 <StarBorder key={i} style={{ color: 'var(--red-color)' }} />
               )
-            )}
+            )} */}
             <span>
-              {comment?.createdAt
+              {review?.createdAt
                 ?.split('/')
                 .map((date) =>
                   date.length === 1 && date.length !== 4 ? '0' + date : date
@@ -41,8 +43,8 @@ const Comments = () => {
                 .join('/')}
             </span>
           </div>
-          <p> {comment.comment} </p>
-          {i !== comments.length - 1 && <LineBreak className="line-break" />}
+          <p> {review.comment} </p>
+          {i !== reviews.length - 1 && <LineBreak className="line-break" />}
         </div>
       ))}
       <div id="link-to-similar"></div>
@@ -102,8 +104,8 @@ const CommentsContainer = styled.div`
       img,
       svg {
         border-radius: 50%;
-        width: 44px;
-        height: 44px;
+        width: 34px;
+        height: 34px;
         margin-right: 8px;
       }
     }

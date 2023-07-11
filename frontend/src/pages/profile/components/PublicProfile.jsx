@@ -2,11 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {
-  AddAPhoto,
-  KeyboardArrowDown,
-  SupervisorAccount,
-} from '@mui/icons-material';
+import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from '@mui/icons-material';
 import SectionHeader from '../../../common/SectionHeader';
 
 const PublicInfo = ({ userData }) => {
@@ -56,6 +52,7 @@ const PublicInfo = ({ userData }) => {
       setShowLoading(true);
       const form = { nickname, tagline };
       const formData = new FormData();
+
       if (form.nickname || form.tagline) {
         await axios.post(`/api/user/${user.email}`, {
           user: { nickname: form.nickname, tagline: form.tagline },

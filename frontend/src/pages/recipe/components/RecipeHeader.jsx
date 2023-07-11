@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { RecipeContext } from '../Recipe';
 import { Link } from 'react-scroll';
+import StarRating from '../../../common/StarRating';
 
 const RecipeHeader = () => {
-  const { recipe, comments, reviews, averageRate, starArray } = useContext(RecipeContext);
+  const { recipe, comments, reviews, averageRate } = useContext(RecipeContext);
 
   return (
     <Header>
@@ -12,10 +13,10 @@ const RecipeHeader = () => {
       {reviews?.length > 0 ? (
         <div className="rates-wrap">
           <div className="rates-flex">
-            {starArray?.map((star) => star)}
+            <StarRating averageRate={averageRate} />
             <span className="flex-padding">
               <Link to="review-id" smooth={true} duration={500}>
-                {averageRate.toFixed(1).toString()}
+                {averageRate?.toFixed(1).toString()}
               </Link>
             </span>
             <p> ({reviews?.length}) </p>

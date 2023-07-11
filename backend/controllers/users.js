@@ -38,6 +38,8 @@ module.exports = {
       const { email } = req.params;
       const userImage = await User.findOneAndUpdate({ email: email }, {});
 
+      console.log("FILE", req.file);
+
       let { cloudinaryId } = userImage.picture;
 
       if (cloudinaryId) {
@@ -58,6 +60,8 @@ module.exports = {
           },
         ],
       });
+
+      console.log("RESULT", result);
 
       const user = await User.findOneAndUpdate(
         { email: email },
@@ -134,40 +138,6 @@ module.exports = {
       res.status(400).send(error.message);
     }
   },
-  addToCustomCollection: async (req, res) => {
-    try {
-      const checkedCollections = req.body.collections;
-      const recipe = req.body.recipe;
-
-      const update = { $push: {} };
-      checkedCollections.forEach((coll) => {
-        update.$push[`collections.$.collRecipes`] = recipe;
-      });
-
-      await User.findOneAndUpdate(
-        { email: req.params.email },
-        {
-          $push: {
-            "collections.$[coll].collRecipes": {
-              $each: [
-                { recipeTitle: recipe.recipeTitle, recipe: recipe.recipe },
-              ],
-              $position: 0,
-            },
-          },
-        },
-
-        {
-          arrayFilters: [{ "coll.collName": { $in: checkedCollections } }],
-        }
-      );
-      res
-        .status(200)
-        .json(`Recipe added to ${JSON.stringify(checkedCollections)}`);
-    } catch (error) {
-      res.status(400).send(error);
-    }
-  },
   deleteCollection: async (req, res) => {
     try {
       const user = await User.findOneAndUpdate(
@@ -185,42 +155,85 @@ module.exports = {
   },
   createUserReview: async (req, res) => {
     try {
+      const {
+        recipeTitle,
+        recipeId,
+        recipeImage,
+        comment,
+        starRating,
+        averageRate,
+        collections,
+        id,
+        recipeReviewsLength,
+      } = req.body;
       console.log(req.body);
-      const { recipeTitle, recipeId, recipeImage, comment, starRating } =
-        req.body;
+
       const { email } = req.params;
-      const user = await User.findOneAndUpdate(
+      await User.findOneAndUpdate(
         {
-          email: email,
+          email,
         },
         {
-          $push: {
+          $addToSet: {
             reviews: {
               recipeTitle,
               recipeImage,
               recipeId,
               comment,
               starRating,
+              id,
             },
           },
         }
       );
 
-      res.status(200).json(user);
-      return user;
+      // Update collections
+      if (collections.length > 0) {
+        await User.updateMany(
+          {
+            email,
+            "collections.collName": { $in: collections },
+            "collections.collRecipes.recipeTitle": recipeTitle,
+          },
+          {
+            $set: {
+              "collections.$[outer].collRecipes.$[inner].averageRate":
+                averageRate,
+              "collections.$[outer].collRecipes.$[inner].recipeReviewsLength":
+                recipeReviewsLength,
+            },
+          },
+          {
+            arrayFilters: [
+              { "outer.collName": { $in: collections } },
+              { "inner.recipeTitle": recipeTitle },
+            ],
+          }
+        );
+      }
+
+      res.status(200).json("Updated");
     } catch (err) {
       res.status(400).send(err);
     }
   },
   editUserReview: async (req, res) => {
     try {
-      const { recipeTitle, recipeImage, comment, starRating } = req.body;
+      const {
+        recipeTitle,
+        recipeImage,
+        comment,
+        starRating,
+        collections,
+        averageRate,
+        recipeReviewsLength,
+        id,
+      } = req.body;
       const { email } = req.params;
 
+      // Update reviews
       const user = await User.findOneAndUpdate(
-        {
-          email,
-        },
+        { email },
         {
           $set: {
             reviews: {
@@ -228,15 +241,76 @@ module.exports = {
               recipeImage,
               comment,
               starRating,
+              id,
+            },
+          },
+        }
+      );
+
+      // Update collections
+      if (collections.length > 0) {
+        await User.updateMany(
+          {
+            email,
+            "collections.collName": { $in: collections },
+            "collections.collRecipes.recipeTitle": recipeTitle,
+          },
+          {
+            $set: {
+              "collections.$[outer].collRecipes.$[inner].averageRate":
+                averageRate,
+              "collections.$[outer].collRecipes.$[inner].recipeReviewsLength":
+                recipeReviewsLength,
+            },
+          },
+          {
+            arrayFilters: [
+              { "outer.collName": { $in: collections } },
+              { "inner.recipeTitle": recipeTitle },
+            ],
+          }
+        );
+      }
+      res.status(200).json(user);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  addToCustomCollection: async (req, res) => {
+    try {
+      const checkedCollections = req.body.collections;
+      const recipe = req.body.recipe;
+
+      const update = { $push: {} };
+      checkedCollections.forEach((coll) => {
+        update.$push[`collections.$.collRecipes`] = recipe;
+      });
+
+      await User.findOneAndUpdate(
+        { email: req.params.email },
+        {
+          $push: {
+            "collections.$[coll].collRecipes": {
+              $each: [
+                {
+                  recipeTitle: recipe.recipeTitle,
+                  recipe: recipe.recipe,
+                  starRating: recipe.starRating,
+                },
+              ],
+              $position: 0,
             },
           },
         },
-        { new: true }
+        {
+          arrayFilters: [{ "coll.collName": { $in: checkedCollections } }],
+        }
       );
-      res.status(200).json(user);
-      return user;
-    } catch (err) {
-      res.status(400).send(err);
+      res
+        .status(200)
+        .json(`Recipe added to ${JSON.stringify(checkedCollections)}`);
+    } catch (error) {
+      res.status(400).send(error);
     }
   },
   addPersonalRecipe: async (req, res) => {

@@ -37,8 +37,9 @@ const PersonalReviewSchema = new mongoose.Schema(
   {
     recipeTitle: String,
     recipeId: { type: Number, required: true },
-    recipeImage: String,
     starRating: { type: Number, required: true },
+    id: { type: Number, required: true },
+    recipeImage: String,
     comment: { type: String, trim: true },
   },
   { timestamps: true }
@@ -46,6 +47,8 @@ const PersonalReviewSchema = new mongoose.Schema(
 
 const CollectionRecipeSchema = new mongoose.Schema({
   recipeTitle: { type: String, required: true },
+  recipeReviewsLength: mongoose.Schema.Types.Mixed,
+  averageRate: mongoose.Schema.Types.Mixed,
   recipe: {
     id: Number,
     image: String,

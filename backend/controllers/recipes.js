@@ -30,7 +30,6 @@ const extractKeyword = async (word) => {
         .replace(/[^a-zA-Z"]/g, "")
         .toLowerCase();
 
-      console.log(keyword, "final word: from extract function");
       return keyword;
     }
   } catch (error) {
@@ -44,7 +43,6 @@ module.exports = {
       const checkParams = await Searched.findOne({
         name: { $in: query.split(" ") },
       });
-      console.log(req.params, "step 1: check if the keyword exists");
 
       if (!checkParams) {
         const keyword = await extractKeyword(query);
@@ -66,7 +64,6 @@ module.exports = {
 
         res.status(200).json(recipe);
       } else {
-        console.log(checkParams);
         res.status(200).json(checkParams);
       }
     } catch (error) {
@@ -137,6 +134,7 @@ module.exports = {
           id: recipeRes.data.id,
           recipeTitle: recipeRes.data.title,
           data: recipeRes.data,
+          averageRate: 0,
         });
 
         res.status(201).json([createRecipe, []]);
@@ -151,7 +149,9 @@ module.exports = {
   },
   createRecipeReview: async (req, res) => {
     try {
-      const { recipeTitle, userId, comment, starRating } = req.body;
+      console.log(req.body);
+      const { recipeTitle, userId, comment, starRating, averageRate } =
+        req.body;
 
       const user = await User.findById(userId);
 
@@ -162,11 +162,14 @@ module.exports = {
         comment,
         starRating,
       });
-
       await review.save();
-      await Recipe.findOneAndUpdate(
+
+      const updatedRecipe = await Recipe.findOneAndUpdate(
         { recipeTitle: recipeTitle },
-        { $push: { reviews: { $each: [review._id], $position: 0 } } },
+        {
+          $push: { reviews: { $each: [review._id], $position: 0 } },
+          $set: { averageRate: averageRate },
+        },
         { new: true }
       );
 
@@ -175,14 +178,15 @@ module.exports = {
         _id: { $in: recipeReviews.reviews },
       });
 
-      res.status(200).json(reviews);
+      const sentData = { reviews, updatedAverage: updatedRecipe.averageRate };
+      res.status(200).json(sentData);
     } catch (error) {
       res.status(404).send(error.message);
     }
   },
   editRecipeReview: async (req, res) => {
     try {
-      const { recipeId, userId, nickname, comment, starRating } = req.body;
+      const { recipeId, userId, comment, starRating, averageRate } = req.body;
       const user = await User.findById(userId);
 
       await Review.findOneAndUpdate(
@@ -201,12 +205,18 @@ module.exports = {
         { new: true }
       );
 
+      const recipe = await Recipe.findOneAndUpdate(
+        { id: req.params.id },
+        { $set: { averageRate: averageRate } },
+        { new: true }
+      );
+
       const recipeReviews = await Recipe.findOne({ id: req.params.id });
       const reviews = await Review.find({
         _id: { $in: recipeReviews.reviews },
       });
 
-      res.status(200).json(reviews);
+      res.status(200).json({ averageRate: recipe.averageRate, reviews });
     } catch (error) {
       res.status(401).send(error);
     }

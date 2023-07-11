@@ -320,9 +320,9 @@ const HeaderControl = styled.div`
     padding: 0 36px;
   }
 
-  @media (max-width: 800px) {
+  /* @media (max-width: 800px) {
     padding: 0 62px;
-  }
+  } */
 
   .hamburger-wrap {
     flex: 1;

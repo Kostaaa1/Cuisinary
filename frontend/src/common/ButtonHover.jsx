@@ -10,6 +10,7 @@ const Return = ({ value, onClick, icon }) => {
 
 const Back = styled.button`
   /* position: absolute; */
+  background-color: #fff;
   display: flex;
   border: none;
   align-items: center;

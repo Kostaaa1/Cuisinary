@@ -25,7 +25,6 @@ export const useUser = () => {
         );
 
         const userData = res.data;
-        console.log('getUserData called');
 
         return userData;
       } catch (error) {
@@ -39,9 +38,7 @@ export const useUser = () => {
 
 export const useAuth = () => {
   const getAuthData = () =>
-    localStorage.getItem(
-      '@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@'
-    );
+    localStorage.getItem('@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@');
 
   const authenticated = useMemo(() => {
     const item = getAuthData();

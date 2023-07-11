@@ -4,11 +4,26 @@ import styled from 'styled-components';
 import ButtonBorder from '../../../common/ButtonBorder';
 import AuthContext from '../../../setup/app-context-menager/AuthContext';
 import PersonAvatar from '../../../common/PersonAvatar';
+import { useRef } from 'react';
+import { useEffect } from 'react';
 
 const ProfileGreet = () => {
   const { userData } = useContext(AuthContext);
   const navigate = useNavigate();
   const [profileImgLoaded, setProfileImgLoaded] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const imgElement = imgRef.current;
+    if (
+      imgElement &&
+      imgElement.complete &&
+      imgElement.naturalHeight > 0 &&
+      imgElement.naturalWidth > 0
+    ) {
+      setProfileImgLoaded(true);
+    }
+  }, []);
 
   return (
     <Greet>

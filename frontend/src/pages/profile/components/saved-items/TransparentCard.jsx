@@ -1,7 +1,8 @@
-import { Add } from "@mui/icons-material";
-import { useState } from "react";
-import styled from "styled-components";
-import ButtonBorder from "../../../../common/ButtonBorder";
+import { Add } from '@mui/icons-material';
+import { useState } from 'react';
+import styled from 'styled-components';
+import ButtonBorder from '../../../../common/ButtonBorder';
+import StarRating from '../../../../common/StarRating';
 
 const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
   return (
@@ -10,8 +11,12 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
         <img src={favorite.recipe?.image} alt="" />
         <div className="card-content">
           <h4>{favorite?.recipeTitle}</h4>
+          <div className="flex">
+            <StarRating averageRate={favorite?.averageRate} />
+            <p> {favorite?.recipeReviewsLength} </p>
+          </div>
           <ButtonBorder
-            style={{ width: "160px", height: "36px" }}
+            style={{ width: '160px', height: '36px' }}
             value={
               <p>
                 <Add /> <span> Add to collection </span>
@@ -38,7 +43,7 @@ const Card = styled.div`
   width: 30%;
   display: flex;
   flex-direction: column;
-  min-height: 380px;
+  min-height: 400px;
   box-shadow: var(--card-shadow-border);
 
   @media (max-width: 1270px) {
@@ -48,7 +53,7 @@ const Card = styled.div`
   .transparent {
     position: absolute;
     background-color: rgba(245, 245, 245, 0.73);
-    content: "";
+    content: '';
     width: 100%;
     height: 100%;
     display: flex;
@@ -84,17 +89,44 @@ const Card = styled.div`
 
   .card-content {
     padding: 1rem;
+    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex-wrap: wrap;
+
+    .flex {
+      height: max-content;
+      display: flex;
+      align-items: start;
+
+      p {
+        font-size: 14px;
+        margin-left: 6px;
+        color: var(--grey-color);
+      }
+    }
+
+    .summary {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      outline: 1px solid black;
+      font-size: 14px;
+      font-weight: 400 !important;
+    }
 
     h4 {
       text-align: start;
       color: var(--grey-color);
       cursor: pointer;
-      font-size: 18px;
-      padding-bottom: 42px;
+
+      &:hover {
+        text-decoration: underline;
+        color: var(--main-color);
+        text-decoration-color: var(--main-color);
+        text-underline-offset: 5px;
+        text-decoration-thickness: 10%;
+      }
     }
 
     p {

@@ -1,14 +1,14 @@
-import { KeyboardArrowDown, HttpsOutlined } from "@mui/icons-material";
-import axios from "axios";
-import { useRef } from "react";
-import { useState } from "react";
-import styled from "styled-components";
-import Loading from "../../../common/Loading";
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAuth0 } from "@auth0/auth0-react";
-import SectionHeader from "../../../common/SectionHeader";
-import LineBreak from "../../../common/LineBreak";
+import { KeyboardArrowDown, HttpsOutlined } from '@mui/icons-material';
+import axios from 'axios';
+import { useRef } from 'react';
+import { useState } from 'react';
+import styled from 'styled-components';
+import Loading from '../../../common/Loading';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
+import SectionHeader from '../../../common/SectionHeader';
+import LineBreak from '../../../common/LineBreak';
 
 const PersonalInfo = () => {
   const [clicked, setClicked] = useState(true);
@@ -16,20 +16,20 @@ const PersonalInfo = () => {
   const [showLoading, setShowLoading] = useState(false);
   const { user } = useAuth0();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    zipCode: "",
-    email: "",
+    firstName: '',
+    lastName: '',
+    zipCode: '',
+    email: '',
   });
 
   const [formBirthDate, setFormBirthDate] = useState({
-    month: "",
-    day: "",
-    year: "",
+    month: '',
+    day: '',
+    year: '',
   });
 
   const queryClient = useQueryClient();
-  const userData = queryClient.getQueryData(["user-data", user?.email]);
+  const userData = queryClient.getQueryData(['user-data', user?.email]);
 
   useEffect(() => {
     if (userData) {
@@ -37,16 +37,16 @@ const PersonalInfo = () => {
       const { month, day, year } = birthDate;
 
       setFormData({
-        firstName: firstName || "",
-        lastName: lastName || "",
-        zipCode: zipCode || "",
-        email: email || "",
+        firstName: firstName || '',
+        lastName: lastName || '',
+        zipCode: zipCode || '',
+        email: email || '',
       });
 
       setFormBirthDate({
-        month: month || "",
-        day: day || "",
-        year: year || "",
+        month: month || '',
+        day: day || '',
+        year: year || '',
       });
     }
   }, [userData]);
@@ -58,8 +58,8 @@ const PersonalInfo = () => {
     const { month, day, year } = formBirthDate;
 
     let birthDate = {
-      month: month !== "" ? month.padStart(2, "0") : month,
-      day: day !== "" ? day.padStart(2, "0") : day,
+      month: month !== '' ? month.padStart(2, '0') : month,
+      day: day !== '' ? day.padStart(2, '0') : day,
       year: year,
     };
 
@@ -74,7 +74,7 @@ const PersonalInfo = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "month" || name === "day" || name === "year") {
+    if (name === 'month' || name === 'day' || name === 'year') {
       setFormBirthDate((prev) => ({
         ...prev,
         [name]: value,
@@ -103,7 +103,7 @@ const PersonalInfo = () => {
       <FormWrap>
         <div className="head-info" onClick={() => setClicked(!clicked)}>
           <h2>My Basic Info</h2>
-          <KeyboardArrowDown className={clicked ? "click" : ""} />
+          <KeyboardArrowDown className={clicked ? 'click' : ''} />
         </div>
         {clicked && (
           <>
@@ -126,7 +126,7 @@ const PersonalInfo = () => {
                     value={formData.firstName}
                     type="text"
                     maxLength={18}
-                    placeholder={"Taylor"}
+                    placeholder={'Taylor'}
                   />
                 </div>
                 <div className="input-wrapper half">
@@ -137,7 +137,7 @@ const PersonalInfo = () => {
                     value={formData.lastName}
                     type="text"
                     maxLength={18}
-                    placeholder={"Smith"}
+                    placeholder={'Smith'}
                   />
                 </div>
               </HalfWrap>
@@ -150,13 +150,11 @@ const PersonalInfo = () => {
                       name="month"
                       value={formBirthDate.month}
                       type="text"
-                      min={"1"}
-                      max={"12"}
+                      min={'1'}
+                      max={'12'}
                       placeholder="MM"
                       required={
-                        (formBirthDate.day !== "" ||
-                          formBirthDate.year !== "") &&
-                        true
+                        (formBirthDate.day !== '' || formBirthDate.year !== '') && true
                       }
                       maxLength={2}
                     />
@@ -166,12 +164,10 @@ const PersonalInfo = () => {
                       value={formBirthDate.day}
                       name="day"
                       type="text"
-                      min={"1"}
-                      max={"31"}
+                      min={'1'}
+                      max={'31'}
                       required={
-                        (formBirthDate.month !== "" ||
-                          formBirthDate.year !== "") &&
-                        true
+                        (formBirthDate.month !== '' || formBirthDate.year !== '') && true
                       }
                       placeholder="DD"
                       maxLength={2}
@@ -182,13 +178,11 @@ const PersonalInfo = () => {
                       name="year"
                       value={formBirthDate.year}
                       type="text"
-                      min={"1930"}
-                      max={"2022"}
+                      min={'1930'}
+                      max={'2022'}
                       placeholder="YYYY"
                       required={
-                        (formBirthDate.month !== "" ||
-                          formBirthDate.day !== "") &&
-                        true
+                        (formBirthDate.month !== '' || formBirthDate.day !== '') && true
                       }
                       maxLength={4}
                     />
