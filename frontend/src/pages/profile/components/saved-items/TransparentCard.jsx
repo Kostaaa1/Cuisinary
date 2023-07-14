@@ -8,7 +8,7 @@ const TransparentCard = ({ favorite, removeRecipeName, addLoading }) => {
   return (
     <Card>
       <>
-        <img src={favorite.recipe?.image} alt="" />
+        <img src={favorite.data?.image} alt="" />
         <div className="card-content">
           <h4>{favorite?.recipeTitle}</h4>
           <div className="flex">

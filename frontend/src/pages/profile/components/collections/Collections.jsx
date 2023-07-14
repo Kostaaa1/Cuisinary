@@ -6,7 +6,6 @@ import CollectionModal from '../../../../common/CollectionModal';
 import NewCollectionCard from './NewCollectionCard';
 import { useNavigate } from 'react-router-dom';
 import useNoScroll from '../../../../utils/useNoScroll';
-import { useRef } from 'react';
 import SectionHeader from '../../../../common/SectionHeader';
 
 const Collections = ({ userData }) => {
@@ -31,18 +30,13 @@ const Collections = ({ userData }) => {
   const layoutArr = useMemo(() => {
     let destructuredArray = userData?.collections?.map((coll) =>
       coll.collRecipes.map((recipes) => ({
-        data: { image: recipes.recipe?.image },
+        data: { image: recipes.data?.image },
       }))
     );
-
     return destructuredArray?.map((el) =>
       mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
     );
   }, [userData, mockData]);
-
-  useEffect(() => {
-    console.log(userData?.collections);
-  }, [userData?.collections]);
 
   return (
     <>

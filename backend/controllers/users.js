@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
+const { default: mongoose } = require("mongoose");
 
 const fileSizeFormatter = (bytes, decimal) => {
   if (bytes === 0) {
@@ -153,159 +154,30 @@ module.exports = {
       res.status(400).send(err);
     }
   },
-  createUserReview: async (req, res) => {
-    try {
-      const {
-        recipeTitle,
-        recipeId,
-        recipeImage,
-        comment,
-        starRating,
-        averageRate,
-        collections,
-        id,
-        recipeReviewsLength,
-      } = req.body;
-      console.log(req.body);
-
-      const { email } = req.params;
-      await User.findOneAndUpdate(
-        {
-          email,
-        },
-        {
-          $addToSet: {
-            reviews: {
-              recipeTitle,
-              recipeImage,
-              recipeId,
-              comment,
-              starRating,
-              id,
-            },
-          },
-        }
-      );
-
-      // Update collections
-      if (collections.length > 0) {
-        await User.updateMany(
-          {
-            email,
-            "collections.collName": { $in: collections },
-            "collections.collRecipes.recipeTitle": recipeTitle,
-          },
-          {
-            $set: {
-              "collections.$[outer].collRecipes.$[inner].averageRate":
-                averageRate,
-              "collections.$[outer].collRecipes.$[inner].recipeReviewsLength":
-                recipeReviewsLength,
-            },
-          },
-          {
-            arrayFilters: [
-              { "outer.collName": { $in: collections } },
-              { "inner.recipeTitle": recipeTitle },
-            ],
-          }
-        );
-      }
-
-      res.status(200).json("Updated");
-    } catch (err) {
-      res.status(400).send(err);
-    }
-  },
-  editUserReview: async (req, res) => {
-    try {
-      const {
-        recipeTitle,
-        recipeImage,
-        comment,
-        starRating,
-        collections,
-        averageRate,
-        recipeReviewsLength,
-        id,
-      } = req.body;
-      const { email } = req.params;
-
-      // Update reviews
-      const user = await User.findOneAndUpdate(
-        { email },
-        {
-          $set: {
-            reviews: {
-              recipeTitle,
-              recipeImage,
-              comment,
-              starRating,
-              id,
-            },
-          },
-        }
-      );
-
-      // Update collections
-      if (collections.length > 0) {
-        await User.updateMany(
-          {
-            email,
-            "collections.collName": { $in: collections },
-            "collections.collRecipes.recipeTitle": recipeTitle,
-          },
-          {
-            $set: {
-              "collections.$[outer].collRecipes.$[inner].averageRate":
-                averageRate,
-              "collections.$[outer].collRecipes.$[inner].recipeReviewsLength":
-                recipeReviewsLength,
-            },
-          },
-          {
-            arrayFilters: [
-              { "outer.collName": { $in: collections } },
-              { "inner.recipeTitle": recipeTitle },
-            ],
-          }
-        );
-      }
-      res.status(200).json(user);
-    } catch (err) {
-      res.status(400).send(err);
-    }
-  },
   addToCustomCollection: async (req, res) => {
     try {
-      const checkedCollections = req.body.collections;
-      const recipe = req.body.recipe;
+      const checkedCollections = req.body.collectionIds;
+      const recipeId = req.body.recipeId;
 
-      const update = { $push: {} };
-      checkedCollections.forEach((coll) => {
-        update.$push[`collections.$.collRecipes`] = recipe;
-      });
+      const collectionIds = checkedCollections.map(
+        (collId) => new mongoose.Types.ObjectId(collId)
+      );
 
       await User.findOneAndUpdate(
         { email: req.params.email },
         {
           $push: {
             "collections.$[coll].collRecipes": {
-              $each: [
-                {
-                  recipeTitle: recipe.recipeTitle,
-                  recipe: recipe.recipe,
-                  starRating: recipe.starRating,
-                },
-              ],
+              $each: [recipeId],
               $position: 0,
             },
           },
         },
         {
-          arrayFilters: [{ "coll.collName": { $in: checkedCollections } }],
+          arrayFilters: [{ "coll._id": { $in: collectionIds } }],
         }
       );
+
       res
         .status(200)
         .json(`Recipe added to ${JSON.stringify(checkedCollections)}`);

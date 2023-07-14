@@ -41,18 +41,10 @@ const Description = () => {
       }
       setFavorite(true);
 
-      const saveData = {
-        id: recipe.id,
-        averageRate: averageRate,
-        recipeReviewsLength: reviews.length,
-      };
-
-      console.log(reviews, recipe);
-
       await toast.promise(
-        reviews.length > 0 && averageRate > 0
-          ? axios.post(`/api/auth/${userData?.email}`, saveData)
-          : axios.post(`/api/auth/${userData?.email}`, { id: recipe.id }),
+        axios.post(`/api/auth/${userData?.email}`, {
+          id: recipe.id,
+        }),
         {
           pending: 'Saving recipe...',
           success: 'Recipe saved to your collection!',
@@ -69,22 +61,30 @@ const Description = () => {
     <Container>
       <div className="buttons">
         <button onClick={saveRecipeInCollection}>
-          Save {favorite ? <Favorite /> : <FavoriteBorder />}
+          {favorite ? (
+            <>
+              Save <Favorite />
+            </>
+          ) : (
+            <>
+              Saved <FavoriteBorder />
+            </>
+          )}
         </button>
       </div>
       <img src={recipe?.image} alt="recipe-image" />
       <div className="description">
         <div className="desc-wrap">
           <h4>Prep Time</h4>
-          <p> {recipe?.readyInMinutes} </p>
+          <p> {recipe?.readyInMinutes} mins</p>
         </div>
         <div className="desc-wrap">
           <h4>Cook Time</h4>
-          <p> {recipe?.preparationMinutes} </p>
+          <p> {recipe?.preparationMinutes} mins</p>
         </div>
         <div className="desc-wrap">
           <h4>Servings</h4>
-          <p> {recipe?.servings} </p>
+          <p> {recipe?.servings} mins</p>
         </div>
         <div className="desc-wrap">
           <h4>Price Per Serving</h4>
@@ -117,23 +117,22 @@ const Container = styled.div`
   }
 
   .description {
+    background-color: #f4f7ea;
     display: flex;
+    margin-top: 14px;
     width: 100%;
     flex-wrap: wrap;
+    justify-content: space-between;
+    padding-right: 140px;
+    height: 180px;
 
     .desc-wrap {
-      width: 50%;
       padding: 10px;
 
-      h4 {
-        color: var(--main-color);
-        font-size: 16px;
-        font-weight: 700;
-      }
-
       p {
-        font-size: 14px;
-        margin-top: 6px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-top: 8px;
         color: var(--grey-color);
       }
     }

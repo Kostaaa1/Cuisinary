@@ -24,19 +24,16 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const navigate = useNavigate();
   useSmoothScroll();
 
-  const { arrayOfRecipeNames, setArrayOfRecipeNames, collectionId, collectionParams } =
-    useContext(GlobalContext);
+  useContext(GlobalContext);
 
-  // forcing refetches based on the URL. Trying to reduce the repeating of the code, i do not know if this is a good practice. It works tho.
   let refetchOnMount = 'always';
   const path = location.pathname;
   const prefixPath = '/account/profile';
 
   if (
-    // path === prefixPath + '' ||
-    // path === prefixPath + '/public-profile' ||
-    path ===
-    prefixPath + '/change-password'
+    path === prefixPath + '' ||
+    path === prefixPath + '/public-profile' ||
+    path === prefixPath + '/change-password'
   ) {
     refetchOnMount = false;
   }
@@ -49,25 +46,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
       refetchOnMount,
     }
   );
-
-  useEffect(() => {
-    if (
-      arrayOfRecipeNames.length !== 0 &&
-      location.pathname !== '/account/profile/saved-items'
-    ) {
-      handleDeletionOfRecipes();
-      setArrayOfRecipeNames([]);
-    }
-  }, [location.pathname]);
-
-  const handleDeletionOfRecipes = async () => {
-    const recipeNames = {
-      titles: arrayOfRecipeNames,
-      collectionId: collectionParams === 'saved-items' ? '' : collectionId,
-    };
-
-    await axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
-  };
 
   useEffect(() => {
     if (showResponsiveList && windowSize[0] > 1120) {
@@ -163,6 +141,7 @@ const CustomLink = styled(NavLink)`
 
 const Wrapper = styled.section`
   position: relative;
+  margin-bottom: 50px;
 
   .list-item {
     text-decoration: none;
@@ -253,6 +232,7 @@ const Container = styled.div`
 
   .profile {
     max-width: 260px;
+    min-width: 260px;
     height: 100%;
     margin-right: 14px;
     background-color: #fff;
@@ -282,7 +262,6 @@ const Container = styled.div`
     word-break: break-all;
     padding: 8px 24px;
     min-height: 200px;
-    margin-bottom: 100px;
 
     .loading {
       transform: translate(0, -30%);

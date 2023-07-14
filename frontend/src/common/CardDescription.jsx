@@ -5,9 +5,14 @@ import { FavoriteBorder, Favorite } from '@mui/icons-material';
 import axios from 'axios';
 import useNoScroll from '../utils/useNoScroll';
 import AuthContext from '../setup/app-context-menager/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useUser } from '../setup/auth/useAuth';
 
 const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
   const { userData } = useContext(AuthContext);
+  const { user } = useAuth0();
+  const { updateQueryCache } = useUser();
   const [heart, setHeart] = useState(false);
   useNoScroll(favorite);
 
@@ -19,11 +24,18 @@ const CardDescription = ({ recipeData, favorite, setFavorite, params }) => {
       userData.collections[0]?.collRecipes.push({
         recipeTitle: recipeData.title,
       });
+
       setFavorite(true);
       setHeart(true);
       if (checkForRecipe) return;
 
-      await axios.post(`/api/auth/${userData?.email}`, { id: recipeData.id });
+      const collections = await axios.post(`/api/auth/${userData?.email}`, {
+        id: recipeData.id,
+      });
+
+      if (collections.data !== '') {
+        updateQueryCache(['user-data', user?.email], collections.data);
+      }
     } catch (error) {
       console.log(error);
     }

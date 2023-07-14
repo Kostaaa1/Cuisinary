@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Ingredients from './components/Ingredients';
@@ -11,7 +11,7 @@ import Description from './components/Description';
 import RecipeHeader from './components/RecipeHeader';
 import Summary from './components/Summary';
 import axios from 'axios';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import useSmoothScroll from '../../utils/useSmoothScroll';
 import { useUser } from '../../setup/auth/useAuth';
@@ -36,18 +36,15 @@ const Recipe = () => {
   });
 
   useEffect(() => {
-    if (userData) {
-      getRecipe();
-      isFavorite();
-    }
-  }, [userData]);
+    getRecipe();
+    isFavorite();
+  }, []);
 
   const getRecipe = async () => {
     try {
       const recipeData = await axios.get(`/api/recipe/${params.id}/getRecipe`);
       const recipe = recipeData.data;
 
-      console.log(recipe, 'yooooooooo');
       setRecipe(recipe[0].data);
       setReviews(recipe[1]);
       setAverageRate(recipe[0].averageRate);
@@ -59,7 +56,7 @@ const Recipe = () => {
   };
 
   const isFavorite = () => {
-    const checkCollections = userData?.collections.some((coll) =>
+    const checkCollections = userData?.collections?.some((coll) =>
       coll.collRecipes.some((col) => col.recipeTitle === recipe.title)
     );
     setFavorite(checkCollections);
@@ -100,7 +97,8 @@ const Recipe = () => {
 
   return (
     <RecipeContext.Provider value={value}>
-      {recipe && isFetched && userData ? (
+      {recipe && isFetched ? (
+        // {recipe && isFetched && userData ? (
         <>
           <Wrapper>
             <div className="container">
@@ -113,7 +111,7 @@ const Recipe = () => {
               <RecipeReviews />
             </div>
           </Wrapper>
-          <SimilarRecipes />
+          {/* <SimilarRecipes /> */}
         </>
       ) : (
         <Loading />

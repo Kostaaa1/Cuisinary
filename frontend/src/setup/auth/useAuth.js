@@ -1,13 +1,16 @@
 import { useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useUser = () => {
   const { user, getAccessTokenSilently } = useAuth0();
+  const queryClient = useQueryClient();
 
   const getUserData = async () => {
     if (user) {
       try {
+        console.log('getUserData called');
         const mockUser = {
           nickname: user?.nickname,
           email: user?.email,
@@ -25,7 +28,6 @@ export const useUser = () => {
         );
 
         const userData = res.data;
-
         return userData;
       } catch (error) {
         return null;
@@ -33,7 +35,12 @@ export const useUser = () => {
     }
   };
 
-  return { getUserData };
+  const updateQueryCache = async (queryKey, newData) => {
+    const userData = await getUserData();
+    queryClient.setQueryData(queryKey, { ...userData, collections: newData });
+  };
+
+  return { updateQueryCache, getUserData };
 };
 
 export const useAuth = () => {

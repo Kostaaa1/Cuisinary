@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import { ToastContainer, toast } from 'react-toastify';
 
 const AddCustomModal = ({ showModal, favorite }) => {
   const [collName, setCollName] = useState('');
@@ -80,19 +81,28 @@ const AddCustomModal = ({ showModal, favorite }) => {
     e.preventDefault();
 
     try {
-      let checkedCollWithRecipe = userCollections
+      const checkedCollWithRecipe = userCollections
         .filter(({ collName }, i) => collName === checkedColls[i])
         .map((coll) =>
           coll.collRecipes.some(({ recipeTitle }) => recipeTitle === favorite.recipeTitle)
             ? false
-            : coll.collName
+            : coll._id
         )
         .filter((coll) => coll);
 
-      await axios.post(`/api/user/${user.email}/addToCustom`, {
-        collections: checkedCollWithRecipe,
-        recipe: favorite,
-      });
+      await toast.promise(
+        axios.post(`/api/user/${user.email}/addToCustom`, {
+          collectionIds: checkedCollWithRecipe,
+          recipeId: favorite._id,
+        }),
+        {
+          pending: 'Saving recipe...',
+          success: `Recipe saved to collection ${userCollections
+            .map((coll) => (checkedCollWithRecipe.includes(coll._id) ? x.collName : null))
+            .filter((coll) => coll)}!`,
+          error: 'An error occurred while saving the recipe!',
+        }
+      );
 
       showModal();
     } catch (error) {
@@ -118,7 +128,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
             <Close className="close" onClick={showModal} />
           </div>
           <div className="recipe-section">
-            <img src={favorite.recipe.image} alt="" />
+            <img src={favorite.data.image} alt="" />
             <p>
               Select collection(s) for <span>{favorite.recipeTitle}.</span>
             </p>
@@ -133,7 +143,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
                   <div className="show-input">
                     <div className="flex" onClick={() => setShowInput(false)}>
                       <Close />
-                      <h5>NEW COLLECTION</h5>
+                      <h6>NEW COLLECTION</h6>
                     </div>
                     <div className="input-wrap">
                       <input
@@ -149,7 +159,7 @@ const AddCustomModal = ({ showModal, favorite }) => {
                 ) : (
                   <div className="add-collection" onClick={() => setShowInput(true)}>
                     <Add />
-                    <h5>NEW COLLECTION</h5>
+                    <h6>NEW COLLECTION</h6>
                   </div>
                 )}
                 {collections.map((coll, id) => (
@@ -223,6 +233,19 @@ const Section = styled(motion.div)`
         }
       }
 
+      h6 {
+        cursor: pointer;
+        color: var(--grey-color);
+        letter-spacing: 0 !important;
+
+        &:hover {
+          text-decoration: underline;
+          text-decoration-color: var(--red-color);
+          text-underline-offset: 3px;
+          text-decoration-thickness: 11%;
+        }
+      }
+
       .main-form-div {
         outline: 1px solid rgba(0, 0, 0, 0.2);
         height: 340px;
@@ -244,16 +267,6 @@ const Section = styled(motion.div)`
             -ms-user-select: none;
             user-select: none;
 
-            h5 {
-              cursor: pointer;
-
-              &:hover {
-                text-decoration: underline;
-                text-decoration-color: var(--red-color);
-                text-underline-offset: 3px;
-                text-decoration-thickness: 11%;
-              }
-            }
             svg {
               cursor: pointer;
               font-size: 1.4rem;
@@ -380,8 +393,8 @@ const Section = styled(motion.div)`
       font-size: 15px;
 
       img {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
       }
 
       span {

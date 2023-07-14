@@ -24,14 +24,13 @@ const SideNavbar = ({
   const { authenticated } = useAuth();
   const { loginWithPopup } = useAuth0();
 
-  const categoryNavigation = query => {
+  const categoryNavigation = (query) => {
     if (!query) {
       logoutUser();
       return;
     }
 
-    const toUrl =
-      clickedCategory.name === 'My Profile' ? 'account' : 'category';
+    const toUrl = clickedCategory.name === 'My Profile' ? 'account' : 'category';
     navigate(`/${toUrl}/${query}`);
     setClickedCategory('');
     setShowSideNav(false);
@@ -81,21 +80,14 @@ const SideNavbar = ({
             <ArrowBack onClick={() => setClickedCategory('')} />
             <h2>
               {clickedCategory.name[0] +
-                clickedCategory.name
-                  .slice(1, clickedCategory.name.length)
-                  .toLowerCase()}
+                clickedCategory.name.slice(1, clickedCategory.name.length).toLowerCase()}
             </h2>
           </span>
           <ul>
             {clickedCategory.categories.map((category, id) => (
-              <>
-                <li
-                  key={category.list}
-                  onClick={() => categoryNavigation(category.query)}
-                >
-                  {category.list}
-                </li>
-              </>
+              <li key={category.list} onClick={() => categoryNavigation(category.query)}>
+                {category.list}
+              </li>
             ))}
           </ul>
         </div>

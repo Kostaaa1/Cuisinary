@@ -18,8 +18,6 @@ router.post("/:email/newCollection", UserController.newCollection);
 router.post("/:email/:id/editCollection", UserController.editCollection);
 router.post("/:email/:id/deleteCollection", UserController.deleteCollection);
 router.post("/:email/addToCustom", UserController.addToCustomCollection);
-router.post("/:email/createUserReview", UserController.createUserReview);
-router.post("/:email/editUserReview", UserController.editUserReview);
 router.post(
   "/:email/addPersonalRecipe",
   upload.single("image"),

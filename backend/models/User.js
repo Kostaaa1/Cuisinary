@@ -33,37 +33,12 @@ const PersonalRecipeSchema = new mongoose.Schema({
   private: Boolean,
 });
 
-const PersonalReviewSchema = new mongoose.Schema(
-  {
-    recipeTitle: String,
-    recipeId: { type: Number, required: true },
-    starRating: { type: Number, required: true },
-    id: { type: Number, required: true },
-    recipeImage: String,
-    comment: { type: String, trim: true },
-  },
-  { timestamps: true }
-);
-
-const CollectionRecipeSchema = new mongoose.Schema({
-  recipeTitle: { type: String, required: true },
-  recipeReviewsLength: mongoose.Schema.Types.Mixed,
-  averageRate: mongoose.Schema.Types.Mixed,
-  recipe: {
-    id: Number,
-    image: String,
-    imageType: String,
-    summary: String,
-  },
-  _id: false,
-});
-
 const CollectionSchema = new mongoose.Schema({
   collName: String,
   collDesc: String,
   private: Boolean,
   id: Number,
-  collRecipes: [CollectionRecipeSchema],
+  collRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
 });
 
 const UserSchema = new mongoose.Schema({
@@ -76,7 +51,7 @@ const UserSchema = new mongoose.Schema({
   birthDate: BirthDateSchema,
   zipCode: String,
   collections: [CollectionSchema],
-  reviews: [PersonalReviewSchema],
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   personalRecipes: [PersonalRecipeSchema],
 });
 

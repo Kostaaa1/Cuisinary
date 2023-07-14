@@ -5,7 +5,7 @@ import { Link } from 'react-scroll';
 import StarRating from '../../../common/StarRating';
 
 const RecipeHeader = () => {
-  const { recipe, comments, reviews, averageRate } = useContext(RecipeContext);
+  const { recipe, reviews, averageRate } = useContext(RecipeContext);
 
   return (
     <Header>
@@ -19,13 +19,13 @@ const RecipeHeader = () => {
                 {averageRate?.toFixed(1).toString()}
               </Link>
             </span>
-            <p> ({reviews?.length}) </p>
+            <p> ({reviews?.filter((review) => review.comment !== '').length}) </p>
           </div>
           <div className="divider-line"></div>
           <div className="rates-flex">
             <span>
               <Link to="review-id" smooth={true} duration={500}>
-                {comments?.length} REVIEWS
+                {reviews?.length} REVIEWS
               </Link>
             </span>
           </div>
@@ -66,6 +66,7 @@ const Header = styled.div`
     }
 
     .p-underline {
+      font-weight: 500;
       color: var(--grey-color);
       cursor: pointer;
     }

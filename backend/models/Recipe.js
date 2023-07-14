@@ -3,9 +3,12 @@ const mongoose = require("mongoose");
 const ReviewSchema = new mongoose.Schema({
   userId: { type: String },
   userImage: { type: String },
-  nickname: { type: String },
   comment: { type: String },
   starRating: { type: Number },
+  recipeTitle: { type: String },
+  recipeId: { type: Number },
+  recipeImage: { type: String },
+  nickname: { type: String },
   createdAt: {
     type: String,
     default: () => {

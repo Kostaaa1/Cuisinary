@@ -20,6 +20,7 @@ import CollectionModal from '../../../../common/CollectionModal';
 import useNoScroll from '../../../../utils/useNoScroll';
 import { useWindowSize } from '../../../../utils/useWindowSize';
 import DeleteModal from '../../../../common/DeleteModal';
+import { ToastContainer } from 'react-toastify';
 
 const SavedItems = () => {
   const params = useParams();
@@ -68,7 +69,6 @@ const SavedItems = () => {
 
   useEffect(() => {
     setCollectionParams(params.name);
-
     if (params.id) {
       setCollectionId(params.id);
     }
@@ -93,7 +93,6 @@ const SavedItems = () => {
       id: params.id,
       email: user.email,
     });
-
     navigate('/account/profile/collection');
   };
 
@@ -185,7 +184,7 @@ const SavedItems = () => {
         )}
         <div className="collection-control">
           {collectionArray.map((favorite, id) =>
-            arrayOfRecipeNames.includes(favorite?.recipeTitle) && !favorite.loading ? (
+            arrayOfRecipeNames.includes(favorite?._id) && !favorite.loading ? (
               <TransparentCard
                 key={id}
                 favorite={favorite}
@@ -220,6 +219,18 @@ const SavedItems = () => {
             isPrivate={collectionData?.private}
           />
         )}
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </>
     </Saved>
   );

@@ -28,23 +28,23 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
         </div>
       )}
       <img
-        src={favorite.recipe?.image}
+        src={favorite.data?.image}
         alt=""
-        onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}
+        onClick={() => navigate(`/recipe/${favorite.data.id}`)}
       />
       <div className="card-content">
-        <h4 onClick={() => navigate(`/recipe/${favorite.recipe.id}`)}>
+        <h4 onClick={() => navigate(`/recipe/${favorite.data.id}`)}>
           {favorite?.recipeTitle}
         </h4>
         <div className="flex">
           <StarRating averageRate={favorite?.averageRate} />
-          <p> {favorite?.recipeReviewsLength} </p>
+          <p> {favorite?.reviews.length > 0 ? favorite?.reviews.length : ''} </p>
         </div>
         <ButtonBorder
           style={{ width: '160px', height: '36px' }}
           value={
             <p>
-              <Add /> <span> Add to collection </span>
+              <Add /> <span>Add to collection</span>
             </p>
           }
           onClick={() => setShowModal(true)}
@@ -58,7 +58,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
       {showRemoveModal && (
         <RemoveRecipeModal
           remove={() => {
-            addRecipeName(favorite.recipeTitle);
+            addRecipeName(favorite._id);
             addLoading();
           }}
           title={favorite.recipeTitle}
@@ -78,7 +78,7 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
 
 const Card = styled.div`
   position: relative;
-  width: 30%;
+  max-width: 34%;
   display: flex;
   flex-direction: column;
   min-height: 400px;
@@ -119,9 +119,8 @@ const Card = styled.div`
       align-items: start;
 
       p {
-        font-size: 14px;
+        font-size: 12px;
         margin-left: 6px;
-        color: var(--grey-color);
       }
     }
 

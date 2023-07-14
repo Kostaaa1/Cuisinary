@@ -32,15 +32,22 @@ const RecipeReviews = () => {
     { text: 'Loved It', bool: false, class: '' },
   ]);
 
-  useEffect(() => {
-    let myReview = reviews?.filter((review) => review.userId === userData?._id)[0];
+  function myReviewSetter(reviewsData) {
+    const myReview = reviewsData?.filter((review) => review.userId === userData?._id)[0];
+
     if (myReview) {
       setMyReview(myReview);
       setComment(myReview?.comment);
       setSubmitted(true);
       setClickId(myReview.starRating - 1);
     }
-  }, [reviews, userData]);
+  }
+
+  useEffect(() => {
+    if (userData && reviews) {
+      myReviewSetter(reviews);
+    }
+  }, [userData]);
 
   const clearInputs = () => {
     if (!myReview) {
@@ -74,20 +81,18 @@ const RecipeReviews = () => {
 
   const editReview = async (data) => {
     try {
-      const [editUserReview, editRecipeReview] = await Promise.all([
-        axios.post(`/api/user/${userData?.email}/editUserReview`, {
-          ...data,
-          recipeImage: recipe.image,
-        }),
-        axios.post(`/api/recipe/${params.id}/editRecipeReview`, {
+      const editRecipeReview = await axios.post(
+        `/api/recipe/${params.id}/editRecipeReview`,
+        {
           ...data,
           recipeId: myReview._id,
           userId: userData._id,
-        }),
-      ]);
+        }
+      );
 
-      setAverageRate(editRecipeReview.data.averageRate);
+      myReviewSetter(editRecipeReview.data.reviews);
       setReviews(editRecipeReview.data.reviews);
+      setAverageRate(editRecipeReview.data.averageRate);
     } catch (error) {
       console.log(error);
     } finally {
@@ -96,18 +101,15 @@ const RecipeReviews = () => {
   };
   const createReview = async (data) => {
     try {
-      const [userReview, recipeReviews] = await Promise.all([
-        axios.post(`/api/user/${userData?.email}/createUserReview`, {
-          ...data,
-          recipeId: recipe.id,
-          recipeImage: recipe.image,
-        }),
-        axios.post(`/api/recipe/${params.id}/createRecipeReview`, {
+      const recipeReviews = await axios.post(
+        `/api/recipe/${params.id}/createRecipeReview`,
+        {
           ...data,
           userId: userData._id,
-        }),
-      ]);
+        }
+      );
 
+      myReviewSetter(recipeReviews.data.reviews);
       setReviews(recipeReviews.data.reviews);
       setAverageRate(recipeReviews.data.updatedAverage);
     } catch (error) {
@@ -138,30 +140,22 @@ const RecipeReviews = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const sum = calculateAverageRate();
-
-      const collectionsIncludesRecipe = userData.collections
-        .map((coll) =>
-          coll.collRecipes.some((x) => x.recipeTitle === recipe.title)
-            ? coll.collName
-            : ''
-        )
-        .filter((coll) => coll);
 
       const reviewData = {
         comment,
-        averageRate: sum,
-        recipeReviewsLength: myReview ? reviews.length : reviews.length + 1,
+        userId: userData._id,
+        averageRate: calculateAverageRate(),
         starRating: clickId + 1,
         recipeTitle: recipe.title,
-        collections: collectionsIncludesRecipe,
-        id: recipe.id,
+        recipeId: recipe.id,
+        recipeImage: recipe.image,
       };
 
       if (myReview) {
         edit(reviewData);
         return;
       }
+
       create(reviewData);
     } catch (error) {
       console.log(error);
@@ -170,7 +164,7 @@ const RecipeReviews = () => {
 
   return (
     <Section>
-      <Header>
+      <Header id="rates-id">
         <h1>Reviews ({reviews?.length || '0'})</h1>
       </Header>
       <Reviews>

@@ -5,6 +5,7 @@ const axios = require("axios");
 const { Configuration, OpenAIApi } = require("openai");
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
+const { default: mongoose } = require("mongoose");
 
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -61,7 +62,6 @@ module.exports = {
           res.status(201).json(similar);
           return;
         }
-
         res.status(200).json(recipe);
       } else {
         res.status(200).json(checkParams);
@@ -149,26 +149,40 @@ module.exports = {
   },
   createRecipeReview: async (req, res) => {
     try {
-      console.log(req.body);
-      const { recipeTitle, userId, comment, starRating, averageRate } =
-        req.body;
-
-      const user = await User.findById(userId);
-
-      const review = new Review({
+      const {
+        recipeTitle,
+        recipeImage,
+        recipeId,
         userId,
-        userImage: user.picture?.image || "",
-        nickname: user.nickname || "",
         comment,
         starRating,
+        averageRate,
+      } = req.body;
+      console.log(req.body)
+      const user = await User.findById(userId);
+
+      console.log('USER: ',user)
+
+      const review = await Review.create({
+        userId,
+        userImage: user.picture?.image || "",
+        comment,
+        starRating,
+        recipeId,
+        recipeTitle,
+        recipeImage,
+        nickname: user.nickname || "",
       });
-      await review.save();
+      console.log("Review", review)
+
+      user.reviews.push(review._id);
+      await user.save();
 
       const updatedRecipe = await Recipe.findOneAndUpdate(
-        { recipeTitle: recipeTitle },
+        { recipeTitle },
         {
           $push: { reviews: { $each: [review._id], $position: 0 } },
-          $set: { averageRate: averageRate },
+          $set: { averageRate },
         },
         { new: true }
       );
@@ -233,7 +247,7 @@ module.exports = {
   },
   createCategorized: async (req, res) => {
     try {
-      const categorized = await Categorized.create({
+      await Categorized.create({
         name: req.body.name,
         data: req.body.data,
       });
