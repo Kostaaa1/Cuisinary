@@ -33,10 +33,10 @@ const addRecipeToSavedCollection = async (email, data, res) => {
     }
 
     await User.findOneAndUpdate(filter, update, options);
-    const updatedUser = await User.findOne({ email }).populate(
+    const populatedUser = await User.findOne({ email }).populate(
       "collections.collRecipes"
     );
-    res.status(200).json(updatedUser.collections[0].collRecipes);
+    res.status(200).json(populatedUser.collections[0].collRecipes);
   } catch (error) {
     res.status(404).json(error.message);
   }
@@ -118,7 +118,15 @@ module.exports = {
   },
   getUserId: async (req, res) => {
     try {
-      const user = await User.findOne({ _id: req.params.id });
+      const user = await User.findOne({ _id: req.params.id })
+        .populate("collections.collRecipes")
+        .populate("reviews");
+
+      console.log(user);
+      // const updatedUser = await User.findOne({ email })
+      // .populate("collections.collRecipes")
+      // .populate("reviews");
+
       res.status(200).json(user);
     } catch (error) {
       res.status(400).send(error.message);

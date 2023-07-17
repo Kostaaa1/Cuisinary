@@ -9,7 +9,7 @@ const ReviewSchema = new mongoose.Schema({
   recipeId: { type: Number },
   recipeImage: { type: String },
   nickname: { type: String },
-  createdAt: {
+  displayDate: {
     type: String,
     default: () => {
       const date = new Date();
@@ -17,6 +17,12 @@ const ReviewSchema = new mongoose.Schema({
       const dd = date.getDate();
       const yyyy = date.getFullYear();
       return `${mm}/${dd}/${yyyy}`;
+    },
+  },
+  createdAt: {
+    type: String,
+    default: () => {
+      return new Date();
     },
   },
 });

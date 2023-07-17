@@ -17,7 +17,7 @@ const UserReview = ({ recipeImg, myReview, showSubmit }) => {
       <div className="my-review-rates">
         <StarRating averageRate={myReview.starRating} />
         <span>
-          {myReview?.createdAt
+          {myReview?.displayDate
             ?.split('/')
             .map((date) => (date.length === 1 && date.length !== 4 ? '0' + date : date))
             .join('/')}

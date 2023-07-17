@@ -36,10 +36,10 @@ const Reviews = ({ userData }) => {
       let arr = userData?.reviews;
       switch (sortingTitle) {
         case 'Newest':
-          arr?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+          arr?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           break;
         case 'Oldest':
-          arr?.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+          arr?.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
           break;
         case 'Least Positive':
           arr?.sort((a, b) => a.starRating - b.starRating);
@@ -109,10 +109,6 @@ const Reviews = ({ userData }) => {
       document.removeEventListener('click', handleClick);
     };
   }, []);
-
-  useEffect(() => {
-    console.log(userData.reviews);
-  }, [userData.reviews]);
 
   return (
     <Container>

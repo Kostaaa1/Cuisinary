@@ -2,8 +2,6 @@ import React, { useEffect, useContext, useState, useCallback, useMemo } from 're
 import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import List from '../../pages/profile/components/List';
-import GlobalContext from '../../setup/app-context-menager/GlobalContext';
-import axios from 'axios';
 import ProfileGreet from './components/ProfileGreet';
 import { useUser } from '../../setup/auth/useAuth';
 import { useQuery } from '@tanstack/react-query';
@@ -14,7 +12,7 @@ import { ArrowBack } from '@mui/icons-material';
 import ButtonHover from '../../common/ButtonHover';
 import useSmoothScroll from '../../utils/useSmoothScroll';
 
-const MyProfile = ({ listContent, staticList, setLists }) => {
+const MyProfile = ({ listContent, staticList }) => {
   const params = useParams();
   const location = useLocation();
   const { user } = useAuth0();
@@ -23,8 +21,6 @@ const MyProfile = ({ listContent, staticList, setLists }) => {
   const [showResponsiveList, setShowResponsiveList] = useState(false);
   const navigate = useNavigate();
   useSmoothScroll();
-
-  useContext(GlobalContext);
 
   let refetchOnMount = 'always';
   const path = location.pathname;

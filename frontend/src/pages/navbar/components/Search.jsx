@@ -10,7 +10,7 @@ const Search = ({ style, setShowSideNav, showSideNav, showSearched }) => {
   const navigate = useNavigate();
   const { searchBarRef } = useContext(GlobalContext);
 
-  const submitHandler = e => {
+  const submitHandler = (e) => {
     e.preventDefault();
 
     if (!input) return;
@@ -25,7 +25,8 @@ const Search = ({ style, setShowSideNav, showSideNav, showSearched }) => {
       <h4>Search</h4>
       <Wrapper className="wrapper">
         <input
-          onChange={e => setInput(e.target.value)}
+          autoFocus
+          onChange={(e) => setInput(e.target.value)}
           type="text"
           value={input}
           placeholder="What are you looking for?"

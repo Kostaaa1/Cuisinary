@@ -35,7 +35,7 @@ const Comments = () => {
               )
             )} */}
             <span>
-              {review?.createdAt
+              {review?.displayDate
                 ?.split('/')
                 .map((date) =>
                   date.length === 1 && date.length !== 4 ? '0' + date : date

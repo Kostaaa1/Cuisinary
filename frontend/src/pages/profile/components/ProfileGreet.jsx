@@ -8,7 +8,7 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 
 const ProfileGreet = () => {
-  const { userData } = useContext(AuthContext);
+  const { userData, isRefetching } = useContext(AuthContext);
   const navigate = useNavigate();
   const [profileImgLoaded, setProfileImgLoaded] = useState(false);
   const imgRef = useRef(null);
@@ -27,7 +27,8 @@ const ProfileGreet = () => {
 
   return (
     <Greet>
-      {!userData && !profileImgLoaded ? (
+      {!userData || isRefetching ? (
+        // {!userData && !profileImgLoaded ? (
         <h4 className="h4-div">Loading...</h4>
       ) : (
         <>

@@ -11,9 +11,13 @@ export const AuthContextProvider = ({ children }) => {
   const [userCollections, setUserCollections] = useState([]);
   const [arrayId, setArrayId] = useState([]);
 
-  const { data: userData } = useQuery(['context-user', user?.email], getUserData, {
-    enabled: !!user,
-  });
+  const { data: userData, isRefetching } = useQuery(
+    ['context-user', user?.email],
+    getUserData,
+    {
+      enabled: !!user,
+    }
+  );
 
   const logoutUser = () => {
     logout().then(() =>
@@ -35,6 +39,7 @@ export const AuthContextProvider = ({ children }) => {
     arrayId,
     setArrayId,
     userData,
+    isRefetching,
     userCollections,
     logoutUser,
   };

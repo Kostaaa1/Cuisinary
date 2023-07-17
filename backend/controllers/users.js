@@ -105,11 +105,13 @@ module.exports = {
               $position: 1,
             },
           },
-        }
+        },
+        { new: true }
       );
 
       let collection = user.collections.find((x) => x.collName === collName);
       console.log(collection);
+
       res.status(200).json(collection);
     } catch (error) {
       res.status(400).send(error.message);

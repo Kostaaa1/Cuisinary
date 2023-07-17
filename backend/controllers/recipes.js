@@ -7,13 +7,12 @@ const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
 const { default: mongoose } = require("mongoose");
 
-const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(config);
-
 const extractKeyword = async (word) => {
   try {
+    const config = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    const openai = new OpenAIApi(config);
     if (word) {
       const prompt = `I want to fetch the data based on one word that is related to food. This is the name of the recipe: "${word}". I want you to extract the key/main word out of the name of the recipe that i provided that is related to food, so I can make the fetch for the similar word! Your response needs to be only that one word! For example, in the recipe name: "Mexican Lasagna with Chicken & Black Bean", the potential keyword would be "Chicken", then i would be able to make further fetches!`;
 
@@ -44,6 +43,7 @@ module.exports = {
       const checkParams = await Searched.findOne({
         name: { $in: query.split(" ") },
       });
+      console.log("PARAMS FOR KEYWORD: ", checkParams);
 
       if (!checkParams) {
         const keyword = await extractKeyword(query);
@@ -158,10 +158,7 @@ module.exports = {
         starRating,
         averageRate,
       } = req.body;
-      console.log(req.body)
       const user = await User.findById(userId);
-
-      console.log('USER: ',user)
 
       const review = await Review.create({
         userId,
@@ -173,7 +170,6 @@ module.exports = {
         recipeImage,
         nickname: user.nickname || "",
       });
-      console.log("Review", review)
 
       user.reviews.push(review._id);
       await user.save();
@@ -187,12 +183,14 @@ module.exports = {
         { new: true }
       );
 
-      const recipeReviews = await Recipe.findOne({ id: req.params.id });
-      const reviews = await Review.find({
-        _id: { $in: recipeReviews.reviews },
-      });
+      const populated = await Recipe.findOne({ recipeTitle }).populate(
+        "reviews"
+      );
 
-      const sentData = { reviews, updatedAverage: updatedRecipe.averageRate };
+      const sentData = {
+        reviews: populated.reviews,
+        updatedAverage: updatedRecipe.averageRate,
+      };
       res.status(200).json(sentData);
     } catch (error) {
       res.status(404).send(error.message);
@@ -203,17 +201,28 @@ module.exports = {
       const { recipeId, userId, comment, starRating, averageRate } = req.body;
       const user = await User.findById(userId);
 
+      const displayDate = () => {
+        const date = new Date();
+        const mm = date.getMonth() + 1;
+        const dd = date.getDate();
+        const yyyy = date.getFullYear();
+        return `${mm}/${dd}/${yyyy}`;
+      };
+      const currentDate = displayDate();
+
       await Review.findOneAndUpdate(
         {
           _id: recipeId,
         },
         {
           $set: {
-            userId: userId,
+            userId,
             nickname: user.nickname,
             userImage: user.picture.image || "",
-            comment: comment,
-            starRating: starRating,
+            comment,
+            starRating,
+            displayDate: currentDate,
+            createdAt: new Date(),
           },
         },
         { new: true }
@@ -221,16 +230,20 @@ module.exports = {
 
       const recipe = await Recipe.findOneAndUpdate(
         { id: req.params.id },
-        { $set: { averageRate: averageRate } },
+        { $set: { averageRate } },
         { new: true }
       );
 
-      const recipeReviews = await Recipe.findOne({ id: req.params.id });
-      const reviews = await Review.find({
-        _id: { $in: recipeReviews.reviews },
-      });
+      const populated = await Recipe.findOne({ id: req.params.id }).populate(
+        "reviews"
+      );
 
-      res.status(200).json({ averageRate: recipe.averageRate, reviews });
+      const sendData = {
+        averageRate: recipe.averageRate,
+        reviews: populated.reviews,
+      };
+
+      res.status(200).json(sendData);
     } catch (error) {
       res.status(401).send(error);
     }

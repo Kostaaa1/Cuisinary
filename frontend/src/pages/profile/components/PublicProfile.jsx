@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from '@mui/icons-material';
 import SectionHeader from '../../../common/SectionHeader';
+import { useQueryClient } from '@tanstack/react-query';
 
 const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);
@@ -14,6 +15,7 @@ const PublicInfo = ({ userData }) => {
   const [tagline, setTagline] = useState('');
   const [nickname, setNickname] = useState('');
   const [showLoading, setShowLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setNickname(userData?.nickname);
@@ -64,7 +66,8 @@ const PublicInfo = ({ userData }) => {
         await axios.post(`/api/user/${user?.email}/addImage`, formData);
       }
 
-      window.location.reload();
+      queryClient.refetchQueries(['user-data', user?.email]);
+      queryClient.refetchQueries(['context-user', user?.email]);
     } catch (error) {
       console.log(error);
     }

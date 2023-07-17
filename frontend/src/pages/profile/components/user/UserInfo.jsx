@@ -11,12 +11,13 @@ import FavoriteCollection from '../collections/FavoriteCollection';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useSmoothScroll from '../../../../utils/useSmoothScroll';
 import { useMemo } from 'react';
+import axios from 'axios';
 
 const UserInfo = () => {
   const navigate = useNavigate();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const { userData } = useContext(AuthContext);
-  const { layoutData, layoutArr, collections } = useLayoutData();
+  const { layoutData, layoutArr } = useLayoutData();
   const [activeIndex, setActiveIndex] = useState(0);
   const h3Refs = [useRef(null), useRef(null), useRef(null)];
   const params = useParams();
@@ -35,21 +36,18 @@ const UserInfo = () => {
   ];
 
   const fetchUserData = async () => {
-    const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
-    const data = await res.json();
+    const res = await axios.get(`/api/auth/${params.profileId}/getUserId`);
+    const data = await res.data;
 
+    console.log(data, 'data');
     layoutData(data.collections);
     return data;
   };
 
-  const { data: inspectUserData = {} } = useQuery(
-    ['user-info'],
-    fetchUserData,
-    {
-      enabled: !!userData,
-      refetchOnMount: 'always',
-    }
-  );
+  const { data: inspectUserData = {} } = useQuery(['user-info'], fetchUserData, {
+    enabled: !!userData,
+    refetchOnMount: 'always',
+  });
 
   const pageData = useMemo(() => {
     if (Object.entries(inspectUserData).length === 0) return;
@@ -77,6 +75,10 @@ const UserInfo = () => {
     };
   }, [queryClient]);
 
+  useEffect(() => {
+    console.log(pageData);
+  }, [pageData]);
+
   return (
     <Section>
       {Object.keys(inspectUserData).length === 0 && !isImageLoaded ? (
@@ -91,9 +93,7 @@ const UserInfo = () => {
                 alt="avatar"
               />
             )}
-            {!inspectUserData.picture?.image && (
-              <Person className="profile-svg" />
-            )}
+            {!inspectUserData.picture?.image && <Person className="profile-svg" />}
             <div className="profile-info">
               <NavigationWrap links={navigationLinks} />
               <h1>{inspectUserData?.nickname}</h1>
@@ -134,7 +134,7 @@ const UserInfo = () => {
                     {activeIndex === 0 &&
                       pageData.map((collection, id) => (
                         <FavoriteCollection
-                          key={id}
+                          key={collection._id}
                           collection={collection}
                           layoutArr={layoutArr[id]}
                           onClick={() => {

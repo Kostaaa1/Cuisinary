@@ -25,7 +25,6 @@ export const useLayoutData = () => {
   ]);
 
   const layoutData = (collections) => {
-    console.log(collections, 'fropm use Layout Data')
     if (!collections) return;
 
     if (userData) {
@@ -34,15 +33,15 @@ export const useLayoutData = () => {
   };
 
   const layoutArr = useMemo(() => {
-    let destructuredArray = collections?.map((coll) =>
+    let destructuredArray = userData?.collections?.map((coll) =>
       coll.collRecipes.map((recipes) => ({
-        data: { image: recipes.recipe?.image },
+        data: { image: recipes.data?.image },
       }))
     );
     return destructuredArray?.map((el) =>
       mockData.map((mockEl, i) => (el[i] ? el[i] : mockEl))
     );
-  }, [collections, mockData]);
+  }, [userData, mockData]);
 
   return {
     layoutArr,

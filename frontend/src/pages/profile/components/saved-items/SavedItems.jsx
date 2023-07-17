@@ -213,6 +213,7 @@ const SavedItems = () => {
         )}
         {showEditCollectionModal && (
           <CollectionModal
+            refetch={refetch}
             showModal={() => setShowEditCollectionModal(false)}
             collectionTitle={collectionData?.collName}
             collectionDesc={collectionData?.collDesc}

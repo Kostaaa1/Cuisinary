@@ -69,7 +69,9 @@ const PersonalInfo = () => {
         birthDate,
       },
     });
-    window.location.reload();
+
+    queryClient.refetchQueries(['user-data', user?.email]);
+    queryClient.refetchQueries(['context-user', user?.email]);
   };
 
   const handleInputChange = (e) => {

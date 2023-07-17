@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router-dom';
 import useNoScroll from '../utils/useNoScroll';
+import { useQueryClient } from '@tanstack/react-query';
 
 const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate }) => {
   const params = useParams();
@@ -17,6 +18,8 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
   const [collPrivate, setCollPrivate] = useState(isPrivate ? isPrivate : false);
   const { user } = useAuth0();
   useNoScroll(showModal);
+
+  const queryClient = useQueryClient();
 
   const submitCollection = async (e) => {
     e.preventDefault();
@@ -33,8 +36,8 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
         { ...collectionData, private: collPrivate }
       );
 
+      queryClient.refetchQueries(['user-data', user?.email]);
       showModal();
-      window.location.reload();
     } catch (error) {
       console.log(error);
     }

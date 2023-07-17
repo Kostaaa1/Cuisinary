@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import styled from "styled-components";
-import ButtonHover from "../../../../common/ButtonHover";
-import { ArrowBack } from "@mui/icons-material";
-import NavigationWrap from "./UserNavigationWrap";
-import Loading from "../../../../common/Loading";
-import useSmoothScroll from "../../../../utils/useSmoothScroll";
-import { useUser } from "../../../../setup/auth/useAuth";
-import { useQuery } from "@tanstack/react-query";
-import LineBreak from "../../../../common/LineBreak";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import styled from 'styled-components';
+import ButtonHover from '../../../../common/ButtonHover';
+import { ArrowBack } from '@mui/icons-material';
+import NavigationWrap from './UserNavigationWrap';
+import Loading from '../../../../common/Loading';
+import useSmoothScroll from '../../../../utils/useSmoothScroll';
+import { useQuery } from '@tanstack/react-query';
+import LineBreak from '../../../../common/LineBreak';
+import axios from 'axios';
+import StarRating from '../../../../common/StarRating';
+import Summary from '../../../recipe/components/Summary';
 
 const CollectionPage = () => {
   const navigate = useNavigate();
@@ -17,25 +19,21 @@ const CollectionPage = () => {
   useSmoothScroll();
 
   const fetchUserData = async () => {
-    const res = await fetch(`/api/auth/${params.profileId}/getUserId`);
-    const data = await res.json();
+    const res = await axios.get(`/api/auth/${params.profileId}/getUserId`);
+    const data = res.data;
     return data;
   };
 
-  const { data: currentUser = {} } = useQuery(
-    ["current-userData"],
-    fetchUserData,
-    {
-      enabled: !!params.profileId,
-      refetchOnMount: "always",
-    }
-  );
+  const { data: currentUser = {} } = useQuery(['current-userData'], fetchUserData, {
+    enabled: !!params.profileId,
+    refetchOnMount: 'always',
+  });
 
   const navigationLinks = [
-    { url: "/", content: "Home" },
+    { url: '/', content: 'Home' },
     {
-      url: "/account/profile/collection",
-      content: "Saved Items & Collections",
+      url: '/account/profile/collection',
+      content: 'Saved Items & Collections',
     },
     {
       url: `/profile/${currentUser?._id}`,
@@ -44,39 +42,32 @@ const CollectionPage = () => {
   ];
 
   useEffect(() => {
-    if (params.collectionId === "all-saved-items" && !!currentUser) {
+    console.log(currentUser);
+    if (params.collectionId === 'all-saved-items' && !!currentUser) {
       setCollectionData(currentUser.collections?.[0]);
     } else {
       setCollectionData(
-        currentUser.collections?.filter(
-          (col) => col._id === params.collectionId
-        )[0]
+        currentUser.collections?.filter((col) => col._id === params.collectionId)[0]
       );
     }
   }, [currentUser]);
 
-  useEffect(() => {
-    console.log(collectionData);
-  }, [collectionData]);
   return (
     <Page>
       {collectionData && currentUser ? (
         <>
           <ButtonHover
-            value={"BACK TO PROFILE"}
+            value={'BACK TO PROFILE'}
             icon={<ArrowBack />}
             onClick={() => navigate(`/profile/${currentUser?._id}`)}
           />
-          <NavigationWrap
-            links={navigationLinks}
-            style={{ margin: "40px 0 10px 0" }}
-          />
+          <NavigationWrap links={navigationLinks} style={{ margin: '40px 0 10px 0' }} />
           <div className="flex-wrap">
             <h1> {collectionData?.collName}</h1>
             <p>
               {collectionData.collDesc
                 ? collectionData.collDesc
-                : `All ${currentUser?.nickname}'s favorites in one place`}{" "}
+                : `All ${currentUser?.nickname}'s favorites in one place`}{' '}
             </p>
             <CustomLink to={`/profile/${currentUser?._id}`}>
               Collection by <span> {currentUser?.nickname} </span>
@@ -85,12 +76,14 @@ const CollectionPage = () => {
           <p>{collectionData.collRecipes?.length} items</p>
           <div className="collection-card">
             <LineBreak className="line-break" />
-            {collectionData.collRecipes?.map((data, id) => (
-              <Card key={id} className="card">
-                <Link to={"/recipe/" + data.recipe.id}>
-                  <img src={data?.recipe.image} />
+            {collectionData.collRecipes?.map((recipe) => (
+              <Card key={recipe._id}>
+                <Link to={'/recipe/' + recipe.id}>
+                  <img src={recipe?.data.image} />
                   <div className="card-desc">
-                    <h3>{data?.recipeTitle}</h3>
+                    <h3>{recipe?.recipeTitle}</h3>
+                    <StarRating averageRate={recipe?.averageRate} />
+                    <Summary recipe={recipe.data} smallTextSize={true} />
                   </div>
                 </Link>
               </Card>
@@ -110,10 +103,14 @@ const Card = styled.div`
   width: 280px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
-  .wrap {
-    padding: 20px;
+  .card-desc {
+    padding: 1rem;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-    h4 {
+    h3 {
       cursor: pointer;
       width: fit-content;
       word-break: break-all;

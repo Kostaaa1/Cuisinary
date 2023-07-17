@@ -62,31 +62,11 @@ const Recipe = () => {
     setFavorite(checkCollections);
   };
 
-  const summary = useMemo(() => {
-    if (recipe?.summary) {
-      let str = recipe.summary;
-      let dotCount = 0;
-      let index = 0;
-
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === '.') {
-          dotCount++;
-          if (dotCount === 4) {
-            index = i;
-            break;
-          }
-        }
-      }
-      return str.slice(0, index + 1);
-    }
-  }, [recipe]);
-
   const value = {
     recipe,
     averageRate,
     setAverageRate,
     favorite,
-    summary,
     setFavorite,
     reviews,
     favoriteForSimilar,
@@ -103,7 +83,7 @@ const Recipe = () => {
           <Wrapper>
             <div className="container">
               <RecipeHeader />
-              <Summary />
+              <Summary recipe={recipe} />
               <Description />
               <Ingredients />
               <Directions />
@@ -111,7 +91,7 @@ const Recipe = () => {
               <RecipeReviews />
             </div>
           </Wrapper>
-          {/* <SimilarRecipes /> */}
+          <SimilarRecipes />
         </>
       ) : (
         <Loading />
