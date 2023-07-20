@@ -3,23 +3,10 @@ import { SupervisorAccount } from '@mui/icons-material';
 import Button from '../../../common/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import SectionHeader from '../../../common/SectionHeader';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const PersonalRecipes = () => {
+const PersonalRecipes = ({ userData }) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { user } = useAuth0();
-  const [personalRecipes, setPersonalRecipes] = useState([]);
-
-  const userData = queryClient.getQueryData(['user-data', user?.email]);
-
-  useEffect(() => {
-    setPersonalRecipes(userData?.personalRecipes);
-  }, [userData]);
 
   return (
     <Section>
@@ -32,7 +19,7 @@ const PersonalRecipes = () => {
         icon={<SupervisorAccount />}
         onClick={() => navigate('/account/add-recipe')}
       />
-      {personalRecipes?.length === 0 ? (
+      {!userData.personalRecipes.length > 0 ? (
         <div className="recipe-add">
           <h2>You haven't created any recipes yet.</h2>
           <p>To add a recipe click the button bellow</p>
@@ -44,7 +31,7 @@ const PersonalRecipes = () => {
         </div>
       ) : (
         <Grid>
-          {personalRecipes?.map((recipe) => (
+          {userData.personalRecipes?.map((recipe) => (
             <Card key={recipe._id}>
               <Link to={`/account/${userData._id}/recipe/${recipe._id}`}>
                 <img src={recipe?.picture?.image} />
@@ -75,18 +62,9 @@ const Card = styled.div`
   flex-direction: column;
   box-shadow: var(--card-shadow-border);
 
-  .loading {
-    transform: translate(0, -55px);
-  }
-
   img {
     width: 100%;
     height: 280px;
-  }
-
-  .blur-img {
-    position: absolute;
-    top: 0;
   }
 
   .card-content {
