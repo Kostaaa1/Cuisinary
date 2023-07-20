@@ -1,17 +1,21 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import ButtonBorder from '../../../common/ButtonBorder';
-import AuthContext from '../../../setup/app-context-menager/AuthContext';
 import PersonAvatar from '../../../common/PersonAvatar';
 import { useRef } from 'react';
 import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const ProfileGreet = () => {
-  const { userData, isRefetching } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { user } = useAuth0();
   const [profileImgLoaded, setProfileImgLoaded] = useState(false);
   const imgRef = useRef(null);
+
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(['context-user']);
 
   useEffect(() => {
     const imgElement = imgRef.current;
@@ -27,8 +31,7 @@ const ProfileGreet = () => {
 
   return (
     <Greet>
-      {!userData || isRefetching ? (
-        // {!userData && !profileImgLoaded ? (
+      {!userData && !profileImgLoaded ? (
         <h4 className="h4-div">Loading...</h4>
       ) : (
         <>
@@ -50,7 +53,7 @@ const ProfileGreet = () => {
                 : userData?.email}
             </h4>
             <ButtonBorder
-              style={{ width: '140px', height: '30px' }}
+              style={{ width: '140px' }}
               onClick={() => navigate(`/profile/${userData._id}`)}
               value={'View Public Profile'}
             />
@@ -67,6 +70,7 @@ const Greet = styled.div`
   width: 100%;
   height: 100%;
   padding: 10px;
+  padding-top: 0;
 
   .h4-div {
     display: flex;
