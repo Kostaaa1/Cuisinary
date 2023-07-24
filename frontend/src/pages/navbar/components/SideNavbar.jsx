@@ -1,16 +1,11 @@
-import React, { useContext } from 'react';
 import Search from './Search';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { ArrowBack } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { FaUserCircle } from 'react-icons/fa';
-import { useAuth } from '../../../setup/auth/useAuth';
 import { userLinkList } from '../navbar-constants';
 import { categoryData } from '../navbar-constants';
-import AuthContext from '../../../setup/app-context-menager/AuthContext';
-import { useAuth0 } from '@auth0/auth0-react';
 import UserIconComponent from '../../../common/UserStateComponent';
-import LineBreak from '../../../common/LineBreak';
+import { useAuth } from '../../../setup/auth/useAuth';
 
 const SideNavbar = ({
   clickedCategory,
@@ -20,9 +15,7 @@ const SideNavbar = ({
   setShowSideNav,
 }) => {
   const navigate = useNavigate();
-  const { logoutUser } = useContext(AuthContext);
-  const { authenticated } = useAuth();
-  const { loginWithPopup } = useAuth0();
+  const { logoutUser } = useAuth();
 
   const categoryNavigation = (query) => {
     if (!query) {

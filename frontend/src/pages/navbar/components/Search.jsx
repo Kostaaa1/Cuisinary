@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { Close } from '@mui/icons-material';
-import GlobalContext from '../../../setup/app-context-menager/GlobalContext';
+import ProfileContext from '../../../setup/app-context-menager/GlobalContext';
 
 const Search = ({ style, setShowSideNav, showSideNav, showSearched }) => {
   const [input, setInput] = useState('');
   const navigate = useNavigate();
-  const { searchBarRef } = useContext(GlobalContext);
+  const { searchBarRef } = useContext(ProfileContext);
 
   const submitHandler = (e) => {
     e.preventDefault();

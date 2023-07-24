@@ -15,14 +15,14 @@ import { useEffect } from 'react';
 import PrepTime from './PrepTime';
 import PublicRecipe from './PublicRecipe';
 import axios from 'axios';
-import { useContext } from 'react';
-import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import useSmoothScroll from '../../../../utils/useSmoothScroll';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AddRecipe = () => {
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(['context-user']);
   const navigate = useNavigate();
-  const { userData } = useContext(AuthContext);
   const [prepTime, setPrepTime] = useState({ value: '', time: 'minutes' });
   const [cookTime, setCookTime] = useState({ value: '', time: 'minutes' });
   const [isPublic, setIsPublic] = useState(true);
@@ -47,7 +47,7 @@ const AddRecipe = () => {
     createdBy: userData?.nickname,
     createdByUserId: userData?._id,
   });
-  useSmoothScroll()
+  useSmoothScroll();
 
   const handleImage = (e) => {
     const file = e.target.files[0];

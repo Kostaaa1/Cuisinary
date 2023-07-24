@@ -2,15 +2,13 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { ArrowDropDown } from '@mui/icons-material';
 import { userLinkList } from '../navbar-constants';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import UserStateComponent from '../../../common/UserStateComponent';
 import { useAuth } from '../../../setup/auth/useAuth';
-import AuthContext from '../../../setup/app-context-menager/AuthContext';
 
 const Dropdown = () => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const { authenticated } = useAuth();
-  const { logoutUser } = useContext(AuthContext);
+  const { authenticated, logoutUser } = useAuth();
 
   return (
     <li
@@ -28,9 +26,7 @@ const Dropdown = () => {
                   <div
                     className="li-control"
                     onClick={() =>
-                      item.list === 'Log Out'
-                        ? logoutUser()
-                        : setShowDropdown(false)
+                      item.list === 'Log Out' ? logoutUser() : setShowDropdown(false)
                     }
                   >
                     <li>{item.list}</li>

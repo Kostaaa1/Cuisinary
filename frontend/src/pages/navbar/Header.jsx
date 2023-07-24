@@ -7,10 +7,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Search from './components/Search';
 import Navbar from './components/Navbar';
 import Logo from '../../common/Logo';
-import GlobalContext from '../../setup/app-context-menager/GlobalContext';
+import ProfileContext from '../../setup/app-context-menager/GlobalContext';
 import ScrolledHeader from './ScrolledHeader';
 import Dropdown from './components/Dropdown';
-import { useAuth } from '../../setup/auth/useAuth';
+import { useAuth, useUser } from '../../setup/auth/useAuth';
 import SideNavbar from './components/SideNavbar';
 import { useWindowSize } from '../../utils/useWindowSize';
 import { userLinkList } from './navbar-constants';
@@ -18,7 +18,7 @@ import useNoScroll from '../../utils/useNoScroll';
 import UserStateComponent from '../../common/UserStateComponent';
 
 const Header = () => {
-  const { showSearch, setShowSearch } = useContext(GlobalContext);
+  const { showSearch, setShowSearch } = useContext(ProfileContext);
   const { loginWithPopup } = useAuth0();
   const [activateScrolled, setActivateScrolled] = useState(false);
   const { authenticated } = useAuth();

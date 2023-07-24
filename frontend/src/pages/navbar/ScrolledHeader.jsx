@@ -6,11 +6,11 @@ import { useState, memo, useContext } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { motion } from 'framer-motion';
 import Logo from '../../common/Logo';
-import RecipeNames from '../../setup/app-context-menager/GlobalContext';
+import ProfileContext from '../../setup/app-context-menager/GlobalContext';
 import Dropdown from './components/Dropdown';
 
 const Horizontal = () => {
-  const { showSearch, setShowSearch } = useContext(RecipeNames);
+  const { showSearch, setShowSearch } = useContext(ProfileContext);
   const { loginWithPopup, user } = useAuth0();
 
   const showSearched = () => {
