@@ -104,7 +104,10 @@ const Header = () => {
                 {showSearch ? (
                   <Search style={{ width: '400px' }} showSearched={showSearched} />
                 ) : (
-                  <ul className="wrapper-resize">
+                  <ul
+                    className="wrapper-resize"
+                    style={{ flex: windowSize[0] <= 620 && '8' }}
+                  >
                     <li className="list">
                       <FaSearch
                         className="search"
@@ -315,14 +318,11 @@ const HeaderControl = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 60px;
+  /* width: 100vw; */
 
   @media (max-width: 1270px) {
-    padding: 0 36px;
+    padding: 0 24px;
   }
-
-  /* @media (max-width: 800px) {
-    padding: 0 62px;
-  } */
 
   .hamburger-wrap {
     flex: 1;
