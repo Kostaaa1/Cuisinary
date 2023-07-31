@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LineBreak from './LineBreak';
 import Loading from './Loading';
 import styled from 'styled-components';
 import useAddFixed from '../pages/profile/hooks/useAddFixed';
+import { useWindowSize } from '../utils/useWindowSize';
 
 const SectionHeader = ({
   title,
@@ -15,17 +16,22 @@ const SectionHeader = ({
   onClick,
 }) => {
   const headerRef = useRef(null);
+  const windowSize = useWindowSize();
   useAddFixed(headerRef);
 
   return (
     <>
-      <Section>
-        <div className={`account-section`} ref={headerRef}>
+      <Section
+        style={{
+          height: !buttonValue ? '180px' : windowSize[0] >= 710 ? '170px' : '100%',
+        }}
+      >
+        <div className="account-section" ref={headerRef}>
           <h1> {title} </h1>
-          {buttonValue ? (
+          {buttonValue && windowSize[0] >= 710 && (
             <>
               {showLoading ? (
-                <button className="btn-save">
+                <button className="btn-save" disabled>
                   <Loading className="scaled-loading" />
                 </button>
               ) : (
@@ -48,71 +54,129 @@ const SectionHeader = ({
                 </>
               )}
             </>
-          ) : (
-            <div></div>
+          )}
+          {!buttonValue && windowSize[0] >= 710 && (
+            <div className="button-wrap">
+              <div className="btn-save replace"></div>
+            </div>
           )}
         </div>
         <Content>
-          <h4> {text} </h4>
-          <span>
-            {icon}
-            {span}
-          </span>
+          <div>
+            <h4> {text} </h4>
+            <span>
+              {icon}
+              {span}
+            </span>
+          </div>
+          {buttonValue && windowSize[0] < 710 && (
+            <div className="button-wrap">
+              {showLoading ? (
+                <button className="btn-save" disabled>
+                  <Loading className="scaled-loading" />
+                </button>
+              ) : (
+                <>
+                  {buttonSave ? (
+                    <input
+                      type="submit"
+                      value={buttonValue}
+                      className={`btn-save highlight`}
+                      onClick={onClick}
+                    />
+                  ) : (
+                    <input
+                      type="submit"
+                      value={buttonValue}
+                      disabled
+                      className={`btn-save`}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+          {/* {!buttonValue && windowSize[0] < 710 && (
+            <div className="button-wrap">
+              <div className="btn-save replace"></div>
+            </div>
+          )} */}
         </Content>
       </Section>
-      <LineBreak className="line-break" />
+      {/* <LineBreak className="line-break" /> */}
     </>
   );
 };
 
 const Section = styled.section`
   position: relative;
-  height: 160px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.11);
+  margin-bottom: 24px;
+
+  .button-wrap {
+    margin-top: 24px;
+    width: max-content;
+  }
+
+  @media screen and (max-width: 709px) {
+    justify-content: center;
+  }
+
+  .btn-save {
+    position: relative;
+    height: 56px;
+    width: 200px;
+    font-size: 12px;
+    font-weight: 900;
+    color: white;
+    background-color: #d9d9d9;
+    display: block;
+    border: none;
+    border-radius: 3px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+
+    .scaled-loading {
+      transform: scale(0.8) !important;
+    }
+  }
+
+  .replace {
+    background-color: transparent;
+  }
+
+  .highlight {
+    background-color: var(--red-color);
+    cursor: pointer;
+
+    &:active {
+      outline: 2px solid var(--blue-color);
+      border-radius: 5px;
+      outline-offset: 1px;
+    }
+  }
 
   .account-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 90px;
+    height: max-content;
+    min-height: 56px;
+    margin-bottom: 22px;
 
     h1 {
       font-size: 36px !important;
     }
 
-    .button-replace {
-      width: 200px;
-      height: 56px;
-    }
+    @media screen and (max-width: 709px) {
+      margin: 0;
 
-    .btn-save {
-      position: relative;
-      width: 200px;
-      height: 56px;
-      font-size: 12px;
-      font-weight: 900;
-      color: white;
-      background-color: #d9d9d9;
-      display: block;
-      border: none;
-      border-radius: 3px;
-      letter-spacing: 1.2px;
-
-      .scaled-loading {
-        transform: scale(0.8) !important;
-      }
-    }
-
-    .highlight {
-      background-color: var(--red-color);
-      cursor: pointer;
-
-      &:active {
-        outline: 2px solid var(--blue-color);
-        border-radius: 5px;
-        outline-offset: 1px;
+      h1 {
+        font-size: 32px !important;
       }
     }
   }
@@ -120,20 +184,27 @@ const Section = styled.section`
 
 const Content = styled.div`
   position: absolute;
-  left: 0;
   bottom: 0;
-  height: 80px;
+  justify-content: flex-end;
   width: 100%;
-  height: 60px;
+  height: 100%;
   display: flex;
-  align-items: flex-start;
   flex-direction: column;
-  justify-content: center;
+  padding-bottom: 24px;
+
+  @media screen and (max-width: 709px) {
+    position: relative;
+    justify-content: space-around;
+  }
 
   h4 {
     font-weight: 400;
     line-height: 24px;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
+
+    @media screen and (max-width: 709px) {
+      font-size: 16px !important;
+    }
   }
 
   span {
