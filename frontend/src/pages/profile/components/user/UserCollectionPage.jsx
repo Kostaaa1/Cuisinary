@@ -15,7 +15,7 @@ import Summary from '../../../recipe/components/Summary';
 const CollectionPage = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [collectionData, setCollectionData] = useState([]);
+  const [collectionData, setCollectionData] = useState();
   useSmoothScroll();
 
   const fetchUserData = async () => {
@@ -42,7 +42,6 @@ const CollectionPage = () => {
   ];
 
   useEffect(() => {
-    console.log(currentUser);
     if (params.collectionId === 'all-saved-items' && !!currentUser) {
       setCollectionData(currentUser.collections?.[0]);
     } else {
@@ -77,16 +76,16 @@ const CollectionPage = () => {
           <div className="collection-card">
             <LineBreak className="line-break" />
             {collectionData.collRecipes?.map((recipe) => (
-              <Card key={recipe._id}>
-                <Link to={'/recipe/' + recipe.id}>
+              <Link key={recipe._id} to={'/recipe/' + recipe.id}>
+                {/* <Card>
                   <img src={recipe?.data.image} />
                   <div className="card-desc">
                     <h3>{recipe?.recipeTitle}</h3>
                     <StarRating averageRate={recipe?.averageRate} />
                     <Summary recipe={recipe.data} smallTextSize={true} />
                   </div>
-                </Link>
-              </Card>
+                </Card> */}
+              </Link>
             ))}
           </div>
         </>
@@ -99,16 +98,18 @@ const CollectionPage = () => {
 
 const Card = styled.div`
   background-color: #fff;
-  min-height: 460px;
+  height: 440px;
   width: 280px;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
 
   .card-desc {
     padding: 1rem;
-    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    outline: 1px solid black;
 
     h3 {
       cursor: pointer;
@@ -124,7 +125,8 @@ const Card = styled.div`
   }
 
   img {
-    height: 62%;
+    object-fit: fill;
+    height: 100%;
   }
 `;
 

@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
+import { RecipeContext } from '../Recipe';
 
-const Summary = ({ recipe, smallTextSize }) => {
+const Summary = ({ smallTextSize }) => {
+  const { recipe } = useContext(RecipeContext);
   const summary = useMemo(() => {
     if (recipe?.summary) {
       let str = recipe.summary;
@@ -19,7 +21,8 @@ const Summary = ({ recipe, smallTextSize }) => {
           }
         }
       }
-      return str.slice(0, index + 1);
+      let sum = str.slice(0, index + 1);
+      return sum;
     }
   }, [recipe]);
 
@@ -29,7 +32,8 @@ const Summary = ({ recipe, smallTextSize }) => {
         smallTextSize ? { fontSize: '14px' } : { fontSize: '16px', lineHeight: '1.7' }
       }
       dangerouslySetInnerHTML={{
-        __html: summary,
+        __html:
+          smallTextSize && summary?.length > 80 ? `${summary.slice(0, 81)}...` : summary,
       }}
     ></Paragraph>
   );
@@ -38,6 +42,7 @@ const Summary = ({ recipe, smallTextSize }) => {
 const Paragraph = styled.p`
   font-weight: 400;
   color: var(--main-color);
+  word-break: break-all !important;
 
   b {
     font-size: inherit;

@@ -64,7 +64,6 @@ module.exports = {
         const createdRecipe = await Recipe.create(recipeData);
         await addRecipeToSavedCollection(email, createdRecipe, res);
       } else {
-        console.log(existingRecipe);
         await addRecipeToSavedCollection(email, existingRecipe, res);
       }
     } catch (error) {
@@ -121,11 +120,6 @@ module.exports = {
       const user = await User.findOne({ _id: req.params.id })
         .populate("collections.collRecipes")
         .populate("reviews");
-
-      console.log(user);
-      // const updatedUser = await User.findOne({ email })
-      // .populate("collections.collRecipes")
-      // .populate("reviews");
 
       res.status(200).json(user);
     } catch (error) {

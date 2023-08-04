@@ -1,19 +1,19 @@
-import styled from "styled-components";
-import { Close, Delete } from "@mui/icons-material";
-import Button from "./Button";
-import { useEffect } from "react";
-import { motion } from "framer-motion";
+import styled from 'styled-components';
+import { Close, Delete } from '@mui/icons-material';
+import Button from './Button';
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 const DeleteModal = ({ text, message, type, name, onClick, closeModal }) => {
   useEffect(() => {
     const handle = (e) => {
-      if (e.key !== "Escape") return;
+      if (e.key !== 'Escape') return;
       closeModal();
     };
 
-    document.addEventListener("keydown", handle);
+    document.addEventListener('keydown', handle);
     return () => {
-      document.removeEventListener("keydown", handle);
+      document.removeEventListener('keydown', handle);
     };
   }, []);
 
@@ -41,9 +41,9 @@ const DeleteModal = ({ text, message, type, name, onClick, closeModal }) => {
               Cancel
             </button>
             <Button
-              value={"Delete"}
+              value={'Delete'}
               onClick={onClick}
-              style={{ width: "120px", height: "50px" }}
+              style={{ width: '120px', height: '50px' }}
             />
           </div>
         </div>
@@ -55,7 +55,7 @@ const DeleteModal = ({ text, message, type, name, onClick, closeModal }) => {
 const Modal = styled.div`
   position: fixed;
   overflow: none;
-  content: "";
+  content: '';
   top: 0;
   left: 0;
   width: 100%;
@@ -134,7 +134,7 @@ const Section = styled(motion.div)`
         text-align: center;
         align-items: center;
         font-size: 14px;
-        letter-spacing: 1.1px;
+        letter-spacing: 1px;
         cursor: pointer;
         border: none;
         margin-right: 16px;

@@ -23,7 +23,7 @@ const User = styled.span`
   cursor: pointer;
   font-weight: 500;
 
-  @media screen and (max-width: 800px) {
+  @media screen and (max-width: 729px) {
     font-size: 12px;
   }
 

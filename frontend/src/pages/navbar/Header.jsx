@@ -32,7 +32,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    if (showSideNav && windowSize[0] > 1120) {
+    if (showSideNav && windowSize[0] > 1030) {
       setShowSideNav(false);
     }
   }, [windowSize]);
@@ -64,7 +64,7 @@ const Header = () => {
   return (
     <>
       <HeaderContainer className="header-container">
-        {windowSize[0] > 1120 ? (
+        {windowSize[0] > 1030 ? (
           <>
             {!activateScrolled ? (
               <VerticalHeader>
@@ -104,10 +104,7 @@ const Header = () => {
                 {showSearch ? (
                   <Search style={{ width: '400px' }} showSearched={showSearched} />
                 ) : (
-                  <ul
-                    className="wrapper-resize"
-                    style={{ flex: windowSize[0] <= 620 && '8' }}
-                  >
+                  <ul className="wrapper-resize">
                     <li className="list">
                       <FaSearch
                         className="search"
@@ -141,7 +138,7 @@ const Header = () => {
         )}
       </HeaderContainer>
       <AnimatePresence>
-        {showSideNav && windowSize[0] < 1120 && (
+        {showSideNav && windowSize[0] < 1030 && (
           <SideNav
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -229,7 +226,7 @@ const SideNav = styled(motion.nav)`
   }
 
   .side-navbar {
-    padding: 80px 36px 20px 36px;
+    padding: 80px 24px 20px 24px;
     width: 380px;
     height: 100%;
     background-color: #fff;
@@ -321,15 +318,27 @@ const HeaderControl = styled.div`
   /* width: 100vw; */
 
   @media (max-width: 1270px) {
-    padding: 0 24px;
+    padding: 0 36px;
   }
 
-  .hamburger-wrap {
-    flex: 1;
+  @media (max-width: 729px) {
+    padding: 0 24px;
   }
 
   svg {
     cursor: pointer;
+  }
+
+  .hamburger-wrap {
+    flex: 1;
+
+    @media screen and (max-width: 729px) {
+      flex: 0;
+    }
+
+    svg {
+      margin-right: 12px;
+    }
   }
 
   .wrapper-resize {

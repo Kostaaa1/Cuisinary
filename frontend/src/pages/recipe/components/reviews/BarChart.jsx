@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { BarChart, Bar } from 'recharts';
 import styled from 'styled-components';
 import { Star, StarBorder, StarHalf } from '@mui/icons-material';
-import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 import { RecipeContext } from '../../Recipe';
 import LineBreak from '../../../../common/LineBreak';
 import StarRating from '../../../../common/StarRating';

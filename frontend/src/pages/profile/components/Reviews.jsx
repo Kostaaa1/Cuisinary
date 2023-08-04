@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../../../common/Button';
 import Loading from '../../../common/Loading';
-import { Link } from 'react-router-dom';
-import StarRating from '../../../common/StarRating';
 import {
   ArrowDropDown,
   Check,
@@ -11,6 +9,7 @@ import {
   SupervisorAccount,
 } from '@mui/icons-material';
 import SectionHeader from '../../../common/SectionHeader';
+import HorizontalCard from '../../../common/HorizontalCard';
 
 const Reviews = ({ userData }) => {
   const loadCount = 5;
@@ -151,22 +150,12 @@ const Reviews = ({ userData }) => {
                   </div>
                 ) : (
                   <>
-                    {reviews?.map((review, id) => (
-                      <div key={id} className="reviews">
-                        <Link to={'/recipe/' + review.recipeId}>
-                          <img src={review.recipeImage} alt="review-image" />
-                        </Link>
-                        <div className="control-flex">
-                          <Link to={'/recipe/' + review.recipeId}>
-                            <h2> {review.recipeTitle} </h2>
-                          </Link>
-                          <div className="stars-wrap">
-                            <StarRating averageRate={review.starRating} />
-                            <span>&nbsp; My Review</span>
-                          </div>
-                          <p> {review.comment} </p>
-                        </div>
-                      </div>
+                    {reviews?.map((review) => (
+                      <HorizontalCard
+                        key={review._id}
+                        cardData={review}
+                        isRecipe={true}
+                      />
                     ))}
                     {showLoadMore && (
                       <div className="button-flex">
@@ -189,7 +178,7 @@ const Reviews = ({ userData }) => {
         </>
       ) : (
         <div className="wrapper">
-          <h1> You haven't created any reviews yet. </h1>
+          <h2> You haven't created any reviews yet. </h2>
         </div>
       )}
     </Container>
@@ -203,8 +192,8 @@ const Container = styled.section`
     justify-content: center;
     padding: 32px 0;
 
-    h1 {
-      font-size: 26px !important;
+    h2 {
+      font-size: 24px !important;
       color: var(--grey-color);
     }
   }
@@ -238,8 +227,6 @@ const Container = styled.section`
       .dropdown {
         position: absolute;
         box-shadow: var(--card-shadow-border);
-        /* top: 30px; */
-        /* right: 6px; */
         left: -30px;
         width: 160px;
         height: 170px;
@@ -306,7 +293,7 @@ const ReviewsSections = styled.section`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2rem;
+    padding: 0 1.8rem;
     user-select: none;
 
     .show {
@@ -344,60 +331,6 @@ const ReviewsSections = styled.section`
       height: 100px;
       width: 100%;
       border: 1px solid var(--grey-hover-color);
-    }
-
-    .reviews {
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--grey-hover-color);
-      margin: 1.8rem;
-      height: 100%;
-
-      img {
-        height: 160px;
-        width: 320px;
-      }
-
-      .control-flex {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        margin-left: 28px;
-        width: 100%;
-        height: 84px;
-
-        .stars-wrap {
-          display: flex;
-          align-items: center;
-        }
-
-        .bordered {
-          color: var(--grey-color) !important;
-        }
-
-        h2 {
-          cursor: pointer;
-          width: fit-content;
-          color: var(--grey-color);
-          font-size: 22px;
-
-          &:hover {
-            color: var(--main-color);
-            text-decoration: underline;
-            text-decoration-color: var(--main-color);
-            text-underline-offset: 5px;
-            text-decoration-thickness: 8%;
-          }
-        }
-      }
-
-      p {
-        font-size: 14px;
-      }
-
-      svg {
-        color: var(--red-color);
-      }
     }
   }
 `;

@@ -10,8 +10,10 @@ import SectionHeader from '../../../../common/SectionHeader';
 
 const Collections = ({ userData }) => {
   const navigate = useNavigate();
+  // const { setCollections, layoutArr } = useLayoutData();
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   useNoScroll(showCollectionModal);
+
   const mockData = [
     {
       data: {},
@@ -44,7 +46,7 @@ const Collections = ({ userData }) => {
         <div className="saved-items">
           <SectionHeader
             title="Saved Items & Collections"
-            text="Create collections to organize your saved items"
+            text="Create collections to organize your saved items."
             span="Others can see your saved items and any collection you make public."
             icon={<HttpsOutlined />}
             buttonValue="NEW COLLECTION +"
@@ -59,11 +61,6 @@ const Collections = ({ userData }) => {
                   key={collection._id}
                   collection={collection}
                   layoutArr={layoutArr[id]}
-                  onClick={() => {
-                    collection.collName === 'All Saved Items'
-                      ? navigate('/account/profile/saved-items')
-                      : navigate(`/account/profile/collection/${collection._id}`);
-                  }}
                 />
               ))}
               <NewCollectionCard onClick={() => setShowCollectionModal(true)} />

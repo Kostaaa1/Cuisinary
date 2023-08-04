@@ -1,12 +1,12 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import CardDescription from '../../common/CardDescription';
 import styled from 'styled-components';
 import { useState } from 'react';
 import axios from 'axios';
 import SavedModal from '../../common/SavedModal';
 import useSmoothScroll from '../../utils/useSmoothScroll';
 import { motion } from 'framer-motion';
+import RecipeCard from '../../common/RecipeCard';
 import Loading from '../../common/Loading';
 
 const Category = () => {
@@ -27,9 +27,9 @@ const Category = () => {
     fetchCategorized
   );
 
-  const CardDescriptionProps = (favorite, params, setFavorite, key, recipeData) => {
+  const RecipeCardProps = (favorite, params, setFavorite, key, recipeData) => {
     return (
-      <CardDescription
+      <RecipeCard
         favorite={favorite}
         params={params}
         setFavorite={setFavorite}
@@ -59,7 +59,7 @@ const Category = () => {
           {categoryRecipes
             ?.slice(3, categoryRecipes.length)
             ?.map((recipe, id) =>
-              CardDescriptionProps(favorite, params.recipe, setFavorite, id, recipe)
+              RecipeCardProps(favorite, params.recipe, setFavorite, id, recipe)
             )}
         </Grid>
       ) : (
@@ -81,14 +81,14 @@ const Container = styled.div`
   margin: 0 auto;
   /* margin: 200px auto; */
 
-  .loading {
-    transform: translateY(10%);
-  }
-
   @media screen and (max-width: 1270px) {
     padding-left: 36px;
     padding-right: 36px;
     padding-top: 160px;
+  }
+
+  .loading {
+    transform: translateY(10%);
   }
 
   h1 {
@@ -101,21 +101,16 @@ const Container = styled.div`
   }
 `;
 
-const GridLayout = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
-  grid-gap: 4.6rem;
-  padding-bottom: 60px;
-
-  img {
-    height: 240px;
-  }
-`;
-
 const Grid = styled(motion.div)`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   grid-gap: 2rem;
+
+  @media screen and (max-width: 709px) {
+    display: block;
+    grid-template-columns: initial;
+    grid-gap: 0;
+  }
 `;
 
 export default Category;

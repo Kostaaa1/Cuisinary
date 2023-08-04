@@ -10,7 +10,6 @@ export const useUser = () => {
   const getUserData = async () => {
     if (user) {
       try {
-        console.log('getUserData called');
         const mockUser = {
           nickname: user?.nickname,
           email: user?.email,
@@ -44,13 +43,23 @@ export const useUser = () => {
 };
 
 export const useAuth = () => {
+  const { logout } = useAuth0();
+
   const getAuthData = () =>
     localStorage.getItem('@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@');
+
+  const logoutUser = () => {
+    logout().then(() =>
+      localStorage.removeItem(
+        '@@auth0spajs@@::Iori8HXqCllLPmy2JEeZOrkjW5lt8bcR::@@user@@'
+      )
+    );
+  };
 
   const authenticated = useMemo(() => {
     const item = getAuthData();
     return !!item;
   }, [getAuthData]);
 
-  return { authenticated };
+  return { authenticated, logoutUser };
 };

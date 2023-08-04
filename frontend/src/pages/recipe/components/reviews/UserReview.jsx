@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { Create, Star, StarBorder } from '@mui/icons-material';
 import StarRating from '../../../../common/StarRating';
+import { useState } from 'react';
+import ReadMoreText from '../../../../common/ReadMoreText';
 
 const UserReview = ({ recipeImg, myReview, showSubmit }) => {
   return (
@@ -23,7 +25,7 @@ const UserReview = ({ recipeImg, myReview, showSubmit }) => {
             .join('/')}
         </span>
       </div>
-      <p> {myReview.comment} </p>
+      <ReadMoreText text={myReview.comment} maxLength={200} />
     </MyReview>
   );
 };

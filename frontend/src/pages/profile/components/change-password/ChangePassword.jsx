@@ -9,16 +9,17 @@ const ChangeProfile = () => {
     <div>
       <SectionHeader
         title="Change Password"
-        text="The information on this page will be displayed on your
-        public profile, which is visible to other users."
+        text="If you want to change your password, click the button below, and we will send password reset instructions to your email address."
         icon={<HttpsOutlined />}
         span="Your password will always remain private."
       />
-      <Button
-        onClick={() => navigate('/account/forgot-password-reset')}
-        style={{ padding: '1.4rem 1.8rem' }}
-        value={'RESET PASSWORD'}
-      />
+      <div>
+        <Button
+          onClick={() => navigate('/account/forgot-password-reset')}
+          style={{ padding: '1.4rem 1.8rem' }}
+          value={'RESET PASSWORD'}
+        />
+      </div>
     </div>
   );
 };

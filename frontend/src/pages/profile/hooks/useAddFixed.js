@@ -3,9 +3,13 @@ import { useEffect } from 'react';
 const useAddFixed = (ref) => {
   useEffect(() => {
     const handleScroll = () => {
-      const height = window.innerWidth > 1120 ? 148 : 88;
+      let height = window.innerWidth > 1030 ? 120 : 78;
 
-      if (window.scrollY > height && ref.current) {
+      if (window.innerWidth < 730) {
+        ref.current.classList.remove('fixed-header');
+      }
+
+      if (window.scrollY > height && ref.current && window.innerWidth > 730) {
         ref.current.classList.add('fixed-header');
       } else if (window.scrollY < height && ref.current) {
         ref.current.classList.remove('fixed-header');

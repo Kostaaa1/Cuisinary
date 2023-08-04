@@ -18,9 +18,14 @@ const Btn = styled.button`
   border: none;
   font-size: 14px;
   border-radius: 3px;
-  letter-spacing: 1.2px;
   background-color: var(--red-color);
   outline: 2px solid var(--red-color);
+  transition: background-color 0.2s ease;
+  letter-spacing: 1px;
+
+  &:hover {
+    background-color: #b64627;
+  }
 
   &:active {
     outline: 2px solid var(--blue-color);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import CardDescription from '../../common/CardDescription';
+import RecipeCard from '../../common/RecipeCard';
 import { useQuery } from '@tanstack/react-query';
 import SavedModal from '../../common/SavedModal';
 import SearchForm from './components/SearchForm';
@@ -45,10 +45,7 @@ const SearchedRecipes = () => {
     }
   };
 
-  const { isLoading, data } = useQuery(
-    ['searched', params.search],
-    fetchSearched
-  );
+  const { isLoading, data } = useQuery(['searched', params.search], fetchSearched);
 
   return (
     <Container>
@@ -70,7 +67,7 @@ const SearchedRecipes = () => {
           >
             {data?.length > 0
               ? data?.map((recipe, id) => (
-                  <CardDescription
+                  <RecipeCard
                     favorite={favorite}
                     params={params.search}
                     setFavorite={setFavorite}
@@ -79,7 +76,7 @@ const SearchedRecipes = () => {
                   />
                 ))
               : data?.results?.map((recipe, id) => (
-                  <CardDescription
+                  <RecipeCard
                     favorite={favorite}
                     params={params.search}
                     setFavorite={setFavorite}

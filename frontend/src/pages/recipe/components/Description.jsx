@@ -1,59 +1,42 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { RecipeContext } from '../Recipe';
 import { FavoriteBorder, Favorite } from '@mui/icons-material';
 import axios from 'axios';
-import { useUser } from '../../../setup/auth/useAuth';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AuthContext from '../../../setup/app-context-menager/AuthContext';
-import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 
 const Description = () => {
-  const { recipe, favorite, reviews, averageRate, setFavorite } =
-    useContext(RecipeContext);
-  const queryClient = useQueryClient();
+  const { recipe, favorite, setFavorite } = useContext(RecipeContext);
   const { user } = useAuth0();
-  const userData = queryClient.getQueryData(['user-data', user?.email]);
-
-  const checkIfRecipeExists = () => {
-    let checkForRecipe = userData?.collections[0]?.collRecipes.find(
-      (recipes) => recipes.recipeTitle === recipe?.title
-    );
-
-    return checkForRecipe;
-  };
-
-  useEffect(() => {
-    const checkForRecipe = checkIfRecipeExists();
-    if (checkForRecipe) setFavorite(true);
-  }, [userData]);
 
   const saveRecipeInCollection = async () => {
     try {
-      const checkForRecipe = checkIfRecipeExists();
-      userData.collections[0]?.collRecipes.push({ recipeTitle: recipe.title });
-
-      if (checkForRecipe) {
+      if (favorite) {
         toast.info('This recipe is already in your collection!');
         return;
       }
       setFavorite(true);
 
-      await toast.promise(
-        axios.post(`/api/auth/${userData?.email}`, {
-          id: recipe.id,
-        }),
-        {
+      const savedRecipe = await axios.post(`/api/auth/${user?.email}`, {
+        id: recipe.id,
+      });
+      console.log(savedRecipe);
+
+      if (savedRecipe && user) {
+        await toast.promise(Promise.resolve(savedRecipe), {
           pending: 'Saving recipe...',
           success: 'Recipe saved to your collection!',
           error: 'An error occurred while saving the recipe!',
-        }
-      );
+        });
+      }
     } catch (error) {
-      console.log(error);
-      toast.error('An error occurred while saving the recipe!');
+      if (!user) {
+        toast.error('You need to log ine before saving the recipe!');
+      } else {
+        toast.error('An error occurred while saving the recipe!');
+      }
     }
   };
 
@@ -61,13 +44,14 @@ const Description = () => {
     <Container>
       <div className="buttons">
         <button onClick={saveRecipeInCollection}>
-          {favorite ? (
+          {favorite && (
             <>
-              Save <Favorite />
+              Saved <Favorite />
             </>
-          ) : (
+          )}
+          {!favorite && (
             <>
-              Saved <FavoriteBorder />
+              Save <FavoriteBorder />
             </>
           )}
         </button>

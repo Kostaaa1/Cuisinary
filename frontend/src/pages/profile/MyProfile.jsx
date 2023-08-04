@@ -44,7 +44,7 @@ const MyProfile = ({ listContent, staticList }) => {
   );
 
   useEffect(() => {
-    if (showResponsiveList && windowSize[0] > 1120) {
+    if (showResponsiveList && windowSize[0] > 1030) {
       setShowResponsiveList(false);
     }
   }, [windowSize]);
@@ -94,7 +94,7 @@ const MyProfile = ({ listContent, staticList }) => {
         </div>
       ) : (
         <Container>
-          {windowSize[0] <= 1120 ? (
+          {windowSize[0] <= 1030 ? (
             <div
               onClick={() => setShowResponsiveList(true)}
               className="myprofile-responsive-button"
@@ -149,7 +149,7 @@ const Wrapper = styled.section`
   }
 
   .line-break {
-    margin: 32px 0;
+    margin: 30px 0;
   }
 
   .selected {
@@ -167,7 +167,7 @@ const Wrapper = styled.section`
     padding: 80px 0 60px 0;
     width: 100%;
 
-    @media screen and (max-width: 1120px) {
+    @media screen and (max-width: 1030px) {
       padding-left: 36px;
       padding-right: 36px;
     }
@@ -188,19 +188,23 @@ const Wrapper = styled.section`
 
 const Container = styled.div`
   display: flex;
-  width: 100%;
   width: 1240px;
   max-width: 100%;
   margin: 0 auto;
-  padding: 200px 0 0 0;
+  padding: 180px 0 0 0;
+  /* padding: 200px 0 0 0; */
 
   @media screen and (max-width: 1270px) {
     padding-left: 36px;
     padding-right: 36px;
   }
 
-  @media (max-width: 1120px) {
-    /* margin-top: -70px; */
+  @media screen and (max-width: 729px) {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  @media (max-width: 1030px) {
     padding-top: 140px;
   }
 
@@ -219,6 +223,15 @@ const Container = styled.div`
     outline: 2px solid var(--main-color);
     cursor: pointer;
 
+    @media screen and (max-width: 729px) {
+      padding: 0 24px;
+      height: 46px;
+
+      button > h6 {
+        font-size: 12px !important;
+      }
+    }
+
     &:active {
       outline: 2px solid var(--blue-color);
       border-radius: 3px;
@@ -230,7 +243,7 @@ const Container = styled.div`
     max-width: 260px;
     min-width: 260px;
     height: 100%;
-    margin-right: 14px;
+    margin-right: 36px;
     background-color: #fff;
   }
 
@@ -256,11 +269,11 @@ const Container = styled.div`
     background-color: #fff;
     width: 100%;
     word-break: break-all;
-    padding: 8px 24px;
+    padding: 8px 0;
     min-height: 200px;
 
     .loading {
-      transform: translate(0, -30%);
+      transform: translate(0, -40%);
     }
   }
 `;

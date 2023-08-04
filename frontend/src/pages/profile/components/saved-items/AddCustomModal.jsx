@@ -98,7 +98,9 @@ const AddCustomModal = ({ showModal, favorite }) => {
         {
           pending: 'Saving recipe...',
           success: `Recipe saved to collection ${userCollections
-            .map((coll) => (checkedCollWithRecipe.includes(coll._id) ? x.collName : null))
+            .map((coll) =>
+              checkedCollWithRecipe.includes(coll.collName) ? coll.collName : null
+            )
             .filter((coll) => coll)}!`,
           error: 'An error occurred while saving the recipe!',
         }

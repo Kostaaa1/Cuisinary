@@ -1,4 +1,4 @@
-import { createContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Ingredients from './components/Ingredients';
@@ -22,44 +22,46 @@ const Recipe = () => {
   const [recipe, setRecipe] = useState({});
   const params = useParams();
   const [reviews, setReviews] = useState([]);
-  const { user } = useAuth0();
   const [isFetched, setIsFetched] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [favoriteForSimilar, setFavoriteForSimilar] = useState(false);
   const [averageRate, setAverageRate] = useState('');
-  const { getUserData } = useUser();
-  useSmoothScroll();
+  // useSmoothScroll();
 
-  const { data: userData } = useQuery(['user-data', user?.email], getUserData, {
+  const { user } = useAuth0();
+  const { getUserData } = useUser();
+  const { data: userData } = useQuery(['context-user'], getUserData, {
     enabled: !!user,
     refetchOnMount: 'always',
   });
 
   useEffect(() => {
     getRecipe();
-    isFavorite();
-  }, []);
+  }, [userData]);
 
   const getRecipe = async () => {
     try {
       const recipeData = await axios.get(`/api/recipe/${params.id}/getRecipe`);
       const recipe = recipeData.data;
 
+      console.log(recipe);
+
       setRecipe(recipe[0].data);
       setReviews(recipe[1]);
       setAverageRate(recipe[0].averageRate);
+
+      const checkCollIncludesRecipe = userData?.collections.some((coll) =>
+        coll.collRecipes.some((x) => x._id === recipe[0]._id)
+      );
+
+      if (checkCollIncludesRecipe) {
+        setFavorite(true);
+      }
     } catch (error) {
       console.log(error);
     } finally {
       setIsFetched(true);
     }
-  };
-
-  const isFavorite = () => {
-    const checkCollections = userData?.collections?.some((coll) =>
-      coll.collRecipes.some((col) => col.recipeTitle === recipe.title)
-    );
-    setFavorite(checkCollections);
   };
 
   const value = {
@@ -78,12 +80,11 @@ const Recipe = () => {
   return (
     <RecipeContext.Provider value={value}>
       {recipe && isFetched ? (
-        // {recipe && isFetched && userData ? (
         <>
           <Wrapper>
             <div className="container">
               <RecipeHeader />
-              <Summary recipe={recipe} />
+              <Summary />
               <Description />
               <Ingredients />
               <Directions />
@@ -112,17 +113,18 @@ const Wrapper = styled.div`
 
   @media screen and (max-width: 1270px) {
     margin: 180px auto 0 auto;
-    padding: 0 36px;
+    padding: 0 24px;
   }
 
-  @media screen and (max-width: 1120px) {
-    margin: 180px auto 0 auto;
+  @media screen and (max-width: 1030px) {
+    margin: 140px auto 0 auto;
   }
 
   @media screen and (max-width: 800px) {
     align-items: center;
-    max-width: 1240px;
-    padding: 62px;
+    max-width: 100%;
+    /* max-width: 1240px; */
+    /* padding: 62px; */
   }
 
   .line-break {

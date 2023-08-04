@@ -1,21 +1,30 @@
 import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
-import CardDescription from '../../../common/CardDescription';
+import RecipeCard from '../../../common/RecipeCard';
 import axios from 'axios';
 import { RecipeContext } from '../Recipe';
 import { motion } from 'framer-motion';
 import SavedModal from '../../../common/SavedModal';
 import LineBreak from '../../../common/LineBreak';
+import { useParams } from 'react-router-dom';
 
 const SimilarRecipes = () => {
   const queryClient = useQueryClient();
+  const params = useParams();
   const { recipe, favoriteForSimilar, setFavoriteForSimilar } = useContext(RecipeContext);
+  const recipes = queryClient.getQueryData(['similar-recipe']);
 
   const fetchSimilarRecipes = async () => {
     try {
-      const res = await axios.get(`/api/recipe/${recipe?.title}/getSimilarRecipes`);
-      return res.data;
+      if (!!recipes && recipes?.recipeId === params.id) {
+        return recipes;
+      } else {
+        const res = await axios.get(
+          `/api/recipe/${recipe?.title}/${params.id}/getSimilarRecipes`
+        );
+        return res.data;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -24,17 +33,11 @@ const SimilarRecipes = () => {
   const { data: similarData, status } = useQuery(
     ['similar-recipe'],
     fetchSimilarRecipes,
-    { enabled: Object.entries(recipe)?.length > 0, refetchOnMount: 'always' }
+    {
+      enabled: !!recipe && Object.entries(recipe)?.length > 0,
+      refetchOnMount: 'always',
+    }
   );
-
-  useEffect(() => {
-    const cleanup = () => {
-      queryClient.clear();
-    };
-    queryClient.invalidateQueries(['similar-recipe']);
-
-    return cleanup;
-  }, [queryClient]);
 
   return (
     <>
@@ -50,7 +53,7 @@ const SimilarRecipes = () => {
             {similarData?.data?.results?.length > 0 ? (
               <>
                 {similarData.data.results.map((recipe, id) => (
-                  <CardDescription
+                  <RecipeCard
                     params={similarData?.name}
                     key={id}
                     recipeData={recipe}
@@ -62,7 +65,7 @@ const SimilarRecipes = () => {
             ) : (
               <>
                 {similarData?.data?.slice(0, 16)?.map((recipe, id) => (
-                  <CardDescription
+                  <RecipeCard
                     params={similarData?.name}
                     key={id}
                     recipeData={recipe}

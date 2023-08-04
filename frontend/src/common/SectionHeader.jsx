@@ -23,12 +23,12 @@ const SectionHeader = ({
     <>
       <Section
         style={{
-          height: !buttonValue ? '180px' : windowSize[0] >= 710 ? '170px' : '100%',
+          height: !buttonValue ? '180px' : windowSize[0] >= 730 ? '170px' : '100%',
         }}
       >
         <div className="account-section" ref={headerRef}>
           <h1> {title} </h1>
-          {buttonValue && windowSize[0] >= 710 && (
+          {buttonValue && windowSize[0] >= 730 && (
             <>
               {showLoading ? (
                 <button className="btn-save" disabled>
@@ -46,8 +46,8 @@ const SectionHeader = ({
                   ) : (
                     <input
                       type="submit"
-                      value={buttonValue}
                       disabled
+                      value={buttonValue}
                       className={`btn-save`}
                     />
                   )}
@@ -55,12 +55,13 @@ const SectionHeader = ({
               )}
             </>
           )}
-          {!buttonValue && windowSize[0] >= 710 && (
+          {!buttonValue && windowSize[0] >= 730 && (
             <div className="button-wrap">
               <div className="btn-save replace"></div>
             </div>
           )}
         </div>
+
         <Content>
           <div>
             <h4> {text} </h4>
@@ -69,7 +70,7 @@ const SectionHeader = ({
               {span}
             </span>
           </div>
-          {buttonValue && windowSize[0] < 710 && (
+          {buttonValue && windowSize[0] < 730 && (
             <div className="button-wrap">
               {showLoading ? (
                 <button className="btn-save" disabled>
@@ -96,14 +97,13 @@ const SectionHeader = ({
               )}
             </div>
           )}
-          {/* {!buttonValue && windowSize[0] < 710 && (
+          {/* {!buttonValue && windowSize[0] < 730 && (
             <div className="button-wrap">
               <div className="btn-save replace"></div>
             </div>
           )} */}
         </Content>
       </Section>
-      {/* <LineBreak className="line-break" /> */}
     </>
   );
 };
@@ -113,16 +113,19 @@ const Section = styled.section`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-bottom: 24px;
   border-bottom: 2px solid rgba(0, 0, 0, 0.11);
+  padding-bottom: 24px;
   margin-bottom: 24px;
 
   .button-wrap {
-    margin-top: 24px;
     width: max-content;
+
+    @media screen and (max-width: 768px) {
+      margin-top: 24px;
+    }
   }
 
-  @media screen and (max-width: 709px) {
+  @media screen and (max-width: 729px) {
     justify-content: center;
   }
 
@@ -137,7 +140,7 @@ const Section = styled.section`
     display: block;
     border: none;
     border-radius: 3px;
-    letter-spacing: 1.2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 
     .scaled-loading {
@@ -163,6 +166,7 @@ const Section = styled.section`
   .account-section {
     display: flex;
     justify-content: space-between;
+    z-index: 1;
     align-items: center;
     height: max-content;
     min-height: 56px;
@@ -172,8 +176,8 @@ const Section = styled.section`
       font-size: 36px !important;
     }
 
-    @media screen and (max-width: 709px) {
-      margin: 0;
+    @media screen and (max-width: 729px) {
+      /* margin: 0; */
 
       h1 {
         font-size: 32px !important;
@@ -192,7 +196,7 @@ const Content = styled.div`
   flex-direction: column;
   padding-bottom: 24px;
 
-  @media screen and (max-width: 709px) {
+  @media screen and (max-width: 729px) {
     position: relative;
     justify-content: space-around;
   }
@@ -202,8 +206,8 @@ const Content = styled.div`
     line-height: 24px;
     margin-bottom: 8px;
 
-    @media screen and (max-width: 709px) {
-      font-size: 16px !important;
+    @media screen and (max-width: 729px) {
+      /* font-size: 16px !important; */
     }
   }
 

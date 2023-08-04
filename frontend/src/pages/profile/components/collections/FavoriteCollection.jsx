@@ -1,42 +1,66 @@
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { DragIndicator } from '@mui/icons-material';
+import { useWindowSize } from '../../../../utils/useWindowSize';
+import HorizontalCard from '../../../../common/HorizontalCard';
 
 const FavoriteCollection = ({ collection, layoutArr, onClick }) => {
+  const windowSize = useWindowSize();
+  const navigate = useNavigate();
+
   return (
-    <Collection onClick={onClick}>
-      <CustomLink>
-        <div className="collection-layout">
-          {layoutArr?.map((recipe, id) =>
-            recipe.data.image ? (
-              <img key={id} src={recipe.data.image} alt="" />
-            ) : (
-              <div key={id} className="grey-div"></div>
-            )
-          )}
-        </div>
-        <div className="collection-description">
-          <p>{collection.private ? 'PRIVATE' : 'PUBLIC'}</p>
-          <h3>{collection.collName}</h3>
-          <span>
-            <DragIndicator /> Collection // {collection?.collRecipes?.length}
-          </span>
-        </div>
-      </CustomLink>
-    </Collection>
+    <>
+      {windowSize[0] >= 730 ? (
+        <Collection onClick={onClick}>
+          <CustomLink
+            onClick={() => {
+              collection.collName === 'All Saved Items'
+                ? navigate('/account/profile/saved-items')
+                : navigate(`/account/profile/collection/${collection._id}`);
+            }}
+          >
+            <div className="collection-layout">
+              {layoutArr?.map((recipe, id) =>
+                recipe.data.image ? (
+                  <img key={id} src={recipe.data.image} alt="" />
+                ) : (
+                  <div key={id} className="grey-div"></div>
+                )
+              )}
+            </div>
+            <div className="collection-description">
+              <p>{collection.private ? 'PRIVATE' : 'PUBLIC'}</p>
+              <h3>{collection.collName}</h3>
+              <span>
+                <DragIndicator /> Collection // {collection?.collRecipes?.length}
+              </span>
+            </div>
+          </CustomLink>
+        </Collection>
+      ) : (
+        <CustomLink>
+          <HorizontalCard cardData={collection} image={layoutArr[0]} isRecipe={false} />
+        </CustomLink>
+      )}
+    </>
   );
 };
 
-const CustomLink = styled(NavLink)`
+const HorizontalCollection = styled.div`
+  width: 100%;
+`;
+
+const CustomLink = styled.div`
   text-decoration: none;
   color: var(--main-color);
   cursor: pointer;
+  width: 100%;
 `;
 
 const Collection = styled.div`
   display: flex;
   flex-direction: column;
-  width: 280px;
+  width: 270px;
   min-height: 400px;
   box-shadow: var(--card-shadow-border);
   overflow: none;

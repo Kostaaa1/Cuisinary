@@ -18,13 +18,14 @@ const Button = styled.button`
   font-weight: 800;
   border-radius: 3px;
   display: flex;
-  justify-content: center;
   text-align: center;
+  justify-content: center;
   align-items: center;
   font-size: 12px;
   cursor: pointer;
   border: none;
   user-select: none;
+  padding: 6px 0;
 
   svg {
     margin-right: 4px;

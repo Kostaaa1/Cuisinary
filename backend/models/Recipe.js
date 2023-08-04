@@ -2,13 +2,15 @@ const mongoose = require("mongoose");
 
 const ReviewSchema = new mongoose.Schema({
   userId: { type: String },
-  userImage: { type: String },
+  userImage: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  nickname: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  // nickname: { type: String },
+  // userImage: { type: String },
   comment: { type: String },
   starRating: { type: Number },
   recipeTitle: { type: String },
   recipeId: { type: Number },
   recipeImage: { type: String },
-  nickname: { type: String },
   displayDate: {
     type: String,
     default: () => {

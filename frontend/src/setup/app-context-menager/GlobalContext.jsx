@@ -1,19 +1,17 @@
 import React, { createContext, useEffect, useState, useRef } from 'react';
-import { useWindowSize } from '../../utils/useWindowSize';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useContext } from 'react';
-import AuthContext from './AuthContext';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const GlobalContext = createContext(null);
 
 export const GlobalContextProvider = ({ children }) => {
-  const [arrayOfRecipeNames, setArrayOfRecipeNames] = useState([]);
+  const { user } = useAuth0();
+  const [arrayOfRecipeIds, setArrayOfRecipeIds] = useState([]);
   const [collectionId, setCollectionId] = useState('');
   const [collectionParams, setCollectionParams] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [showSearch2, setShowSearch2] = useState(false);
-  const { userData } = useContext(AuthContext);
   const location = useLocation();
 
   // used for navbar
@@ -28,20 +26,20 @@ export const GlobalContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (
-      arrayOfRecipeNames.length !== 0 &&
+      arrayOfRecipeIds.length !== 0 &&
       location.pathname !== '/account/profile/saved-items'
     ) {
       handleDeletionOfRecipes();
-      setArrayOfRecipeNames([]);
+      setArrayOfRecipeIds([]);
     }
   }, [location.pathname]);
 
   const handleDeletionOfRecipes = async () => {
     const recipeNames = {
-      ids: arrayOfRecipeNames,
+      ids: arrayOfRecipeIds,
       collectionId: collectionParams === 'saved-items' ? '' : collectionId,
     };
-    await axios.post(`/api/auth/${userData?.email}/deleteFavs`, recipeNames);
+    await axios.post(`/api/auth/${user?.email}/deleteFavs`, recipeNames);
   };
 
   useEffect(() => {
@@ -62,8 +60,8 @@ export const GlobalContextProvider = ({ children }) => {
   }, [searchBarRef, searchBarRef2]);
 
   const value = {
-    arrayOfRecipeNames,
-    setArrayOfRecipeNames,
+    arrayOfRecipeIds,
+    setArrayOfRecipeIds,
     collectionId,
     setCollectionId,
     collectionParams,

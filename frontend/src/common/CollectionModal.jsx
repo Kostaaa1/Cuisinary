@@ -92,7 +92,7 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
                 rows="6"
                 id="tagline"
                 type="text"
-                placeholder={!collDesc && 'Add description'}
+                placeholder={!collDesc ? 'Add description' : undefined}
                 maxLength="300"
                 value={collDesc}
                 onChange={(e) => setCollDesc(e.target.value)}

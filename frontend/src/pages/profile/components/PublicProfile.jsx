@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from '@mui/icons-material';
 import SectionHeader from '../../../common/SectionHeader';
 import { useQueryClient } from '@tanstack/react-query';
+import { useWindowSize } from '../../../utils/useWindowSize';
 
 const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);
@@ -16,6 +17,7 @@ const PublicInfo = ({ userData }) => {
   const [nickname, setNickname] = useState('');
   const [showLoading, setShowLoading] = useState(false);
   const queryClient = useQueryClient();
+  const windowSize = useWindowSize();
 
   useEffect(() => {
     setNickname(userData?.nickname);
@@ -67,7 +69,7 @@ const PublicInfo = ({ userData }) => {
       }
 
       queryClient.refetchQueries(['user-data', user?.email]);
-      queryClient.refetchQueries(['context-user', user?.email]);
+      queryClient.refetchQueries(['context-user']);
     } catch (error) {
       console.log(error);
     }
@@ -121,7 +123,7 @@ const PublicInfo = ({ userData }) => {
                 </div>
                 <div className="form-file">
                   <label htmlFor="input_file">
-                    <span>Add an image</span>
+                    <label>Add an image</label>
                     <div>
                       {preview ? (
                         <img src={preview} alt="" />
@@ -130,7 +132,7 @@ const PublicInfo = ({ userData }) => {
                       ) : (
                         <AddAPhoto className="addPhoto" />
                       )}
-                      <h3>Profile photo</h3>
+                      <h4>Profile photo</h4>
                     </div>
                   </label>
                   <input
@@ -153,6 +155,7 @@ const PublicInfo = ({ userData }) => {
 const Form = styled.form`
   /* padding: 24px; */
 `;
+
 const DynamicForm = styled.div`
   width: 100%;
   height: 100%;
@@ -187,10 +190,26 @@ const DynamicForm = styled.div`
     width: 100%;
     height: 100%;
 
-    .form-file {
+    @media screen and (max-width: 729px) {
       display: flex;
       flex-direction: column;
+      align-items: center;
+
+      .form-file {
+        /* width: 220px !important; */
+      }
+    }
+
+    .form-file {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 40%;
+      margin: 20px 0 0 0;
+
+      h4 {
+        margin-top: 10px;
+      }
 
       input {
         display: none;
@@ -201,7 +220,7 @@ const DynamicForm = styled.div`
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        height: 270px;
+        height: 260px;
         margin-top: 10px;
         cursor: pointer;
 
@@ -211,11 +230,10 @@ const DynamicForm = styled.div`
         }
 
         svg {
-          /* display: block; */
           border: 2px solid var(--red-color);
           border-radius: 50%;
-          width: 140px;
-          height: 140px;
+          width: 120px;
+          height: 120px;
           padding: 34px;
           color: var(--red-color);
           margin-bottom: 10px;
@@ -225,8 +243,8 @@ const DynamicForm = styled.div`
         img {
           display: block;
           border-radius: 50%;
-          height: 140px;
-          width: 140px;
+          height: 120px;
+          width: 120px;
           margin-bottom: 5px;
           border: 2px solid var(--red-color);
         }
@@ -234,7 +252,11 @@ const DynamicForm = styled.div`
     }
 
     .form-control {
-      width: 65%;
+      width: 48%;
+
+      @media screen and (max-width: 729px) {
+        width: 100%;
+      }
 
       .input-wrapper {
         display: flex;
@@ -256,12 +278,6 @@ const DynamicForm = styled.div`
       }
     }
 
-    .form-file {
-      width: 32%;
-      margin: 20px 0 0 0;
-      max-height: 300px;
-    }
-
     label {
       font-weight: bold;
       margin-bottom: 10px;
@@ -274,7 +290,7 @@ const DynamicForm = styled.div`
 
     input {
       width: 100%;
-      height: 40px;
+      height: 48px;
       padding: 0 10px;
       font-size: 14px;
     }

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import GlobalContext from '../../../setup/app-context-menager/GlobalContext';
+import ProfileContext from '../../../setup/app-context-menager/GlobalContext';
 import { Close, SearchOutlined } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ const SearchForm = () => {
   const navigate = useNavigate();
   const params = useParams();
   const [searchValue, setSearhValue] = useState(params.search ? params.search : '');
-  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(GlobalContext);
+  const { searchBarRef2, showSearch2, setShowSearch2 } = useContext(ProfileContext);
 
   const submitHandler = (e) => {
     e.preventDefault();

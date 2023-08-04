@@ -396,7 +396,7 @@ const Wrapper = styled.div`
   box-shadow: var(--card-shadow-border);
   padding: 40px;
 
-  @media screen and (max-width: 1120px) {
+  @media screen and (max-width: 1030px) {
     margin-top: 140px;
   }
 

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../../../common/Loading';
@@ -19,29 +19,26 @@ import {
 } from '@mui/icons-material';
 import useNoScroll from '../../../../utils/useNoScroll';
 import useSmoothScroll from '../../../../utils/useSmoothScroll';
-import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 
 const PersonalRecipe = () => {
-  const { user } = useAuth0();
   const params = useParams();
-  const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showIconFullsize, setShowIconFullsize] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
-  const { userData } = useContext(AuthContext);
   const queryClient = useQueryClient();
-  useNoScroll(showImageModal);
-  // useSmoothScroll();
   const fixedRef = useRef(null);
+  const userData = queryClient.getQueryData(['context-user']);
+
+  useNoScroll(showImageModal);
+  useSmoothScroll();
+
+  // To Abstract
+  const { user } = useAuth0();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const cleanup = () => {
-      queryClient.clear();
-    };
-
-    queryClient.invalidateQueries(['context-user', user?.email]);
-    return cleanup;
-  }, [queryClient, user?.email]);
+    queryClient.invalidateQueries(['personal-recipes']);
+  }, [queryClient]);
 
   const fetchPersonalRecipe = async () => {
     try {
@@ -54,15 +51,20 @@ const PersonalRecipe = () => {
     }
   };
 
-  const { data: recipeData } = useQuery(['personal-recipes'], fetchPersonalRecipe, {
-    enabled: !!params,
-    refetchOnMount: 'always',
-  });
+  const { data: recipeData, isFetching } = useQuery(
+    ['personal-recipes'],
+    fetchPersonalRecipe,
+    {
+      enabled: !!params,
+      refetchOnMount: 'always',
+    }
+  );
 
+  // To Abstract
   const deletePersonalRecipe = async () => {
     try {
       await axios.delete(
-        `/api/user/${userData?.email}/${recipeData._id}/deletePersonalRecipe`
+        `/api/user/${user?.email}/${recipeData._id}/deletePersonalRecipe`
       );
     } catch {
       console.log(error.message);
@@ -74,7 +76,7 @@ const PersonalRecipe = () => {
   return (
     <>
       <Recipe>
-        {userData && !recipeData ? (
+        {!recipeData || isFetching ? (
           <Loading />
         ) : (
           <>
@@ -83,7 +85,7 @@ const PersonalRecipe = () => {
               <p> {recipeData?.summary} </p>
               <span className="created-by">
                 {recipeData?.private ? 'Private' : 'Public'} recipe by: &nbsp;
-                <Link to={`/profile/${userData?.createdByUserId}`}>
+                <Link to={`/profile/${recipeData?.createdByUserId}`}>
                   {recipeData?.createdBy}
                 </Link>
               </span>

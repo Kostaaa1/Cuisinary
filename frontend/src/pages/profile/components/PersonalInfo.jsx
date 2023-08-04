@@ -71,7 +71,7 @@ const PersonalInfo = () => {
     });
 
     queryClient.refetchQueries(['user-data', user?.email]);
-    queryClient.refetchQueries(['context-user', user?.email]);
+    queryClient.refetchQueries(['context-user']);
   };
 
   const handleInputChange = (e) => {
@@ -104,7 +104,7 @@ const PersonalInfo = () => {
       />
       <FormWrap>
         <div className="head-info" onClick={() => setClicked(!clicked)}>
-          <h2>My Basic Info</h2>
+          <h3>My Basic Info</h3>
           <KeyboardArrowDown className={clicked ? 'click' : ''} />
         </div>
         {clicked && (
@@ -213,8 +213,16 @@ const HalfWrap = styled.div`
   display: flex;
   justify-content: space-between;
 
+  @media screen and (max-width: 729px) {
+    display: block;
+  }
+
   .half {
     width: 48%;
+
+    @media screen and (max-width: 729px) {
+      width: 100%;
+    }
   }
 
   .date {
@@ -231,6 +239,7 @@ const HalfWrap = styled.div`
 
 const FormWrap = styled.div`
   width: 100%;
+  height: 100%;
   border: 1px solid var(--input-border-color);
 
   .head-info {
@@ -240,7 +249,7 @@ const FormWrap = styled.div`
     padding: 0 2rem;
     user-select: none;
 
-    h2 {
+    h3 {
       margin: 20px 0;
     }
 
@@ -279,10 +288,6 @@ const FormWrap = styled.div`
         outline: none;
       }
     }
-  }
-
-  h3 {
-    margin: 20px 0;
   }
 `;
 

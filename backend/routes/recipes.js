@@ -5,7 +5,7 @@ const { upload } = require("../middleware/multer");
 
 router.get("/recipe/:id/getRecipe", recipesController.getRecipe);
 router.get(
-  "/recipe/:query/getSimilarRecipes",
+  "/recipe/:query/:recipeId/getSimilarRecipes",
   recipesController.getSimilarRecipes
 );
 router.post(

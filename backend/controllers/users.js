@@ -19,7 +19,6 @@ const fileSizeFormatter = (bytes, decimal) => {
 module.exports = {
   updateUser: async (req, res) => {
     try {
-      console.log(req.body);
       const updateData = {};
       Object.entries(req.body.user).forEach(([key, value]) => {
         if (value) updateData[key] = value;
@@ -38,8 +37,6 @@ module.exports = {
       const { path, originalname, mimetype, size } = req.file;
       const { email } = req.params;
       const userImage = await User.findOneAndUpdate({ email: email }, {});
-
-      console.log("FILE", req.file);
 
       let { cloudinaryId } = userImage.picture;
 
@@ -239,6 +236,7 @@ module.exports = {
                 image: result.secure_url,
                 cloudinaryId: result.public_id,
               },
+              $position: 0,
             },
           },
         },
@@ -281,7 +279,6 @@ module.exports = {
           console.log("Deleted from cloudinary");
         }
       );
-
       await user.updateOne({ $pull: { personalRecipes: { _id: id } } });
 
       res.status(200).json(user);

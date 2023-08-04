@@ -116,27 +116,28 @@ a {
 }
 
 .fixed-header {
-  display: flex;
   position: fixed;
+  display: flex;
   width: 100%;
   background-color: #fff;
   z-index: 2;
   top: 60px;
   margin-left: -24px;
-  padding: 16px 24px;
-  width: 966px;
+  padding: 10px 24px;
+  width: 993px;
   box-shadow: inset 0px -2px 0 var(--grey-hover-color);
 
   @media (max-width: 1270px) {
-    width: 894px;
+    width: calc(100% - 318px);
   }
 
   @media (max-width: 1240px) {
-    width: calc(100% - 260px - 86px);
+    width: calc(100% - 318px);
   }
 
-  @media (max-width: 1120px) {
-    width: calc(100% - 72px) !important;
+  @media (max-width: 1030px) {
+    width: calc(100% - 22px) !important;
+    outline: 1px solid green;
   }
 }
 

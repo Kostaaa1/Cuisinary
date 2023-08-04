@@ -10,6 +10,8 @@ import { RecipeContext } from '../../Recipe';
 import { useParams } from 'react-router-dom';
 import StarRatings from './StarRatings';
 import { useAuth0 } from '@auth0/auth0-react';
+import Button from '../../../../common/Button';
+import { Star } from '@mui/icons-material';
 
 const RecipeReviews = () => {
   const params = useParams();
@@ -17,8 +19,8 @@ const RecipeReviews = () => {
   const { recipe, reviews, setAverageRate, setReviews, averageRate, favorite } =
     useContext(RecipeContext);
   const queryClient = useQueryClient();
-  const { user } = useAuth0();
-  const userData = queryClient.getQueryData(['user-data', user?.email]);
+  const { user, loginWithPopup } = useAuth0();
+  const userData = queryClient.getQueryData(['context-user']);
   const [submitted, setSubmitted] = useState(false);
   const [myReview, setMyReview] = useState(null);
   const [comment, setComment] = useState('');
@@ -32,8 +34,12 @@ const RecipeReviews = () => {
     { text: 'Loved It', bool: false, class: '' },
   ]);
 
+  useEffect(() => {
+    console.log(reviews)
+  }, [reviews])
+
   function myReviewSetter(reviewsData) {
-    const myReview = reviewsData?.filter((review) => review.userId === userData?._id)[0];
+    let myReview = reviewsData.find((review) => review.userId === userData._id);
 
     if (myReview) {
       setMyReview(myReview);
@@ -109,6 +115,8 @@ const RecipeReviews = () => {
         }
       );
 
+      console.log(recipeReviews.data);
+
       myReviewSetter(recipeReviews.data.reviews);
       setReviews(recipeReviews.data.reviews);
       setAverageRate(recipeReviews.data.updatedAverage);
@@ -173,50 +181,65 @@ const RecipeReviews = () => {
             <Loading styles={{ marginTop: '-10%' }} />
           ) : (
             <>
-              <div>
-                {submitted && myReview ? (
-                  <UserReview
-                    recipeImg={recipe?.image}
-                    myReview={myReview}
-                    showSubmit={showSubmit}
-                  />
-                ) : (
-                  <ReviewsForm>
-                    <StarRatings
-                      clickId={clickId}
-                      setClickId={setClickId}
-                      setLastId={setLastId}
-                      starRef={starRef}
-                      setRateArr={setRateArr}
-                      lastId={lastId}
-                      rateArr={rateArr}
-                      recipe={recipe}
+              {user ? (
+                <div>
+                  {submitted && myReview ? (
+                    <UserReview
+                      recipeImg={recipe?.image}
+                      myReview={myReview}
+                      showSubmit={showSubmit}
                     />
-                    <form onSubmit={handleSubmit}>
-                      <label className="h4-margin">
-                        <h4>
-                          {`Your Review  `}
-                          <span>(optional)</span>
-                        </h4>
-                      </label>
-                      <textarea
-                        placeholder="What did you think about this recipe? Did you make any changes or notes?"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                      ></textarea>
-                      <div className="buttons">
-                        <p onClick={clearInputs}>CANCEL</p>
-                        <input
-                          type="submit"
-                          value="SUBMIT"
-                          className={`btn-submit ${clickId > -1 ? 'active' : ''}`}
-                          disabled={clickId > -1 ? false : true}
-                        />
-                      </div>
-                    </form>
-                  </ReviewsForm>
-                )}
-              </div>
+                  ) : (
+                    <ReviewsForm>
+                      <StarRatings
+                        clickId={clickId}
+                        setClickId={setClickId}
+                        setLastId={setLastId}
+                        starRef={starRef}
+                        setRateArr={setRateArr}
+                        lastId={lastId}
+                        rateArr={rateArr}
+                        recipe={recipe}
+                      />
+                      <form onSubmit={handleSubmit}>
+                        <label className="h4-margin">
+                          <h4>
+                            {`Your Review  `}
+                            <span>(optional)</span>
+                          </h4>
+                        </label>
+                        <textarea
+                          placeholder="What did you think about this recipe? Did you make any changes or notes?"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                        ></textarea>
+                        <div className="buttons">
+                          <p onClick={clearInputs}>CANCEL</p>
+                          <input
+                            type="submit"
+                            value="SUBMIT"
+                            className={`btn-submit ${clickId > -1 ? 'active' : ''}`}
+                            disabled={clickId > -1 ? false : true}
+                          />
+                        </div>
+                      </form>
+                    </ReviewsForm>
+                  )}
+                </div>
+              ) : (
+                <div className="flex-middle">
+                  <Star />
+                  <p>
+                    What do you think of this recipe? Share your experience to help
+                    others.
+                  </p>
+                  <Button
+                    onClick={loginWithPopup}
+                    value={'ADD RATING & REVIEW'}
+                    style={{ padding: '1rem 1.2rem' }}
+                  />
+                </div>
+              )}
               {averageRate > 0 && <BarChart />}
               <Comments />
             </>
@@ -236,6 +259,25 @@ const Wrapper = styled.div`
   background-color: white;
   padding: 20px;
   min-height: 300px;
+
+  .flex-middle {
+    height: 240px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    padding: 0 50px;
+    text-align: center;
+
+    svg {
+      color: var(--red-color);
+      font-size: 62px !important;
+      background-color: #def0ef;
+      border-radius: 50%;
+      padding: 6px;
+    }
+  }
 `;
 
 const Reviews = styled.div`

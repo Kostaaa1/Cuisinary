@@ -9,7 +9,6 @@ const Return = ({ value, onClick, icon }) => {
 };
 
 const Back = styled.button`
-  /* position: absolute; */
   background-color: #fff;
   display: flex;
   border: none;
@@ -27,8 +26,12 @@ const Back = styled.button`
   }
 
   h6 {
-    letter-spacing: 1.8px !important;
+    letter-spacing: 1px !important;
     color: var(--main-color);
+
+    @media screen and (max-width: 709px) {
+      font-size: 12px !important;
+    }
   }
 
   &:hover {

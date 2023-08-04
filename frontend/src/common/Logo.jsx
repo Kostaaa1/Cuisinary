@@ -38,6 +38,10 @@ const CulinaryLogo = styled.div`
     font-size: 2.2rem;
     color: var(--gold-color);
   }
+
+  @media screen and (max-width: 729px) {
+    font-size: 1.8rem;
+  }
 `;
 
 export default Logo;

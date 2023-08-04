@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { Star, StarBorder } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -6,20 +6,25 @@ import PersonAvatar from '../../../../common/PersonAvatar';
 import LineBreak from '../../../../common/LineBreak';
 import { RecipeContext } from '../../Recipe';
 import StarRating from '../../../../common/StarRating';
+import ReadMoreText from '../../../../common/ReadMoreText';
 
 const Comments = () => {
   const navigate = useNavigate();
   const { reviews } = useContext(RecipeContext);
+
+  useEffect(() => {
+    console.log(reviews);
+  }, [reviews]);
 
   return (
     <CommentsContainer>
       {reviews?.map((review, i) => (
         <div key={i} className="head-wrap">
           <div className="head-flex">
-            {review.userImage === '' ? (
+            {review?.userImage === '' ? (
               <PersonAvatar style={{ borderRadius: '50%' }} />
             ) : (
-              <img src={review.userImage} alt="" />
+              <img src={review?.userImage} alt="" />
             )}
             <h5 onClick={() => navigate(`/profile/${review.userId}`)}>
               {review.nickname}
@@ -27,13 +32,6 @@ const Comments = () => {
           </div>
           <div className="review-rates">
             <StarRating averageRate={review.starRating} />
-            {/* {[...Array(5)].map((_, i) =>
-              i <= review.starRating ? (
-                <Star key={i} className="red-star" />
-              ) : (
-                <StarBorder key={i} style={{ color: 'var(--red-color)' }} />
-              )
-            )} */}
             <span>
               {review?.displayDate
                 ?.split('/')
@@ -43,7 +41,7 @@ const Comments = () => {
                 .join('/')}
             </span>
           </div>
-          <p> {review.comment} </p>
+          <ReadMoreText text={review.comment} maxLength={200} />
           {i !== reviews.length - 1 && <LineBreak className="line-break" />}
         </div>
       ))}
@@ -54,7 +52,7 @@ const Comments = () => {
 
 const CommentsContainer = styled.div`
   .review-rates {
-    margin: 18px 0;
+    margin: 20px 0 10px 0;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;

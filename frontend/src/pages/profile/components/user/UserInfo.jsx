@@ -5,7 +5,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../../../common/Loading';
 import NavigationWrap from './UserNavigationWrap';
-import AuthContext from '../../../../setup/app-context-menager/AuthContext';
 import { useLayoutData } from '../../hooks/useLayoutData';
 import FavoriteCollection from '../collections/FavoriteCollection';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -16,14 +15,26 @@ import axios from 'axios';
 const UserInfo = () => {
   const navigate = useNavigate();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const { userData } = useContext(AuthContext);
-  const { layoutData, layoutArr } = useLayoutData();
+  const { setCollections, layoutArr } = useLayoutData();
   const [activeIndex, setActiveIndex] = useState(0);
   const h3Refs = [useRef(null), useRef(null), useRef(null)];
   const params = useParams();
   const queryClient = useQueryClient();
   const [currentHeader, setCurrentHeader] = useState('Collections');
   useSmoothScroll();
+
+  const fetchUserData = async () => {
+    const res = await axios.get(`/api/auth/${params.profileId}/getUserId`);
+    const data = await res.data;
+    console.log(data);
+
+    setCollections(data.collections);
+    return data;
+  };
+
+  const { data: currentUser = {} } = useQuery(['user-info'], fetchUserData, {
+    refetchOnMount: 'always',
+  });
 
   const url = window.location.href.slice(21);
   const navigationLinks = [
@@ -32,26 +43,12 @@ const UserInfo = () => {
       url: '/account/profile/collection',
       content: 'Saved Items & Collections',
     },
-    { url: `/profile/${userData?._id}`, content: userData?.nickname },
+    { url: `/profile/${currentUser?._id}`, content: currentUser?.nickname },
   ];
 
-  const fetchUserData = async () => {
-    const res = await axios.get(`/api/auth/${params.profileId}/getUserId`);
-    const data = await res.data;
-
-    console.log(data, 'data');
-    layoutData(data.collections);
-    return data;
-  };
-
-  const { data: inspectUserData = {} } = useQuery(['user-info'], fetchUserData, {
-    enabled: !!userData,
-    refetchOnMount: 'always',
-  });
-
   const pageData = useMemo(() => {
-    if (Object.entries(inspectUserData).length === 0) return;
-    const { collections, reviews, personalRecipes } = inspectUserData;
+    if (Object.entries(currentUser).length === 0) return;
+    const { collections, reviews, personalRecipes } = currentUser;
 
     switch (activeIndex) {
       case 0:
@@ -59,7 +56,6 @@ const UserInfo = () => {
         return collections?.filter((collection) => !collection.private);
       case 1:
         setCurrentHeader('Recipes');
-        console.log(personalRecipes);
         return personalRecipes?.filter((recipe) => !recipe.private);
       case 2:
         setCurrentHeader('Reviews');
@@ -67,7 +63,7 @@ const UserInfo = () => {
       default:
         return [];
     }
-  }, [inspectUserData, activeIndex]);
+  }, [currentUser, activeIndex]);
 
   useEffect(() => {
     return () => {
@@ -75,29 +71,25 @@ const UserInfo = () => {
     };
   }, [queryClient]);
 
-  useEffect(() => {
-    console.log(pageData);
-  }, [pageData]);
-
   return (
     <Section>
-      {Object.keys(inspectUserData).length === 0 && !isImageLoaded ? (
+      {Object.keys(currentUser).length === 0 && !isImageLoaded ? (
         <Loading className="loading" />
       ) : (
         <>
           <ProfileWrap>
-            {inspectUserData?.picture?.image && (
+            {currentUser?.picture?.image && (
               <img
-                src={inspectUserData.picture.image}
+                src={currentUser.picture.image}
                 onLoad={() => setIsImageLoaded(true)}
                 alt="avatar"
               />
             )}
-            {!inspectUserData.picture?.image && <Person className="profile-svg" />}
+            {!currentUser.picture?.image && <Person className="profile-svg" />}
             <div className="profile-info">
               <NavigationWrap links={navigationLinks} />
-              <h1>{inspectUserData?.nickname}</h1>
-              <p>{inspectUserData?.tagline} </p>
+              <h1>{currentUser?.nickname}</h1>
+              <p>{currentUser?.tagline} </p>
             </div>
           </ProfileWrap>
           <ProfileContent>
@@ -132,6 +124,7 @@ const UserInfo = () => {
                 {pageData?.length > 0 && (
                   <div className="collection-wrap">
                     {activeIndex === 0 &&
+                      currentHeader === 'Collections' &&
                       pageData.map((collection, id) => (
                         <FavoriteCollection
                           key={collection._id}
@@ -147,11 +140,10 @@ const UserInfo = () => {
                         />
                       ))}
                     {activeIndex === 1 &&
-                      pageData.map((recipe, id) => (
+                      currentHeader === 'Recipes' &&
+                      pageData.map((recipe) => (
                         <Card key={recipe._id}>
-                          <Link
-                            to={`/account/${inspectUserData._id}/recipe/${recipe._id}`}
-                          >
+                          <Link to={`/account/${currentUser._id}/recipe/${recipe._id}`}>
                             <img src={recipe?.picture?.image} alt="" />
                             <div className="card-content">
                               <p>{recipe.private ? 'PRIVATE' : 'PUBLIC'}</p>
@@ -161,6 +153,7 @@ const UserInfo = () => {
                         </Card>
                       ))}
                     {activeIndex === 2 &&
+                      currentHeader === 'Reviews' &&
                       pageData.map((review, id) => (
                         <div key={id} className="reviews">
                           <Link to={'/recipe/' + review.recipeId}>
@@ -184,7 +177,7 @@ const UserInfo = () => {
                               )}
                               <span>
                                 &nbsp;
-                                {`${inspectUserData?.nickname}'s Rating`}
+                                {`${currentUser?.nickname}'s Rating`}
                               </span>
                             </div>
                             <p> {review.comment} </p>
@@ -349,6 +342,7 @@ const ProfileContent = styled.div`
         font-weight: 800;
         font-size: 14px;
         padding: 0 16px;
+        flex-wrap: nowrap;
 
         &:hover {
           color: var(--main-color);

@@ -3,22 +3,14 @@ import styled from 'styled-components';
 import { Instagram, Twitter, Pinterest, Facebook } from '@mui/icons-material';
 import Logo from '../common/Logo';
 const Footer = () => {
-  const categories = [
-    'DINNERS',
-    'MEALS',
-    'INGREDIENTS',
-    'CUISINES',
-    'OCCASIONS',
-  ];
+  const categories = ['DINNERS', 'MEALS', 'INGREDIENTS', 'CUISINES', 'OCCASIONS'];
   const socials = [Instagram, Twitter, Pinterest, Facebook];
 
   return (
     <Foot>
       <section>
         <div className="logo">
-          <Logo
-            style={{ transform: 'scale(1.5)', color: 'var(--red-color)' }}
-          />
+          <Logo style={{ transform: 'scale(1.5)', color: 'var(--red-color)' }} />
         </div>
         <div>
           <h2>Categories</h2>
@@ -118,7 +110,7 @@ const Foot = styled.footer`
         line-height: 30px;
         color: var(--main-color);
         cursor: pointer;
-        letter-spacing: 1.2px !important;
+        letter-spacing: 1px !important;
 
         &:hover {
           text-decoration: underline;

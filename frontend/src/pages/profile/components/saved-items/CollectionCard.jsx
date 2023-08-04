@@ -8,12 +8,14 @@ import AddCustomModal from './AddCustomModal';
 import useNoScroll from '../../../../utils/useNoScroll';
 import { useNavigate } from 'react-router-dom';
 import StarRating from '../../../../common/StarRating';
+import { useWindowSize } from '../../../../utils/useWindowSize';
 
-const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
+const CollectionCard = ({ favorite, addRecipeId, addLoading }) => {
   const navigate = useNavigate();
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   useNoScroll(showModal, showRemoveModal);
+  const windowSize = useWindowSize();
 
   const closeModals = () => {
     setShowRemoveModal(false);
@@ -21,44 +23,78 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
   };
 
   return (
-    <Card>
-      {favorite.loading && (
-        <div className="transparent-card">
-          <Loading style={{ marginBottom: '120px' }} />
-        </div>
-      )}
-      <img
-        src={favorite.data?.image}
-        alt=""
-        onClick={() => navigate(`/recipe/${favorite.data.id}`)}
-      />
-      <div className="card-content">
-        <h4 onClick={() => navigate(`/recipe/${favorite.data.id}`)}>
-          {favorite?.recipeTitle}
-        </h4>
-        <div className="flex">
-          <StarRating averageRate={favorite?.averageRate} />
-          <p> {favorite?.reviews.length > 0 ? favorite?.reviews.length : ''} </p>
-        </div>
-        <ButtonBorder
-          style={{ width: '160px', height: '36px' }}
-          value={
-            <p>
-              <Add /> <span>Add to collection</span>
-            </p>
-          }
-          onClick={() => setShowModal(true)}
-        />
-      </div>
-      {!favorite.loading && (
-        <Delete onClick={() => setShowRemoveModal(true)}>
-          <Remove />
-        </Delete>
+    <>
+      {windowSize[0] >= 730 ? (
+        <Card>
+          {favorite.loading && (
+            <div className="transparent-card">
+              <Loading style={{ marginBottom: '120px' }} />
+            </div>
+          )}
+          <img
+            src={favorite.data?.image}
+            onClick={() => navigate(`/recipe/${favorite.data.id}`)}
+          />
+          <div className="card-content">
+            <h4 onClick={() => navigate(`/recipe/${favorite.data.id}`)}>
+              {favorite?.recipeTitle}
+            </h4>
+            <StarRating
+              averageRate={favorite?.averageRate}
+              reviewLength={favorite?.reviews.length}
+            />
+            <ButtonBorder
+              style={{ width: '140px' }}
+              value={'Add to collection'}
+              icon={<Add />}
+              onClick={() => setShowModal(true)}
+            />
+          </div>
+          {!favorite.loading && (
+            <Delete onClick={() => setShowRemoveModal(true)}>
+              <Remove />
+            </Delete>
+          )}
+        </Card>
+      ) : (
+        <HorizontalCard>
+          {favorite.loading && (
+            <div className="transparent-card">
+              <Loading />
+            </div>
+          )}
+          <img
+            src={favorite.data?.image}
+            onClick={() => navigate(`/recipe/${favorite.data.id}`)}
+          />
+          <div className="horizontal-card-content">
+            <h4 onClick={() => navigate(`/recipe/${favorite.data.id}`)}>
+              {favorite?.recipeTitle}
+            </h4>
+            <div className="star-ratings">
+              <StarRating
+                averageRate={favorite?.averageRate}
+                reviewLength={favorite?.reviews.length}
+              />
+            </div>
+            <ButtonBorder
+              style={{ width: '140px' }}
+              value={'Add to collection'}
+              icon={<Add />}
+              onClick={() => setShowModal(true)}
+            />
+          </div>
+          {!favorite.loading && (
+            <Delete onClick={() => setShowRemoveModal(true)}>
+              <Remove />
+            </Delete>
+          )}
+        </HorizontalCard>
       )}
       {showRemoveModal && (
         <RemoveRecipeModal
           remove={() => {
-            addRecipeName(favorite._id);
+            addRecipeId(favorite._id);
             addLoading();
           }}
           title={favorite.recipeTitle}
@@ -72,13 +108,64 @@ const CollectionCard = ({ favorite, addRecipeName, addLoading }) => {
           showModal={() => setShowModal(false)}
         />
       )}
-    </Card>
+    </>
   );
 };
 
+const HorizontalCard = styled.div`
+  position: relative;
+  display: flex;
+  height: 140px;
+  border: 1px solid var(--grey-hover-color);
+  width: 100%;
+
+  .transparent-card {
+    position: absolute;
+    background-color: rgba(245, 245, 245, 0.73);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .horizontal-card-content {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 14px;
+    width: 100%;
+
+    .star-ratings {
+      margin: 10px 0;
+    }
+
+    h4 {
+      text-align: start;
+      color: var(--grey-color);
+      cursor: pointer;
+      font-weight: 700;
+
+      &:hover {
+        text-decoration: underline;
+        color: var(--main-color);
+        text-decoration-color: var(--main-color);
+        text-underline-offset: 5px;
+        text-decoration-thickness: 10%;
+      }
+    }
+  }
+
+  img {
+    height: 100%;
+  }
+`;
+
 const Card = styled.div`
   position: relative;
-  max-width: 34%;
+  width: 28% !important;
   display: flex;
   flex-direction: column;
   min-height: 400px;
@@ -99,6 +186,7 @@ const Card = styled.div`
     align-items: center;
     justify-content: center;
     z-index: 1;
+    outline: 1px solid black;
   }
 
   img {
@@ -111,7 +199,6 @@ const Card = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* flex-wrap: wrap; */
 
     .flex {
       height: max-content;
@@ -137,6 +224,7 @@ const Card = styled.div`
       text-align: start;
       color: var(--grey-color);
       cursor: pointer;
+      font-weight: 700;
 
       &:hover {
         text-decoration: underline;
@@ -176,6 +264,22 @@ const Delete = styled.div`
   justify-content: center;
   cursor: pointer;
   z-index: 1;
+
+  @media screen and (max-width: 729px) {
+    cursor: pointer;
+    position: absolute;
+    left: 170px;
+    top: 4px;
+    z-index: 1;
+    background-color: white;
+    border: 1px solid var(--red-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+  }
 
   svg {
     color: var(--red-color);

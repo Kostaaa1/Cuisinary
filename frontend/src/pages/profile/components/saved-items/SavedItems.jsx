@@ -12,7 +12,7 @@ import TransparentCard from './TransparentCard';
 import Button from '../../../../common/Button';
 import ButtonHover from '../../../../common/ButtonHover';
 import { useNavigate, useParams } from 'react-router-dom';
-import GlobalContext from '../../../../setup/app-context-menager/GlobalContext';
+import ProfileContext from '../../../../setup/app-context-menager/GlobalContext';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -30,12 +30,8 @@ const SavedItems = () => {
   const { user } = useAuth0();
   const [collectionArray, setCollectionArray] = useState([]);
   const [collectionData, setCollectionData] = useState([]);
-  const {
-    arrayOfRecipeNames,
-    setArrayOfRecipeNames,
-    setCollectionId,
-    setCollectionParams,
-  } = useContext(GlobalContext);
+  const { arrayOfRecipeIds, setArrayOfRecipeIds, setCollectionId, setCollectionParams } =
+    useContext(ProfileContext);
   useNoScroll(showDeleteCollectionModal, showEditCollectionModal);
 
   const queryClient = useQueryClient();
@@ -57,14 +53,14 @@ const SavedItems = () => {
     }
   }, [userData]);
 
-  const addRecipeName = (recipeTitle) => {
-    const arr = [...arrayOfRecipeNames, recipeTitle];
-    setArrayOfRecipeNames(arr);
+  const addRecipeId = (id) => {
+    const arr = [...arrayOfRecipeIds, id];
+    setArrayOfRecipeIds(arr);
   };
 
-  const removeRecipeName = (recipeTitle) => {
-    const arr = arrayOfRecipeNames.filter((name) => name !== recipeTitle);
-    setArrayOfRecipeNames(arr);
+  const removeRecipeId = (id) => {
+    const arr = arrayOfRecipeIds.filter((index) => index !== id);
+    setArrayOfRecipeIds(arr);
   };
 
   useEffect(() => {
@@ -100,7 +96,7 @@ const SavedItems = () => {
     <Saved>
       <>
         <div className="wrap">
-          {windowSize[0] > 1120 ? (
+          {windowSize[0] > 1030 ? (
             <ButtonHover
               value={'BACK TO ALL'}
               icon={<ArrowBack />}
@@ -184,11 +180,11 @@ const SavedItems = () => {
         )}
         <div className="collection-control">
           {collectionArray.map((favorite, id) =>
-            arrayOfRecipeNames.includes(favorite?._id) && !favorite.loading ? (
+            arrayOfRecipeIds.includes(favorite?._id) && !favorite.loading ? (
               <TransparentCard
                 key={id}
                 favorite={favorite}
-                removeRecipeName={removeRecipeName}
+                removeRecipeId={removeRecipeId}
                 addLoading={() => addLoading(id)}
               />
             ) : (
@@ -196,7 +192,7 @@ const SavedItems = () => {
                 key={id}
                 addLoading={() => addLoading(id)}
                 favorite={favorite}
-                addRecipeName={addRecipeName}
+                addRecipeId={addRecipeId}
               />
             )
           )}
@@ -213,7 +209,6 @@ const SavedItems = () => {
         )}
         {showEditCollectionModal && (
           <CollectionModal
-            refetch={refetch}
             showModal={() => setShowEditCollectionModal(false)}
             collectionTitle={collectionData?.collName}
             collectionDesc={collectionData?.collDesc}
@@ -249,18 +244,23 @@ const Saved = styled.div`
   .wrap {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     margin-bottom: 8px;
+    justify-content: space-between;
+
+    @media screen and (max-width: 709px) {
+      justify-content: center;
+    }
 
     .wrap-flex {
-      width: 170px;
+      width: 180px;
       display: flex;
       justify-content: space-between;
     }
   }
 
   section {
+    margin: 32px 0;
     display: flex;
     width: 100%;
     align-items: center;
@@ -268,7 +268,9 @@ const Saved = styled.div`
     flex-direction: column;
 
     h2 {
-      font-size: 24px;
+      text-align: center;
+      word-break: keep-all;
+      font-size: 24px !important;
       color: var(--grey-color);
     }
 
@@ -290,7 +292,11 @@ const Saved = styled.div`
 
     h1 {
       font-size: 36px !important;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
+
+      @media screen and (max-width: 709px) {
+        font-size: 30px !important;
+      }
     }
 
     .height-div {
@@ -298,7 +304,7 @@ const Saved = styled.div`
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-      height: 90px;
+      height: 70px;
 
       h4 {
         font-weight: 400;
@@ -345,6 +351,10 @@ const Saved = styled.div`
     flex-wrap: wrap;
     gap: 30px;
     row-gap: 40px;
+
+    @media screen and (max-width: 709px) {
+      flex-direction: column;
+    }
   }
 `;
 

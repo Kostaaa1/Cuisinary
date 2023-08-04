@@ -5,14 +5,15 @@ const axios = require("axios");
 const { Configuration, OpenAIApi } = require("openai");
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
-const { default: mongoose } = require("mongoose");
 
+const config = new Configuration({
+  organization: process.env.OPENAI_ORG_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(config);
 const extractKeyword = async (word) => {
   try {
-    const config = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    const openai = new OpenAIApi(config);
     if (word) {
       const prompt = `I want to fetch the data based on one word that is related to food. This is the name of the recipe: "${word}". I want you to extract the key/main word out of the name of the recipe that i provided that is related to food, so I can make the fetch for the similar word! Your response needs to be only that one word! For example, in the recipe name: "Mexican Lasagna with Chicken & Black Bean", the potential keyword would be "Chicken", then i would be able to make further fetches!`;
 
@@ -24,26 +25,28 @@ const extractKeyword = async (word) => {
       });
 
       let keyword = response.data.choices[0].text;
-
       keyword = keyword
         .trim()
         .replace(/[^a-zA-Z"]/g, "")
         .toLowerCase();
-
       return keyword;
     }
   } catch (error) {
     console.log(error);
   }
 };
+
 module.exports = {
   getSimilarRecipes: async (req, res) => {
     try {
+      console.log("CALLED");
       const query = req.params.query.toLowerCase();
+      const { recipeId } = req.params;
+      console.log(recipeId);
+
       const checkParams = await Searched.findOne({
         name: { $in: query.split(" ") },
       });
-      console.log("PARAMS FOR KEYWORD: ", checkParams);
 
       if (!checkParams) {
         const keyword = await extractKeyword(query);
@@ -59,12 +62,12 @@ module.exports = {
             data: response.data.results,
           });
 
-          res.status(201).json(similar);
+          res.status(201).json({ ...similar._doc, recipeId });
           return;
         }
-        res.status(200).json(recipe);
+        res.status(200).json({ ...recipe._doc, recipeId });
       } else {
-        res.status(200).json(checkParams);
+        res.status(200).json({ ...checkParams._doc, recipeId });
       }
     } catch (error) {
       res.status(400).send(error);
@@ -141,8 +144,19 @@ module.exports = {
         return;
       }
 
-      const reviews = await Review.find({ _id: { $in: recipe.reviews } });
-      res.status(200).json([recipe, reviews]);
+      const reviews = await Review.find({
+        _id: { $in: recipe.reviews },
+      })
+        .populate("userImage", "picture.image -_id")
+        .populate("nickname", "nickname -_id");
+
+      const formattedReviews = reviews.map((review) => ({
+        ...review._doc,
+        nickname: review.nickname.nickname,
+        userImage: review?.userImage.picture.image,
+      }));
+
+      res.status(200).json([recipe, formattedReviews]);
     } catch (error) {
       res.status(400).send(error);
     }
@@ -162,13 +176,14 @@ module.exports = {
 
       const review = await Review.create({
         userId,
-        userImage: user.picture?.image || "",
+        userImage: userId,
+        nickname: userId,
+        // userImage: user.picture?.image || "",
         comment,
         starRating,
         recipeId,
         recipeTitle,
         recipeImage,
-        nickname: user.nickname || "",
       });
 
       user.reviews.push(review._id);
@@ -183,15 +198,32 @@ module.exports = {
         { new: true }
       );
 
-      const populated = await Recipe.findOne({ recipeTitle }).populate(
-        "reviews"
-      );
+      const populated = await Recipe.findOne({ id: req.params.id })
+        .populate({
+          path: "reviews",
+          populate: {
+            path: "userImage",
+            select: "picture.image -_id",
+          },
+        })
+        .populate({
+          path: "reviews",
+          populate: {
+            path: "nickname",
+            select: "nickname -_id",
+          },
+        });
 
-      const sentData = {
-        reviews: populated.reviews,
+      const sendData = {
         updatedAverage: updatedRecipe.averageRate,
+        reviews: populated.reviews.map((review) => ({
+          ...review._doc,
+          nickname: review.nickname.nickname,
+          userImage: review?.userImage.picture.image,
+        })),
       };
-      res.status(200).json(sentData);
+
+      res.status(200).json(sendData);
     } catch (error) {
       res.status(404).send(error.message);
     }
@@ -199,7 +231,6 @@ module.exports = {
   editRecipeReview: async (req, res) => {
     try {
       const { recipeId, userId, comment, starRating, averageRate } = req.body;
-      const user = await User.findById(userId);
 
       const displayDate = () => {
         const date = new Date();
@@ -216,9 +247,6 @@ module.exports = {
         },
         {
           $set: {
-            userId,
-            nickname: user.nickname,
-            userImage: user.picture.image || "",
             comment,
             starRating,
             displayDate: currentDate,
@@ -234,13 +262,29 @@ module.exports = {
         { new: true }
       );
 
-      const populated = await Recipe.findOne({ id: req.params.id }).populate(
-        "reviews"
-      );
+      const populated = await Recipe.findOne({ id: req.params.id })
+        .populate({
+          path: "reviews",
+          populate: {
+            path: "userImage",
+            select: "picture.image -_id",
+          },
+        })
+        .populate({
+          path: "reviews",
+          populate: {
+            path: "nickname",
+            select: "nickname -_id",
+          },
+        });
 
       const sendData = {
         averageRate: recipe.averageRate,
-        reviews: populated.reviews,
+        reviews: populated.reviews.map((review) => ({
+          ...review._doc,
+          nickname: review.nickname.nickname,
+          userImage: review?.userImage.picture.image,
+        })),
       };
 
       res.status(200).json(sendData);
