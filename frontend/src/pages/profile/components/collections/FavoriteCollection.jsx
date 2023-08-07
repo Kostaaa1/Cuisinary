@@ -46,10 +46,6 @@ const FavoriteCollection = ({ collection, layoutArr, onClick }) => {
   );
 };
 
-const HorizontalCollection = styled.div`
-  width: 100%;
-`;
-
 const CustomLink = styled.div`
   text-decoration: none;
   color: var(--main-color);
