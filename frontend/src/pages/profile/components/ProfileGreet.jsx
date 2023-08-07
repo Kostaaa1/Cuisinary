@@ -15,7 +15,11 @@ const ProfileGreet = () => {
   const imgRef = useRef(null);
 
   const queryClient = useQueryClient();
-  const userData = queryClient.getQueryData(['context-user']);
+  const contextUser = queryClient.getQueryData(['context-user']);
+
+  useEffect(() => {
+    console.log('This is context user from ProfileGreet', contextUser);
+  }, [contextUser]);
 
   useEffect(() => {
     const imgElement = imgRef.current;
@@ -31,15 +35,15 @@ const ProfileGreet = () => {
 
   return (
     <Greet>
-      {!userData && !profileImgLoaded ? (
+      {!contextUser && !profileImgLoaded ? (
         <h4 className="h4-div">Loading...</h4>
       ) : (
         <>
-          {!userData?.picture?.image ? (
+          {!contextUser?.picture?.image ? (
             <PersonAvatar />
           ) : (
             <img
-              src={`${userData?.picture?.image}`}
+              src={`${contextUser?.picture?.image}`}
               alt="profile-picture"
               className="profile-picture"
               onLoad={() => setProfileImgLoaded(true)}
@@ -48,13 +52,13 @@ const ProfileGreet = () => {
           <div className="user-info-wrap">
             <h4>
               Hi,
-              {userData?.firstName
-                ? `${userData?.firstName} ${userData?.lastName}`
-                : userData?.email}
+              {contextUser?.firstName
+                ? `${contextUser?.firstName} ${contextUser?.lastName}`
+                : contextUser?.email}
             </h4>
             <ButtonBorder
               style={{ width: '140px' }}
-              onClick={() => navigate(`/profile/${userData._id}`)}
+              onClick={() => navigate(`/profile/${contextUser._id}`)}
               value={'View Public Profile'}
             />
           </div>
