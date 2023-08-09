@@ -24,10 +24,6 @@ const RecipeCard = ({ recipeData, favorite, setFavorite, params }) => {
       await axios.post(`/api/auth/${user?.email}`, {
         id: recipeData.id,
       });
-
-      // if (collections.data !== '') {
-      //   updateQueryCache(['user-data', user?.email], collections.data);
-      // }
     } catch (error) {
       console.log(error);
     }
@@ -35,18 +31,20 @@ const RecipeCard = ({ recipeData, favorite, setFavorite, params }) => {
 
   return (
     <Card>
-      {windowSize[0] <= 730 ? (
+      {windowSize[0] < 730 ? (
         <HorizontalCard>
-          <NavLink to={'/recipe/' + recipeData?.id}>
+          <Link to={'/recipe/' + recipeData?.id}>
             <img src={recipeData?.image} alt="" />
-          </NavLink>
-          <div className="card-desc">
+          </Link>
+          <div className="horizontal-card-content">
             <h6> {params?.toUpperCase()} </h6>
-            <h3>{recipeData?.title}</h3>
+            <Link to={'/recipe/' + recipeData?.id}>
+              <h3>{recipeData?.title}</h3>
+            </Link>
           </div>
-          {/* <div className="favorite" onClick={(e) => addRecipeToFavorites(e)}>
+          <div className="favorite" onClick={(e) => addRecipeToFavorites(e)}>
             {heart ? <Favorite /> : <FavoriteBorder />}
-          </div> */}
+          </div>
         </HorizontalCard>
       ) : (
         <VerticalCard key={recipeData?.id} className="card">
@@ -67,70 +65,37 @@ const RecipeCard = ({ recipeData, favorite, setFavorite, params }) => {
 };
 
 const Card = styled.div`
-  margin: 24px 0;
+  margin: 18px 0;
   border: 1px solid var(--grey-hover-color);
-`;
-
-const NavLink = styled(Link)``;
-
-const HorizontalCard = styled.div`
   position: relative;
-  display: flex;
-  height: 140px;
-  /* height: 180px; */
-  /* align-items: center; */
-  /* justify-content: center; */
+  background-color: #fff;
 
-  .horizontal-card-content {
-    display: flex;
-    flex-direction: column;
-    padding: 0 14px;
-    width: 100%;
+  h6 {
+    letter-spacing: 1.4px !important;
+    color: var(--grey-color);
+  }
 
-    .star-ratings {
-      margin: 10px 0;
+  h3 {
+    text-align: start;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: start;
+    color: var(--main-color);
+    margin: 8px 0;
+    font-size: 22px !important;
+
+    &:hover {
+      text-decoration: underline;
+      color: var(--main-color);
+      text-underline-offset: 5px;
+      text-decoration-thickness: 10%;
     }
-
-    h4 {
-      text-align: start;
-      color: var(--grey-color);
-      cursor: pointer;
-      font-weight: 700;
-
-      &:hover {
-        text-decoration: underline;
-        color: var(--main-color);
-        text-decoration-color: var(--main-color);
-        text-underline-offset: 5px;
-        text-decoration-thickness: 10%;
-      }
-    }
-  }
-
-  img {
-    height: 100%;
-  }
-`;
-
-const VerticalCard = styled.div`
-  position: relative;
-  background-color: white;
-  min-height: 360px;
-  box-shadow: var(--card-shadow-border);
-
-  img {
-    width: 100%;
-    height: 220px;
-  }
-
-  a {
-    text-decoration: none;
   }
 
   .favorite {
     position: absolute;
-    top: 0;
-    right: 10px;
+    top: -5px;
+    right: 5px;
     width: 50px;
     height: 50px;
     background-color: var(--red-color);
@@ -146,24 +111,43 @@ const VerticalCard = styled.div`
       color: white;
     }
   }
+`;
+
+const HorizontalCard = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .horizontal-card-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 14px;
+    width: 100%;
+  }
+
+  img {
+    width: 320px;
+    height: 100%;
+  }
+`;
+
+const VerticalCard = styled.div`
+  min-height: 360px;
+
+  img {
+    width: 100%;
+    height: 220px;
+  }
+
+  a {
+    text-decoration: none;
+  }
 
   .card-desc {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 1.2rem 0.7rem;
-
-    h6 {
-      letter-spacing: 1.4px !important;
-      color: var(--grey-color);
-    }
-
-    h3 {
-      text-align: start;
-      color: var(--main-color);
-      margin: 12px 0;
-      font-size: 22px !important;
-    }
   }
 
   &:hover {
