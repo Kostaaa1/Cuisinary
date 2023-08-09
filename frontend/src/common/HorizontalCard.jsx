@@ -1,49 +1,44 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import StarRating from './StarRating';
 import { DragIndicator } from '@mui/icons-material';
+import ReadMoreText from './ReadMoreText';
 
-const HorizontalCard = ({ cardData, image, isRecipe }) => {
-  useEffect(() => {
-    console.log(cardData);
-  }, [cardData]);
+const HorizontalCard = ({ cardData, image, readMore, isRecipe }) => {
   return (
     <Review>
       {isRecipe ? (
         <Recipe>
-          <NavLink to={'/recipe/' + cardData?.recipeId}>
+          <RecipeLink to={'/recipe/' + cardData?.recipeId}>
             <img src={cardData?.recipeImage} alt="review-image" />
-          </NavLink>
+          </RecipeLink>
           <div className="control-flex">
             <Link to={'/recipe/' + cardData?.recipeId}>
               <h2> {cardData?.recipeTitle} </h2>
             </Link>
             <div className="stars-wrap">
               <StarRating averageRate={cardData?.starRating} />
-              <span>&nbsp; My Review</span>
             </div>
-            <p> {cardData?.comment} </p>
+            <ReadMoreText text={cardData?.comment} readMore={readMore} maxLength={210} />
           </div>
         </Recipe>
       ) : (
         <Collection>
-          <NavLink to={'/account/profile/saved-items'}>
+          <CollectionLink to={'/account/profile/saved-items'}>
             {image?.data?.image ? (
               <img src={image?.data?.image} alt="" />
             ) : (
               <div className="grey-div"></div>
             )}
-          </NavLink>
+          </CollectionLink>
           <div className="flex">
             <p>{cardData?.private ? 'PRIVATE' : 'PUBLIC'}</p>
-            <NavLink to={'/account/profile/saved-items'}>
+            <CollectionLink to={'/account/profile/saved-items'}>
               <h3>{cardData?.collName}</h3>
-            </NavLink>
+            </CollectionLink>
             <span>
               <DragIndicator /> Collection // {cardData?.collRecipes?.length}
             </span>
-            <p> {cardData?.comment} </p>
           </div>
         </Collection>
       )}
@@ -51,31 +46,35 @@ const HorizontalCard = ({ cardData, image, isRecipe }) => {
   );
 };
 
-const NavLink = styled(Link)`
-  flex: 2.5;
-  width: 100%;
-  height: 100%;
+const RecipeLink = styled(Link)`
+  height: 200px;
+  width: 340px;
+  float: left;
+  padding-right: 18px;
+
+  @media screen and (max-width: 729px) {
+    height: 140px;
+    width: 200px;
+  }
 `;
 
 const Recipe = styled.div`
-  display: flex;
-  align-items: center;
   padding: 30px;
-  justify-content: center;
   width: 100%;
-  height: 200px;
+  display: flex;
 
-  svg {
-    font-size: 18px;
+  @media screen and (max-width: 729px) {
+    display: block;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
   }
 
   .control-flex {
     height: 100%;
-    flex: 4;
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    padding: 0 12px;
 
     .stars-wrap {
       display: flex;
@@ -89,7 +88,6 @@ const Recipe = styled.div`
 
     h2 {
       cursor: pointer;
-      width: fit-content;
       color: var(--grey-color);
       font-size: 22px !important;
 
@@ -104,12 +102,21 @@ const Recipe = styled.div`
   }
 `;
 
+const CollectionLink = styled(Link)`
+  height: 150px;
+  width: 300px;
+`;
+
 const Collection = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 140px;
+  /* justify-content: center; */
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
 
   .grey-div {
     background-color: #b1b1b1;
@@ -117,8 +124,8 @@ const Collection = styled.div`
   }
 
   .flex {
-    flex: 4;
-    margin: 0 18px;
+    width: 100%;
+    padding: 0 14px;
 
     p {
       font-weight: 600;
@@ -149,6 +156,7 @@ const Collection = styled.div`
     span {
       display: flex;
       align-items: center;
+      color: var(--grey-color);
 
       svg {
         color: var(--grey-color);
@@ -162,17 +170,13 @@ const Review = styled.div`
   position: relative;
   border: 1px solid var(--grey-hover-color);
 
-  img {
-    height: 100%;
-    max-height: 100%;
-  }
-
   p {
     font-size: 14px;
   }
 
   svg {
     color: var(--red-color);
+    font-size: 20px;
   }
 `;
 
