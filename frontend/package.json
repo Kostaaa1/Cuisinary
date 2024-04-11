@@ -1,0 +1,44 @@
+{
+  "name": "cuisine-react-final",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@auth0/auth0-react": "^2.2.0",
+    "@dnd-kit/core": "^6.0.8",
+    "@dnd-kit/sortable": "^7.0.2",
+    "@dnd-kit/utilities": "^3.2.1",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@iconscout/unicons": "^4.0.8",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.2",
+    "@splidejs/react-splide": "^0.7.12",
+    "@tanstack/react-query": "^4.32.0",
+    "axios": "^1.4.0",
+    "cookie-utils": "^1.0.0",
+    "framer-motion": "^10.15.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.10.1",
+    "react-router-dom": "^6.14.2",
+    "react-scroll": "^1.8.9",
+    "react-spinners": "^0.13.8",
+    "react-toastify": "^9.1.3",
+    "recharts": "^2.7.2",
+    "styled-components": "^6.0.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.17",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "prettier": "^3.0.0",
+    "vite": "^4.4.7"
+  }
+}
