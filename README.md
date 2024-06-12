@@ -38,4 +38,5 @@ This project is not licensed for redistribution or commercial use.
 ## Contact Information
 
 - Email: kostaarsic123@email.com
-- LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/kosta-arsic-b8397829a/)
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/kosta-arsic-b8397829a/)
+- Github: [Github](https://github.com/Kostaaa1/)
