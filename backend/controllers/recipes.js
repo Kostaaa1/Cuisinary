@@ -4,8 +4,6 @@ const { Recipe, Review } = require("../models/Recipe");
 const axios = require("axios");
 const User = require("../models/User");
 const cloudinary = require("../middleware/cloudinary");
-const natural = require("natural");
-const TfIdf = natural.TfIdf;
 
 const extractKeyword = async (word) => {
   const tfidf = new TfIdf();
@@ -19,7 +17,6 @@ module.exports = {
     try {
       const query = req.params.query.toLowerCase();
       const { recipeId } = req.params;
-
       const checkParams = await Searched.findOne({
         name: { $in: query.split(" ") },
       });

@@ -1,32 +1,22 @@
 {
-  "name": "cuisine-react-final",
+  "name": "cuisinary",
+  "private": true,
+  "packageManager": "npm@10.8.2",
   "version": "1.0.0",
-  "description": "",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "main": "index.js",
   "scripts": {
-    "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm run dev",
-    "start": "concurrently \"npm run server\" \"npm run client\"",
-    "install": "concurrently \"cd frontend && npm run install\" \"cd backend && npm run install\""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Kostaaa1/Cuisine-mern-demo.git"
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Kostaaa1/Cuisine-mern-demo/issues"
-  },
-  "homepage": "https://github.com/Kostaaa1/Cuisine-mern-demo#readme",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.22.5",
-    "@babel/preset-react": "^7.22.5",
-    "concurrently": "^7.6.0",
-    "nodemon": "^2.0.20"
-  },
-  "dependencies": {
-    "natural": "^6.5.0"
+    "turbo": "^2.0.14"
   }
 }

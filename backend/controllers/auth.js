@@ -33,9 +33,7 @@ const addRecipeToSavedCollection = async (email, data, res) => {
     }
 
     await User.findOneAndUpdate(filter, update, options);
-    const populatedUser = await User.findOne({ email }).populate(
-      "collections.collRecipes"
-    );
+    const populatedUser = await User.findOne({ email }).populate("collections.collRecipes");
     res.status(200).json(populatedUser.collections[0].collRecipes);
   } catch (error) {
     res.status(404).json(error.message);
@@ -43,6 +41,10 @@ const addRecipeToSavedCollection = async (email, data, res) => {
 };
 
 module.exports = {
+  getAllUsers: async (req, res) => {
+    const data = await User.find({});
+    res.status(200).json(data);
+  },
   addToFavorite: async (req, res) => {
     try {
       const { email } = req.params;
@@ -128,8 +130,6 @@ module.exports = {
   },
   deleteFavorite: async (req, res) => {
     try {
-      console.log(req.body);
-
       const { email } = req.params;
       let filter = {
         email,
@@ -170,7 +170,6 @@ module.exports = {
           "collections.$": 1,
         }
       );
-
       res.status(200).json(user.collections[0]);
     } catch (error) {
       res.status(400).send(error.message);
@@ -187,7 +186,6 @@ module.exports = {
           "collections.$": 1,
         }
       );
-
       res.status(200).send(user.collections[0]);
     } catch (error) {
       res.status(400).send(error.message);
