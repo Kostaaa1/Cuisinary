@@ -15,7 +15,7 @@ app.use(
   })
 );
 
-app.use(function (req, res, next) {
+app.use(function (_, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -33,7 +33,7 @@ app.use("/api/user", require("./routes/users"));
 app.use("/api/articles", require("./routes/articles"));
 
 // Errors
-app.use((err, req, res, next) => {
+app.use((err, _, res, next) => {
   if (err.name === "UnauthorizedError") {
     res.status(401).send({ valid: false });
   } else {
