@@ -18,16 +18,16 @@ const SearchedRecipes = () => {
   const fetchSearched = async () => {
     try {
       const res = await axios(`/api/searched/${params.search}`);
-      const data = await res.json();
+      const data = await res.data;
 
+      // this should be on server 
       if (data.length === 0) {
         const res = await axios(
           `https://api.spoonacular.com/recipes/complexSearch?apiKey=${
             import.meta.env.VITE_SPOONACULAR_API_KEY
           }&number=60&query=${params.search}`
         );
-        const data = await res.json();
-
+        const data = await res.data;
         if (data.results.length === 0) return [];
         await axios.post('/api/searched/createSearched', {
           name: params.search,
@@ -35,6 +35,7 @@ const SearchedRecipes = () => {
         });
         return data.results;
       }
+      //
 
       return data[0].data ?? [];
     } catch (error) {
