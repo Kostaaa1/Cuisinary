@@ -11,17 +11,17 @@ import useSmoothScroll from '../../utils/useSmoothScroll';
 import Loading from '../../common/Loading';
 
 const SearchedRecipes = () => {
-  let params = useParams();
+  const params = useParams();
   const [favorite, setFavorite] = useState(false);
   useSmoothScroll();
 
   const fetchSearched = async () => {
     try {
-      const res = await fetch(`/api/searched/${params.search}`);
+      const res = await axios(`/api/searched/${params.search}`);
       const data = await res.json();
 
       if (data.length === 0) {
-        const res = await fetch(
+        const res = await axios(
           `https://api.spoonacular.com/recipes/complexSearch?apiKey=${
             import.meta.env.VITE_SPOONACULAR_API_KEY
           }&number=60&query=${params.search}`
@@ -33,7 +33,6 @@ const SearchedRecipes = () => {
           name: params.search,
           data: data,
         });
-
         return data.results;
       }
 
@@ -42,7 +41,6 @@ const SearchedRecipes = () => {
       console.log(error);
     }
   };
-
   const { isLoading, data } = useQuery(['searched', params.search], fetchSearched);
 
   return (
