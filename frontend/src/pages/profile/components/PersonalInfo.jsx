@@ -1,14 +1,11 @@
 import { KeyboardArrowDown, HttpsOutlined } from '@mui/icons-material';
-import axios from 'axios';
-import { useRef } from 'react';
+import axios from '../../../utils/axios';
 import { useState } from 'react';
 import styled from 'styled-components';
-import Loading from '../../../common/Loading';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import SectionHeader from '../../../common/SectionHeader';
-import LineBreak from '../../../common/LineBreak';
 
 const PersonalInfo = () => {
   const [clicked, setClicked] = useState(true);

@@ -1,6 +1,5 @@
-import { Person, Star, StarBorder } from '@mui/icons-material';
+import { Person } from '@mui/icons-material';
 import React, { useEffect, useRef, useState } from 'react';
-import { useContext } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../../../common/Loading';
@@ -10,7 +9,7 @@ import FavoriteCollection from '../collections/FavoriteCollection';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import useSmoothScroll from '../../../../utils/useSmoothScroll';
 import { useMemo } from 'react';
-import axios from 'axios';
+import axios from '../../../../utils/axios';
 import HorizontalCard from '../../../../common/HorizontalCard';
 
 const UserInfo = () => {

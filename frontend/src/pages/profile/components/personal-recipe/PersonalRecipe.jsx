@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import axios from '../../../../utils/axios';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../../../common/Loading';

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useUser = () => {

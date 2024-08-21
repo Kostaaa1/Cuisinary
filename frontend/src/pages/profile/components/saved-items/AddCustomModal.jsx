@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import { Close, Add } from '@mui/icons-material';
 import { useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../../../utils/axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';

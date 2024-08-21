@@ -13,7 +13,7 @@ import Button from '../../../../common/Button';
 import ButtonHover from '../../../../common/ButtonHover';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProfileContext from '../../../../setup/app-context-menager/GlobalContext';
-import axios from 'axios';
+import axios from '../../../../utils/axios';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import CollectionModal from '../../../../common/CollectionModal';

@@ -8,9 +8,7 @@ import Loading from '../../../../common/Loading';
 import useSmoothScroll from '../../../../utils/useSmoothScroll';
 import { useQuery } from '@tanstack/react-query';
 import LineBreak from '../../../../common/LineBreak';
-import axios from 'axios';
-import StarRating from '../../../../common/StarRating';
-import Summary from '../../../recipe/components/Summary';
+import axios from '../../../../utils/axios';
 
 const CollectionPage = () => {
   const navigate = useNavigate();

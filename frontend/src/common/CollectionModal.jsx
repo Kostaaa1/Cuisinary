@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Button from './Button';
 import { Close, HttpsOutlined, Add } from '@mui/icons-material';
 import { useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useParams } from 'react-router-dom';
 import useNoScroll from '../utils/useNoScroll';
@@ -19,6 +19,8 @@ const CollectionModal = ({ showModal, collectionTitle, collectionDesc, isPrivate
   const { user } = useAuth0();
   const [isLoading, setIsLoading] = useState(false);
   useNoScroll(showModal);
+
+  
 
   const queryClient = useQueryClient();
 

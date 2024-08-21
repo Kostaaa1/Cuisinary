@@ -6,7 +6,7 @@ import RecipeCard from '../../common/RecipeCard';
 import { useQuery } from '@tanstack/react-query';
 import SavedModal from '../../common/SavedModal';
 import SearchForm from './components/SearchForm';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import useSmoothScroll from '../../utils/useSmoothScroll';
 import Loading from '../../common/Loading';
 

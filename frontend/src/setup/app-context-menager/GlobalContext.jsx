@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const GlobalContext = createContext(null);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { FavoriteBorder, Favorite } from '@mui/icons-material';
-import axios from 'axios';
+import axios from '../utils/axios';
 import useNoScroll from '../utils/useNoScroll';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useWindowSize } from '../utils/useWindowSize';

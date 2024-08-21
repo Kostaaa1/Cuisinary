@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '../../../../utils/axios';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import UserReview from './UserReview';

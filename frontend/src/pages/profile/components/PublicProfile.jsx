@@ -1,11 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import axios from 'axios';
+import axios from '../../../utils/axios';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AddAPhoto, KeyboardArrowDown, SupervisorAccount } from '@mui/icons-material';
 import SectionHeader from '../../../common/SectionHeader';
 import { useQueryClient } from '@tanstack/react-query';
-import { useWindowSize } from '../../../utils/useWindowSize';
 
 const PublicInfo = ({ userData }) => {
   const [clicked, setClicked] = useState(true);

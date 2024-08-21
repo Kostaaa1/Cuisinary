@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import SavedModal from '../../common/SavedModal';
 import useSmoothScroll from '../../utils/useSmoothScroll';
 import { motion } from 'framer-motion';

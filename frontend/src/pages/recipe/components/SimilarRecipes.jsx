@@ -1,12 +1,11 @@
-import { QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useContext, useEffect } from 'react';
+import {  useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import RecipeCard from '../../../common/RecipeCard';
-import axios from 'axios';
+import axios from '../../../utils/axios';
 import { RecipeContext } from '../Recipe';
 import { motion } from 'framer-motion';
 import SavedModal from '../../../common/SavedModal';
-import LineBreak from '../../../common/LineBreak';
 import { useParams } from 'react-router-dom';
 
 const SimilarRecipes = () => {

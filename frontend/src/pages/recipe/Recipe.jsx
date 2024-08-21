@@ -10,7 +10,7 @@ import SimilarRecipes from './components/SimilarRecipes';
 import Description from './components/Description';
 import RecipeHeader from './components/RecipeHeader';
 import Summary from './components/Summary';
-import axios from 'axios';
+import axios from '../../utils/axios';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth0 } from '@auth0/auth0-react';
 import useSmoothScroll from '../../utils/useSmoothScroll';

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Splide, SplideTrack, SplideSlide } from '@splidejs/react-splide';
+import axios from '../../../utils/axios';
+import { useQuery } from '@tanstack/react-query';
+import { Splide, SplideSlide } from '@splidejs/react-splide';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import '@splidejs/react-splide/css/skyblue';

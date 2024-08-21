@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { RecipeContext } from '../Recipe';
 import { FavoriteBorder, Favorite } from '@mui/icons-material';
-import axios from 'axios';
+import axios from '../../../utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth0 } from '@auth0/auth0-react';
